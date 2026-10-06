@@ -11,6 +11,8 @@ function leeg() {
     voortgang: {},
     scores: {},
     laatst: null,
+    dagen: [],
+    gevierd: [],
     toewijzing: { vig: [...TOEWIJZING.vig], helpende: [...TOEWIJZING.helpende] },
     huisstijl: { voorbeeld: 'onsopmaat', kleuren: {}, logo: null, naam: 'De Wilgenhof' },
   };

@@ -3,6 +3,7 @@ import { CASUSSEN, NORM } from './casussen/index.js';
 import { bereken, cssVariabelen, STANDAARD, VERPLICHT, OPTIONEEL, LABELS, isHex, contrast } from './theme.js';
 import { laad, zet, nu, opnieuw } from './state.js';
 import { startRondleiding, stopRondleiding } from './tour.js';
+import { beloonAfronding, toonWachtendMoment, badgeBlok, deelBadge, certificaatPagina, aantalBadges, badgeTeller, delenMetModules } from './beloning.js';
 
 const DEMO_VANDAAG = '2026-10-06';
 const app = document.getElementById('app');
@@ -79,9 +80,11 @@ function isKlaar(id) {
 }
 
 function markeer(id, status) {
-  const voortgang = { ...nu().voortgang };
+  const voor = nu().voortgang;
+  const voortgang = { ...voor };
   if (voortgang[id] !== 'klaar') voortgang[id] = status;
   zet({ voortgang, laatst: id });
+  if (status === 'klaar' && voor[id] !== 'klaar') beloonAfronding(mijnModules().map((m) => m.id), voor);
 }
 
 function volgendeModule() {
@@ -192,6 +195,13 @@ function viewInloggen() {
 
 // ---------- medewerker: welkom ----------
 
+// De welkomstvideo neemt naam en kleuren over uit de huisstijl van de klant.
+function videoAdres() {
+  const { kleuren } = bereken(nu().huisstijl.kleuren);
+  const q = new URLSearchParams({ ingebed: '1', org: orgNaam(), primair: kleuren.paneel, accent: kleuren.actie, grond: kleuren.grond, tekst: kleuren.tekst });
+  return `/video/?${q}`;
+}
+
 function viewWelkom() {
   const aantal = mijnModules().length;
   return schil(`
@@ -207,13 +217,8 @@ function viewWelkom() {
             <button type="button" class="btn btn--stil btn--op-paneel" data-actie="sla-welkom-over">Sla over, naar mijn overzicht</button>
           </div>
         </div>
-        <figure class="video" aria-label="Welkomstvideo, komt later">
-          <div class="video__vlak">
-            <span class="video__speel" aria-hidden="true">${ICOON.speel}</span>
-            <p class="video__titel">Welkomstvideo</p>
-            <p class="video__wat">Hier komt een rustige video van ongeveer anderhalve minuut. Een collega laat zien hoe een dienst bij ons loopt, van de overdracht tot het rapporteren. Met ondertiteling.</p>
-          </div>
-          <figcaption>De video wordt nog gemaakt.</figcaption>
+        <figure class="video video--echt">
+          <iframe class="video__speler" src="${videoAdres()}" title="Welkomstvideo van ${esc(orgNaam())}" loading="lazy" allow="autoplay; fullscreen"></iframe>
         </figure>
       </div>
     </section>`, { route: '#/welkom' });
@@ -260,7 +265,7 @@ function viewOverzicht() {
             <h2 id="deel-${deel.id}">${esc(deel.titel)}</h2>
             <p class="deel__uitleg">${esc(deel.uitleg)}</p>
           </div>
-          <p class="deel__teller${deelKlaar === mods.length ? ' is-klaar' : ''}">${deelKlaar === mods.length ? ICOON.vink : ''}${deelKlaar} van ${mods.length}</p>
+          <div class="deel__rechts">${deelBadge(deel.id, deelKlaar === mods.length)}<p class="deel__teller${deelKlaar === mods.length ? ' is-klaar' : ''}">${deelKlaar === mods.length ? ICOON.vink : ''}${deelKlaar} van ${mods.length}</p></div>
         </header>
         <ol class="modules">${rijen}</ol>
       </section>`;
@@ -290,6 +295,7 @@ function viewOverzicht() {
       </div>
     </section>
     <div class="wrap overzicht">
+      ${badgeBlok({ toegewezen: lijst.map((m) => m.id), voortgang: nu().voortgang, dagen: nu().dagen })}
       ${delen}
       <aside class="hulp" data-tour="hulp">
         <span class="hulp__icoon" aria-hidden="true">${ICOON.vraag}</span>
@@ -637,7 +643,7 @@ function viewOpleider() {
         </div>
         <div class="tabelwrap">
           <table class="tabel">
-            <thead><tr><th scope="col">Naam</th><th scope="col">Profiel</th><th scope="col">Afdeling</th><th scope="col">Gestart</th><th scope="col">Voortgang</th><th scope="col">Per deel</th><th scope="col">Toets</th><th scope="col">Status</th></tr></thead>
+            <thead><tr><th scope="col">Naam</th><th scope="col">Profiel</th><th scope="col">Afdeling</th><th scope="col">Gestart</th><th scope="col">Voortgang</th><th scope="col">Per deel</th><th scope="col">Badges</th><th scope="col">Toets</th><th scope="col">Status</th></tr></thead>
             <tbody>
               ${rijen.map((r) => `
                 <tr${r.live ? ' class="is-live"' : ''}>
@@ -647,6 +653,7 @@ function viewOpleider() {
                   <td>${new Date(r.start).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })}</td>
                   <td><div class="minibalk" role="img" aria-label="${r.klaar} van ${r.totaal} klaar"><span style="width:${Math.round(r.pct * 100)}%"></span></div><span class="klein">${r.klaar} van ${r.totaal}</span></td>
                   <td><span class="deelvinken">${vinkjesPerDeel(r)}</span></td>
+                  <td>${badgeTeller(aantalBadges(r, nu().toewijzing[r.profiel] || [], nu().voortgang), delenMetModules(nu().toewijzing[r.profiel] || []).length)}</td>
                   <td>${r.toets === null ? '<span class="klein">nog niet</span>' : r.toets + '%'}</td>
                   <td><span class="status status--${r.status}">${statusTekst[r.status]}</span></td>
                 </tr>`).join('')}
@@ -878,6 +885,10 @@ function viewHuisstijl() {
     </div>`, { route: '#/beheer/huisstijl' });
 }
 
+function viewCertificaat() {
+  return schil(certificaatPagina({ naam: `${MEDEWERKER.naam} ${MEDEWERKER.achternaam}`, profiel: PROFIELEN[MEDEWERKER.profiel].naam, afdeling: MEDEWERKER.afdeling, org: orgNaam(), logo: logo(), merk: OOM_MERK, toegewezen: mijnModules().map((m) => m.id), voortgang: nu().voortgang, dagen: nu().dagen }), { route: '#/certificaat' });
+}
+
 function viewNietGevonden() {
   return schil(`<div class="wrap smal"><div class="werkpaneel"><h1>Deze pagina bestaat niet</h1><p><a href="#/">Terug naar het begin</a></p></div></div>`);
 }
@@ -898,6 +909,7 @@ function render(opties = {}) {
   } else if (rol === 'medewerker') {
     if (pad === '/welkom') html = viewWelkom();
     else if (pad === '/overzicht') html = viewOverzicht();
+    else if (pad === '/certificaat') html = viewCertificaat();
     else if (pad.startsWith('/module/')) html = viewModule(pad.split('/')[2]);
     else html = viewOverzicht();
   } else if (rol === 'opleider') {
@@ -911,12 +923,13 @@ function render(opties = {}) {
   pasHuisstijlToe(beheer);
   document.body.dataset.rol = rol || 'gast';
   app.innerHTML = html;
-  const titels = { '/': 'Inloggen', '/welkom': 'Welkom', '/overzicht': 'Mijn overzicht', '/opleider': 'Dashboard', '/opleider/profielen': 'Profielen', '/beheer': 'Bibliotheek', '/beheer/klanten': 'Klanten', '/beheer/huisstijl': 'Huisstijl' };
+  const titels = { '/': 'Inloggen', '/welkom': 'Welkom', '/overzicht': 'Mijn overzicht', '/opleider': 'Dashboard', '/opleider/profielen': 'Profielen', '/beheer': 'Bibliotheek', '/beheer/klanten': 'Klanten', '/beheer/huisstijl': 'Huisstijl', '/certificaat': 'Certificaat' };
   document.title = `${titels[pad] || 'Module'} · Leren bij ${orgNaam()}`;
   if (!opties.houdScroll) {
     window.scrollTo(0, 0);
     document.getElementById('inhoud')?.focus({ preventScroll: true });
   }
+  toonWachtendMoment();
 }
 
 function ga(pad) {
@@ -970,6 +983,9 @@ const ACTIES = {
   'sla-welkom-over'() {
     zet({ welkomGezien: true });
     ga('/overzicht');
+  },
+  afdrukken() {
+    window.print();
   },
   'volgende-tip'() {
     const huidig = nu().tip ?? new Date().getDate();
@@ -1166,6 +1182,14 @@ app.addEventListener('input', (e) => {
       }
     }, 300);
   }
+});
+
+// De welkomstvideo meldt hoe hoog hij is.
+window.addEventListener('message', (e) => {
+  const h = e.data?.welkomstvideo?.hoogte;
+  if (e.origin !== location.origin || !Number.isFinite(h)) return;
+  const speler = app.querySelector('.video__speler');
+  if (speler) speler.style.height = `${Math.ceil(h)}px`;
 });
 
 window.addEventListener('hashchange', () => {
