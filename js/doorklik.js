@@ -49,7 +49,7 @@ function onsMenuMetDoel(h, actief, doel) {
   const item = ([naam, icoon], magDoel = true) => {
     const inhoud = `${h.onsIcoon(icoon)}${h.esc(naam)}`;
     if (magDoel && isDoel(doel, 'menu', naam)) return `<li>${doelKnop(h, inhoud, 'ons__menu-item', naam)}</li>`;
-    return `<li class="ons__menu-item${naam === actief ? ' is-actief' : ''}" aria-hidden="true">${inhoud}</li>`;
+    return `<li class="ons__menu-item${magDoel && naam === actief ? ' is-actief' : ''}" aria-hidden="true">${inhoud}</li>`;
   };
   return `
           <nav class="ons__menu">

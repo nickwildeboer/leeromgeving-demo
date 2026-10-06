@@ -4,6 +4,113 @@
 export default {
   id: 'escaleren',
   stapNamen: ['Situatie', 'Toegang', 'Mag het?', 'Stappen', 'Daarna'],
+  les: [
+    {
+      kop: 'Jouw lijst met cliënten',
+      beeld: 'escaleren',
+      tekst: [
+        'In Nedap ONS zie je de dossiers van de cliënten op jouw afdeling. Andere dossiers zijn voor jou dicht. Zo blijft wat een cliënt deelt bij de mensen die voor hem zorgen.',
+        'Soms moet je toch zorg geven aan iemand die niet in jouw lijst staat. Bijvoorbeeld als je invalt op een andere afdeling. Dan kun je jezelf toegang geven. Dat heet escaleren.',
+      ],
+    },
+    {
+      kop: 'Wanneer het mag',
+      beeld: 'dienst',
+      tekst: [
+        'Bij De Wilgenhof escaleer je alleen als je nu zorg geeft aan deze cliënt en je de gegevens daarvoor nodig hebt. De vraag is steeds: heb ik dit nodig voor mijn werk?',
+      ],
+      punten: [
+        'Je helpt een avond op De Beuk en moet weten welke hulp een cliënt bij het douchen krijgt: dat mag.',
+        'Een cliënt van een andere groep wordt onwel in de tuin, en jij helpt: dat mag.',
+        'Je wilt weten hoe het gaat met een cliënt die vroeger op jouw afdeling woonde: dat mag niet.',
+        'Kijken op het account van een collega: dat mag nooit.',
+      ],
+    },
+    {
+      kop: 'Je laat een spoor achter',
+      beeld: 'zoeken',
+      tekst: [
+        'Als je escaleert, vraagt Nedap ONS om een reden. Wie er keek, wanneer en waarom, wordt bewaard. Bij De Wilgenhof kijkt de privacyfunctionaris die lijst regelmatig na.',
+        'Lees daarom alleen wat je nodig hebt voor de zorg van dat moment. Vertel bij de overdracht dat je geëscaleerd hebt, en waarom.',
+      ],
+    },
+    {
+      kop: 'Waar het staat in Nedap ONS',
+      beeld: 'ons',
+      tekst: [
+        'Open je een dossier dat niet in jouw lijst staat, dan zegt Nedap ONS dat je geen toegang hebt. Op dat scherm staat de knop Escaleren. Je schrijft een reden en dan gaat het dossier open.',
+        'In het volgende deel klikken we dat samen door bij meneer Bos.',
+      ],
+    },
+  ],
+  doorklik: {
+    client: 'H Bos',
+    klaar: 'Zo escaleer je: Escaleren op het scherm zonder toegang, een reden opschrijven, en dan alleen lezen wat je voor de zorg nodig hebt.',
+    stappen: [
+      {
+        zeg: 'Je hebt meneer Bos opgezocht. Hij staat niet in jouw lijst, dus je ziet zijn dossier niet. Je moet hem zo zijn avondeten geven.',
+        doe: 'Klik op Escaleren',
+        doel: { knop: 'Escaleren' },
+        pagina: {
+          titel: 'Geen toegang',
+          knoppen: ['Escaleren'],
+          kaarten: [
+            { kop: 'Je hebt geen toegang tot dit dossier', regels: ['Heb je dit dossier nodig voor de zorg die je nu geeft? Dan kun je escaleren. Je moet een reden opgeven.'] },
+          ],
+        },
+      },
+      {
+        zeg: 'Nedap ONS vraagt waarom je toegang nodig hebt. Schrijf het zo dat een ander het later snapt. De reden wordt bewaard bij je naam.',
+        doe: 'Klik op Bevestigen',
+        doel: { knop: 'Bevestigen' },
+        pagina: {
+          titel: 'Escaleren',
+          knoppen: ['Annuleren', 'Bevestigen'],
+          velden: [
+            { label: 'Reden', waarde: 'Ik val vandaag in op De Eik en geef meneer zijn avondeten.' },
+          ],
+        },
+      },
+      {
+        zeg: 'Het dossier is open. Bij Waarschuwingen zie je dat meneer zich snel verslikt. Het advies voor zijn eten staat in het zorgplan.',
+        doe: 'Klik in het menu op Plan',
+        menu: 'Overzicht',
+        doel: { menu: 'Plan' },
+        pagina: {
+          kaarten: [
+            { kop: 'Waarschuwingen', regels: ['Verslikgevaar'] },
+            { kop: 'Episodes', regels: ['Geen relevante episodes'] },
+            { kop: 'Belangrijke rapportages', regels: ['Geen belangrijke rapportages'] },
+          ],
+        },
+      },
+      {
+        zeg: 'Je zoekt alleen wat je nu nodig hebt: het advies bij eten en drinken. De andere delen van het dossier laat je dicht.',
+        doe: 'Klik op het doel over eten en drinken',
+        menu: 'Plan',
+        doel: { regel: 'Eten en drinken: veilig slikken' },
+        pagina: {
+          tabs: ['Zorgplan', 'Onvrijwillige zorg'],
+          kaarten: [
+            { kop: 'Gezondheid', regels: ['Eten en drinken: veilig slikken', 'Medicatie: hulp bij innemen'] },
+            { kop: 'Welzijn', regels: ['Dagbesteding op dinsdag en vrijdag'] },
+          ],
+        },
+      },
+      {
+        zeg: 'Hier staat wat je moet weten voor het eten. Na het eten rapporteer je hoe het ging.',
+        doe: 'Klik in het menu op Rapportages',
+        menu: 'Plan',
+        doel: { menu: 'Rapportages' },
+        pagina: {
+          titel: 'Eten en drinken: veilig slikken',
+          kaarten: [
+            { kop: 'Acties', regels: ['Gemalen eten, geen harde korstjes.', 'Drinken altijd verdikt.', 'Meneer zit rechtop aan tafel en eet in een rustig tempo.'] },
+          ],
+        },
+      },
+    ],
+  },
   startKnop: 'Ik ga naar meneer Bos',
   intro: {
     tijd: 'Zaterdag 16.50 uur, late dienst op De Eik',

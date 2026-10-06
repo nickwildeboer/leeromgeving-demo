@@ -4,6 +4,116 @@
 export default {
   id: 'onsdossier',
   stapNamen: ['Situatie', 'Aftekenen', 'Rapporteren'],
+  les: [
+    {
+      kop: 'Nedap ONS op je telefoon',
+      beeld: 'dossier-app',
+      tekst: [
+        'Ons Dossier is de app van Nedap ONS voor op je telefoon. Je ziet daarin je cliënten, hun agenda en hun rapportages. Je hoeft dus niet naar de pc in het kantoor.',
+        'Bij De Wilgenhof gebruik je de app aan het bed. Je tekent af wat je deed en je rapporteert wat je zag, meteen na de zorg.',
+      ],
+      punten: [
+        'Wat je meteen opschrijft, klopt beter.',
+        'De volgende dienst ziet het direct.',
+      ],
+    },
+    {
+      kop: 'Veilig werken met de app',
+      beeld: 'authenticator',
+      tekst: [
+        'In de app staan gegevens van cliënten. Je werkt daarom alleen in de app, en niet in WhatsApp of in je notities.',
+        'Kijk altijd eerst of je in het goede dossier zit. Controleer de naam en de geboortedatum. Twee cliënten kunnen dezelfde achternaam hebben.',
+      ],
+      punten: [
+        'Vergrendel je telefoon als je de kamer uitloopt.',
+        'Laat de app niet open liggen op de kamer.',
+      ],
+    },
+    {
+      kop: 'Aftekenen en rapporteren',
+      beeld: 'dossier-app',
+      tekst: [
+        'In de agenda van de cliënt staan de handelingen van vandaag, zoals steunkousen of medicatie. Heb je een handeling gedaan, dan teken je hem af. Teken alleen af wat je echt deed.',
+        'Zie je iets wat afwijkt, dan maak je in de app een rapportage. Kort en concreet: wat zag je, wanneer, en wat deed je.',
+        'In het volgende deel doen we dat samen een keer in de app.',
+      ],
+    },
+  ],
+  doorklik: {
+    plek: 'telefoon',
+    app: 'Ons Dossier',
+    klaar: 'Zo werk je aan het bed: cliënt kiezen, naam en geboortedatum controleren, de handeling aftekenen en daarna een rapportage maken.',
+    stappen: [
+      {
+        zeg: 'Je opent Ons Dossier. Je ziet de cliënten van jouw dienst.',
+        doe: 'Tik op meneer Vermeulen',
+        doel: { regel: 'P Vermeulen' },
+        pagina: {
+          balk: 'Ons Dossier',
+          kaarten: [{ kop: 'Mijn cliënten', regels: ['A Bakker', 'P Vermeulen', 'J Willems'] }],
+        },
+      },
+      {
+        zeg: 'Bovenaan staan de naam en de geboortedatum. Kijk of dat klopt. Daaronder zie je de handelingen van vandaag.',
+        doe: 'Tik op Steunkousen aantrekken',
+        doel: { regel: '8.00 uur Steunkousen aantrekken' },
+        pagina: {
+          balk: 'P Vermeulen',
+          tabs: ['Agenda', 'Rapportages'],
+          kaarten: [
+            { kop: 'P Vermeulen', regels: ['Geboren 14-03-1941'] },
+            { kop: 'Vandaag', regels: ['8.00 uur Steunkousen aantrekken', '12.00 uur Medicatie'] },
+          ],
+        },
+      },
+      {
+        zeg: 'Je ziet wat er bij deze handeling hoort. Je hebt de kousen net aangetrokken, dus je tekent af.',
+        doe: 'Tik op Aftekenen',
+        doel: { knop: 'Aftekenen' },
+        pagina: {
+          balk: 'Steunkousen aantrekken',
+          knoppen: ['Aftekenen'],
+          kaarten: [{ kop: 'Handeling', regels: ['Steunkousen aantrekken, beide benen', 'Elke ochtend, 8.00 uur'] }],
+        },
+      },
+      {
+        zeg: 'De handeling is afgetekend en staat op jouw naam. Wil je iets opschrijven, dan ga je naar de rapportages.',
+        doe: 'Tik op Rapportages',
+        doel: { tab: 'Rapportages' },
+        pagina: {
+          balk: 'P Vermeulen',
+          tabs: ['Agenda', 'Rapportages'],
+          kaarten: [
+            { kop: 'Vandaag', regels: ['8.00 uur Steunkousen aantrekken, afgetekend', '12.00 uur Medicatie'] },
+          ],
+        },
+      },
+      {
+        zeg: 'Hier staan de rapportages van meneer Vermeulen, de nieuwste bovenaan. Met de plusknop maak je een nieuwe.',
+        doe: 'Tik op de plusknop',
+        doel: { knop: '+', label: 'Nieuwe rapportage' },
+        pagina: {
+          balk: 'P Vermeulen',
+          tabs: ['Agenda', 'Rapportages'],
+          knoppen: ['+'],
+          kaarten: [{ kop: 'Joost Hendriks · gisteren 21.30', regels: ['Meneer rustig gaan slapen.'] }],
+        },
+      },
+      {
+        zeg: 'Je schrijft kort wat je zag en wat je deed. Daarna sla je op. De rapportage staat meteen in Nedap ONS.',
+        doe: 'Tik op Opslaan',
+        doel: { knop: 'Opslaan' },
+        pagina: {
+          balk: 'Nieuwe rapportage',
+          knoppen: ['Opslaan'],
+          velden: [
+            { label: 'Tekst', waarde: 'Wat zag je, wanneer, en wat deed je?' },
+            { label: 'Zichtbaar voor', waarde: 'Iedereen' },
+          ],
+        },
+      },
+    ],
+  },
   startKnop: 'Ik pak mijn telefoon',
   intro: {
     tijd: 'Vrijdag 8.20 uur, vroege dienst op De Linde',

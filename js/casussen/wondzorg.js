@@ -4,6 +4,110 @@
 export default {
   id: 'wondzorg',
   stapNamen: ['Situatie', 'Foto maken', 'Beschrijven'],
+  les: [
+    {
+      kop: 'Waarom wondfoto\'s in de app',
+      beeld: 'wond',
+      tekst: [
+        'Een foto laat beter zien hoe een wond verandert dan alleen tekst. De wondverpleegkundige legt de foto\'s naast elkaar en ziet of de wond geneest.',
+        'Een wondfoto is een gegeven over de gezondheid van een cliënt. Daarom maak je hem in de wondzorgapp. De foto gaat dan naar het dossier en blijft niet op je telefoon staan.',
+      ],
+      punten: [
+        'Nooit met de gewone camera van je telefoon.',
+        'Nooit via WhatsApp of mail.',
+      ],
+    },
+    {
+      kop: 'Een foto die je kunt vergelijken',
+      beeld: 'meten',
+      tekst: [
+        'Een foto is pas bruikbaar als je hem kunt vergelijken met de vorige. Maak hem daarom elke keer op dezelfde manier.',
+      ],
+      punten: [
+        'Leg een meetlatje naast de wond.',
+        'Zorg voor goed licht, zonder flits die weerkaatst.',
+        'Zet alleen de wond in beeld, geen gezicht.',
+        'Fotografeer recht van voren, zoals de vorige keer.',
+      ],
+    },
+    {
+      kop: 'De wond beschrijven',
+      beeld: 'rapport',
+      tekst: [
+        'Bij de foto schrijf je wat je zag. De app vraagt dat per onderdeel. Bij de grootte noteer je lengte en breedte in centimeters. Het wondbed is de bodem van de wond, met zijn kleur. Wondvocht zie je in de wond en in het oude verband.',
+        'De wondrand is de rand van de wond en de huid eromheen. Vraag de cliënt ook of het verwisselen pijn doet, en schrijf op wat ze zegt.',
+      ],
+    },
+    {
+      kop: 'Hoe het gaat in de app',
+      beeld: 'wond',
+      tekst: [
+        'Je opent de wondzorgapp op je telefoon, kiest de cliënt en de wond. Dan maak je de foto en vul je de beschrijving in.',
+        'In het volgende deel doen we dat samen een keer in de app.',
+      ],
+    },
+  ],
+  doorklik: {
+    plek: 'telefoon',
+    app: 'Wondzorgapp',
+    klaar: 'Zo leg je een wond vast: cliënt kiezen, de wond kiezen, foto maken met meetlatje, beschrijven en opslaan.',
+    stappen: [
+      {
+        zeg: 'Je opent de wondzorgapp. Je ziet de cliënten van jouw afdeling met een wond.',
+        doe: 'Tik op mevrouw Van Dam',
+        doel: { regel: 'M van Dam' },
+        pagina: {
+          balk: 'Wondzorgapp',
+          kaarten: [{ kop: 'De Linde', regels: ['M van Dam', 'H Smit'] }],
+        },
+      },
+      {
+        zeg: 'Mevrouw Van Dam heeft één wond in de app. Je ziet ook wanneer de laatste foto is gemaakt.',
+        doe: 'Tik op de wond aan het onderbeen',
+        doel: { regel: 'Wond onderbeen' },
+        pagina: {
+          balk: 'M van Dam',
+          kaarten: [{ kop: 'Wonden', regels: ['Wond onderbeen', 'Laatste foto: vorige week woensdag'] }],
+        },
+      },
+      {
+        zeg: 'Hier zie je de vorige foto\'s en het wondzorgplan. Het oude verband is eraf en de wond is schoon.',
+        doe: 'Tik op Foto maken',
+        doel: { knop: 'Foto maken' },
+        pagina: {
+          balk: 'Wond onderbeen',
+          knoppen: ['Foto maken'],
+          kaarten: [{ kop: 'Wondzorgplan', regels: ['Verband wisselen op maandag en woensdag', 'Foto bij de wissel op woensdag'] }],
+        },
+      },
+      {
+        zeg: 'De camera van de app staat open. Leg het meetlatje naast de wond en kijk of het licht goed is. Ziet het er goed uit, dan gebruik je de foto.',
+        doe: 'Tik op Foto gebruiken',
+        doel: { knop: 'Foto gebruiken' },
+        pagina: {
+          balk: 'Foto',
+          knoppen: ['Opnieuw', 'Foto gebruiken'],
+          kaarten: [{ kop: 'Controleer de foto', regels: ['Meetlatje in beeld?', 'Genoeg licht?', 'Alleen de wond in beeld?'] }],
+        },
+      },
+      {
+        zeg: 'Nu beschrijf je de wond, onderdeel voor onderdeel. Daarna sla je op en staat alles in het dossier.',
+        doe: 'Tik op Opslaan',
+        doel: { knop: 'Opslaan' },
+        pagina: {
+          balk: 'Wondbeschrijving',
+          knoppen: ['Opslaan'],
+          velden: [
+            { label: 'Grootte', waarde: 'Lengte en breedte in cm' },
+            { label: 'Wondbed', waarde: 'Kies een kleur' },
+            { label: 'Wondvocht', waarde: 'Kies hoeveel en welke kleur' },
+            { label: 'Wondrand en huid', waarde: 'Wat zie je?' },
+            { label: 'Pijn', waarde: 'Wat zegt de cliënt?' },
+          ],
+        },
+      },
+    ],
+  },
   startKnop: 'Ik ga de wond vastleggen',
   intro: {
     tijd: 'Woensdag 9.30 uur, vroege dienst op De Linde',

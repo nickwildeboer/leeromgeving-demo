@@ -4,6 +4,116 @@
 export default {
   id: 'mic',
   stapNamen: ['Situatie', 'Eerst de cliënt', 'Melden', 'Daarna'],
+  les: [
+    {
+      kop: 'Wat een MIC-melding is',
+      beeld: 'mic',
+      tekst: [
+        'MIC staat voor Melding Incidenten Cliëntenzorg. Je maakt een melding als er iets misging bij de zorg, of als het bijna misging. Denk aan een val, een vergeten medicijn of een verkeerd zakje.',
+        'Een melding is om van te leren. Het team zoekt uit hoe het kon gebeuren en wat er beter kan. Het gaat niet om de schuld van een collega.',
+      ],
+    },
+    {
+      kop: 'Eerst de cliënt',
+      beeld: 'escaleren',
+      tekst: [
+        'Merk je dat er iets misging, zorg dan eerst voor de cliënt. Bij medicatie weet je niet altijd wat er in een zakje zit, en of je het later nog mag geven.',
+        'Daarom overleg je bij De Wilgenhof altijd met de verpleegkundige. Zij beslist wat er nu moet gebeuren, zo nodig samen met de apotheek of de arts.',
+      ],
+      punten: [
+        'Los het niet alleen op.',
+        'Leg vast wat je uiteindelijk gaf.',
+      ],
+    },
+    {
+      kop: 'Wat je in een melding schrijft',
+      beeld: 'rapport',
+      tekst: [
+        'Schrijf op wat er gebeurde, hoe laat, en wat je daarna deed. Een collega die er niet bij was, moet het kunnen begrijpen.',
+        'Noem geen namen van collega\'s en geef geen oordeel. Wie bang is om genoemd te worden, meldt minder. Dan leert het team ook minder.',
+        'Na je melding gaat de teamleider ermee aan de slag. Het team bespreekt de melding, en jij hoort terug wat ermee gebeurd is.',
+      ],
+    },
+    {
+      kop: 'Waar het staat in Nedap ONS',
+      beeld: 'ons',
+      tekst: [
+        'Bij De Wilgenhof maak je een MIC-melding als vragenlijst in het dossier van de cliënt. Onder Vragenlijsten maak je een nieuwe aan en kies je MIC-melding.',
+        'In het volgende deel klikken we dat samen een keer door.',
+      ],
+    },
+  ],
+  doorklik: {
+    client: 'J Willems',
+    klaar: 'Zo maak je een MIC-melding: Vragenlijsten in het menu, Nieuwe vragenlijst, MIC-melding kiezen, invullen, opslaan en op Volgende status zetten.',
+    stappen: [
+      {
+        zeg: 'Je hebt het dossier van mevrouw Willems open. De melding hoort bij haar, dus je maakt hem in haar dossier.',
+        doe: 'Klik in het menu op Vragenlijsten',
+        menu: 'Overzicht',
+        doel: { menu: 'Vragenlijsten' },
+        pagina: {
+          kaarten: [
+            { kop: 'Waarschuwingen', regels: ['Geen waarschuwingen'] },
+            { kop: 'Episodes', regels: ['Geen relevante episodes'] },
+            { kop: 'Allergieën en overgevoeligheden', regels: ['Geen actieve allergieën of overgevoeligheden'] },
+          ],
+        },
+      },
+      {
+        zeg: 'Hier staan de vragenlijsten van mevrouw Willems. Rechtsboven staat de knop voor een nieuwe.',
+        doe: 'Klik op Nieuwe vragenlijst',
+        menu: 'Vragenlijsten',
+        doel: { knop: '+ Nieuwe vragenlijst' },
+        pagina: {
+          titel: 'Vragenlijsten',
+          tabs: ['Actueel', 'Archief'],
+          knoppen: ['+ Nieuwe vragenlijst'],
+          kaarten: [
+            { kop: 'Actueel', regels: ['Mikzo Kompas® (2025.1)'] },
+          ],
+        },
+      },
+      {
+        zeg: 'Nedap ONS vraagt welke vragenlijst je wilt maken. Je kunt ook zoeken op de naam.',
+        doe: 'Kies MIC-melding',
+        menu: 'Vragenlijsten',
+        doel: { optie: 'MIC-melding' },
+        pagina: {
+          venster: { titel: 'Maak een nieuwe vragenlijst aan', opties: ['Mikzo Kompas® (2025.1)', 'Omaha inventarisatie', 'MIC-melding'] },
+        },
+      },
+      {
+        zeg: 'Je vult in wanneer het was, wat voor incident het was en wat er gebeurde. Bij wat er gebeurde schrijf je wat je zag en wat je deed.',
+        doe: 'Klik op Opslaan',
+        menu: 'Vragenlijsten',
+        doel: { knop: 'Opslaan' },
+        pagina: {
+          titel: 'MIC-melding',
+          knoppen: ['Opslaan'],
+          velden: [
+            { label: 'Datum en tijd', waarde: 'Vandaag, 12.10 uur' },
+            { label: 'Soort incident', waarde: 'Medicatie' },
+            { label: 'Wat is er gebeurd?', waarde: 'Wat zag je, wanneer, en wat deed je?' },
+            { label: 'Gevolg voor de cliënt', waarde: 'Kies een gevolg' },
+          ],
+        },
+      },
+      {
+        zeg: 'Je melding staat nu op Concept. Pas als je hem doorzet, komt hij bij de teamleider.',
+        doe: 'Klik op Volgende status',
+        menu: 'Vragenlijsten',
+        doel: { knop: 'Volgende status' },
+        pagina: {
+          titel: 'MIC-melding',
+          knoppen: ['Volgende status', 'Meer', 'Wijzig'],
+          kaarten: [
+            { kop: 'Status', regels: ['Concept'] },
+          ],
+        },
+      },
+    ],
+  },
   startKnop: 'Ik ga het oplossen',
   intro: {
     tijd: 'Maandag 12.10 uur, vroege dienst op De Linde',

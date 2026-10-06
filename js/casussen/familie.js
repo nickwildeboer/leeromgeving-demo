@@ -4,6 +4,131 @@
 export default {
   id: 'familie',
   stapNamen: ['Situatie', 'Vastleggen', 'Uitzoeken', 'Opschrijven'],
+  les: [
+    {
+      kop: 'Familie maakt afspraken met jou',
+      beeld: 'familie',
+      tekst: [
+        'Familie kent de cliënt het langst. Ze vertellen je wat hij gewend is en wat ze graag willen. Vaak doen ze dat even tussendoor, op de gang of bij de koffie.',
+        'Zo\'n afspraak geldt voor alle diensten, ook voor de nacht en het weekend. Wat alleen in jouw hoofd zit, weet je collega niet.',
+      ],
+    },
+    {
+      kop: 'Wat je zelf toezegt, en wat niet',
+      beeld: 'overdracht',
+      tekst: [
+        'Niet elk verzoek kun je zelf regelen. Kijk eerst wat voor verzoek het is.',
+      ],
+      punten: [
+        'Een vaste afspraak over de dagelijkse zorg: leg je vast en geef je door aan de EVV\'er.',
+        'Iets wat al in de volgende dienst speelt: zet je ook in de overdracht.',
+        'Iets over medicijnen of behandeling: zeg je niet toe. Dat overleg je eerst, want daar beslist de arts over.',
+      ],
+    },
+    {
+      kop: 'Schrijf het zo dat iedereen het snapt',
+      beeld: 'rapport',
+      tekst: [
+        'Een collega die de cliënt niet kent, moet precies weten wat er moet gebeuren. Schrijf daarom op wie, wat en wanneer. En met wie je het hebt afgesproken.',
+      ],
+      punten: [
+        'Niet: "Zoon komt soms helpen." Wel: "Zoon helpt elke dinsdag om 17.30 uur bij het avondeten."',
+        'Niet: "Familie wil foto\'s." Wel: "Kleindochter krijgt elke zondag een foto van oma via de app, afgesproken met de zoon."',
+      ],
+    },
+    {
+      kop: 'Waar het staat in Nedap ONS',
+      beeld: 'ons',
+      tekst: [
+        'Bij De Wilgenhof schrijf je een afspraak met familie als rapportage in Nedap ONS. Je markeert hem als belangrijk en zet een actie voor de EVV\'er. Die zet de afspraak daarna in het zorgplan.',
+        'In het volgende deel klikken we dat samen door bij mevrouw Dijkstra.',
+      ],
+    },
+  ],
+  doorklik: {
+    client: 'M Dijkstra',
+    klaar: 'Zo leg je een afspraak met familie vast: Rapportages, de plusknop, Rapportage kiezen, de afspraak opschrijven met een actie voor de EVV\'er, markeren als belangrijk en opslaan.',
+    stappen: [
+      {
+        zeg: 'Je hebt het dossier van mevrouw Dijkstra open op het Overzicht. Een afspraak met familie leg je vast als rapportage.',
+        doe: 'Klik in het menu op Rapportages',
+        menu: 'Overzicht',
+        doel: { menu: 'Rapportages' },
+        pagina: {
+          kaarten: [
+            { kop: 'Waarschuwingen', regels: ['Geen waarschuwingen'] },
+            { kop: 'Belangrijke rapportages', regels: ['Geen belangrijke rapportages'] },
+          ],
+        },
+      },
+      {
+        zeg: 'Hier staan de rapportages van mevrouw Dijkstra. Rechtsboven staat de blauwe plusknop.',
+        doe: 'Klik op de plusknop',
+        menu: 'Rapportages',
+        doel: { knop: '+', label: 'Nieuwe rapportage' },
+        pagina: {
+          titel: 'Rapportages',
+          knoppen: ['Acties bekijken', '+'],
+          kaarten: [
+            { kop: 'Joost de Vries · gisteren 21.50', regels: ['Mevrouw heeft na het avondeten met haar dochter gebeld. Daarna rustig gaan slapen.'] },
+          ],
+        },
+      },
+      {
+        zeg: 'Nedap ONS vraagt welk soort rapportage je maakt. Een afspraak met familie is een gewone rapportage.',
+        doe: 'Kies Rapportage',
+        menu: 'Rapportages',
+        doel: { optie: 'Rapportage' },
+        pagina: {
+          venster: { titel: 'Rapportagetype toevoegen', opties: ['Rapportage', 'SOEP', 'Gewicht', 'Bloeddruk', 'Pijnscore', 'Fotorapportage'] },
+        },
+      },
+      {
+        zeg: 'De afspraak staat erin, met wie en wanneer. Bij Acties voor staat de EVV\'er, zo krijgt zij een taak. Markeer de rapportage als belangrijk, dan blijft hij op het Overzicht staan.',
+        doe: 'Klik op Markeer als belangrijk',
+        menu: 'Rapportages',
+        doel: { knop: 'Markeer als belangrijk' },
+        pagina: {
+          titel: 'Nieuw - Rapportage',
+          knoppen: ['Markeer als belangrijk', 'Opslaan'],
+          velden: [
+            { label: 'Tekst', waarde: 'Afspraak met familie: de dochter haalt mevrouw elke zondag om 9.30 uur op voor de kerk. Mevrouw zit dan aangekleed klaar. Afgesproken met de dochter, vrijdag 9 oktober, door Sanne Visser.' },
+            { label: 'Acties voor', waarde: 'EVV' },
+            { label: 'Zichtbaar voor', waarde: 'Iedereen' },
+          ],
+        },
+      },
+      {
+        zeg: 'De ster staat aan. Je rapportage is klaar.',
+        doe: 'Klik op Opslaan',
+        menu: 'Rapportages',
+        doel: { knop: 'Opslaan' },
+        pagina: {
+          titel: 'Nieuw - Rapportage',
+          knoppen: ['★ Belangrijk', 'Opslaan'],
+          velden: [
+            { label: 'Tekst', waarde: 'Afspraak met familie: de dochter haalt mevrouw elke zondag om 9.30 uur op voor de kerk. Mevrouw zit dan aangekleed klaar. Afgesproken met de dochter, vrijdag 9 oktober, door Sanne Visser.' },
+            { label: 'Acties voor', waarde: 'EVV' },
+            { label: 'Zichtbaar voor', waarde: 'Iedereen' },
+          ],
+        },
+      },
+      {
+        zeg: 'Je rapportage staat bovenaan, met een ster. Op het Overzicht staat hij nu bij Belangrijke rapportages. Zondag ziet de collega van de vroege dienst hem daar meteen.',
+        doe: 'Klik in het menu op Overzicht',
+        menu: 'Rapportages',
+        doel: { menu: 'Overzicht' },
+        pagina: {
+          titel: 'Rapportages',
+          knoppen: ['Acties bekijken', '+'],
+          kaarten: [
+            { kop: '★ Sanne Visser · vandaag 14.20', regels: ['Afspraak met familie: de dochter haalt mevrouw elke zondag om 9.30 uur op voor de kerk.'] },
+            { kop: 'Joost de Vries · gisteren 21.50', regels: ['Mevrouw heeft na het avondeten met haar dochter gebeld. Daarna rustig gaan slapen.'] },
+          ],
+        },
+      },
+    ],
+  },
   startKnop: 'Ik ga het vastleggen',
   intro: {
     tijd: 'Vrijdag 14.15 uur, vroege dienst op De Linde',

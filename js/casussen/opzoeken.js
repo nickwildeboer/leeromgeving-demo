@@ -4,6 +4,104 @@
 export default {
   id: 'opzoeken',
   stapNamen: ['Situatie', 'Zoeken', 'Controleren', 'Werkwijze'],
+  les: [
+    {
+      kop: 'Eén naam, meer cliënten',
+      beeld: 'zoeken',
+      tekst: [
+        'Bij De Wilgenhof wonen meer cliënten met dezelfde achternaam. Soms op dezelfde afdeling, soms op een andere.',
+        'Open je het verkeerde dossier, dan staat jouw werk bij de verkeerde cliënt. De ene cliënt lijkt dan iets te missen. Bij de andere staat iets wat niet klopt.',
+      ],
+    },
+    {
+      kop: 'Zo weet je zeker dat je goed zit',
+      beeld: 'dienst',
+      tekst: [
+        'Een naam alleen is niet genoeg. Je kijkt naar meer gegevens die bij één cliënt horen.',
+        'Val je in op een afdeling die je niet kent? Vraag dan eerst aan een collega van die afdeling wie je zoekt.',
+      ],
+      punten: [
+        'De afdeling waar de cliënt woont.',
+        'Het kamernummer.',
+        'De geboortedatum.',
+      ],
+    },
+    {
+      kop: 'Waar het staat in Nedap ONS',
+      beeld: 'ons',
+      tekst: [
+        'Bovenaan elk scherm staat het zoekveld "Zoeken naar cliënten...". Op het startscherm staat ook Cliënt zoeken. Je typt de achternaam en kiest een cliënt uit de lijst.',
+        'In het dossier zie je bovenaan de naam van de cliënt. Onder Algemeen staan de persoonsgegevens en de locatie. Daar controleer je of je goed zit.',
+        'In het volgende deel klikken we dat samen door.',
+      ],
+    },
+  ],
+  doorklik: {
+    client: 'H Jansen',
+    klaar: 'Zo weet je dat je bij de goede cliënt bent: Algemeen in het menu, afdeling, kamer en geboortedatum controleren, en pas dan de rapportages lezen en vastleggen.',
+    stappen: [
+      {
+        zeg: 'Je hebt "Jansen" gezocht en een meneer Jansen geopend. Bovenaan staat zijn naam. Of het de goede is, weet je nog niet.',
+        doe: 'Klik in het menu op Algemeen',
+        menu: 'Overzicht',
+        doel: { menu: 'Algemeen' },
+        pagina: {
+          kaarten: [
+            { kop: 'Waarschuwingen', regels: ['Geen waarschuwingen'] },
+            { kop: 'Belangrijke rapportages', regels: ['Geen belangrijke rapportages'] },
+          ],
+        },
+      },
+      {
+        zeg: 'Onder Algemeen staan zijn persoonsgegevens en waar hij woont. Lieke zei: De Eik, kamer 4, geboren 12 maart 1941. Dat klopt hier alle drie. Nu lees je wat er vandaag speelt.',
+        doe: 'Klik in het menu op Rapportages',
+        menu: 'Algemeen',
+        doel: { menu: 'Rapportages' },
+        pagina: {
+          kaarten: [
+            { kop: 'Personalia', regels: ['Naam: H Jansen', 'Geboortedatum: 12-03-1941'] },
+            { kop: 'Locaties', regels: ['De Eik, kamer 4'] },
+          ],
+        },
+      },
+      {
+        zeg: 'Lieke heeft vanmiddag geschreven dat meneer weinig drinkt. Na het eten leg jij vast hoeveel hij gedronken heeft. Rechtsboven staat de blauwe plusknop.',
+        doe: 'Klik op de plusknop',
+        menu: 'Rapportages',
+        doel: { knop: '+', label: 'Nieuwe rapportage' },
+        pagina: {
+          titel: 'Rapportages',
+          knoppen: ['Acties bekijken', '+'],
+          kaarten: [
+            { kop: 'Lieke Hoekstra · vandaag 14.20', regels: ['Meneer heeft vanmiddag weinig gedronken. Graag bijhouden hoeveel hij drinkt.'] },
+          ],
+        },
+      },
+      {
+        zeg: 'Voor wat een cliënt drinkt, is er een eigen soort rapportage. Dan kan een collega later zien hoeveel hij op een dag binnenkreeg.',
+        doe: 'Kies Vocht inname',
+        menu: 'Rapportages',
+        doel: { optie: 'Vocht inname' },
+        pagina: {
+          venster: { titel: 'Rapportagetype toevoegen', opties: ['Rapportage', 'Gewicht', 'Bloeddruk', 'Vocht inname', 'Vocht uitscheiding', 'Pijnscore'] },
+        },
+      },
+      {
+        zeg: 'Je vult in hoeveel meneer gedronken heeft en wanneer. Je slaat het op bij de goede meneer Jansen.',
+        doe: 'Klik op Opslaan',
+        menu: 'Rapportages',
+        doel: { knop: 'Opslaan' },
+        pagina: {
+          titel: 'Nieuw - Vocht inname',
+          knoppen: ['Opslaan'],
+          velden: [
+            { label: 'Hoeveelheid', waarde: '300 ml' },
+            { label: 'Tijd', waarde: '17.45' },
+          ],
+        },
+      },
+    ],
+  },
   startKnop: 'Ik ga zoeken',
   intro: {
     tijd: 'Zaterdag 16.30 uur, avonddienst op De Eik',

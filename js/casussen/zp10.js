@@ -4,6 +4,110 @@
 export default {
   id: 'zp10',
   stapNamen: ['Situatie', 'Waarnemen', 'Vastleggen', 'Familie'],
+  les: [
+    {
+      kop: 'Wat het zorgpad stervensfase is',
+      beeld: 'zp10',
+      tekst: [
+        'Soms besluiten de arts en het team samen dat een cliënt in de stervensfase is. Vanaf dat moment start het zorgpad stervensfase. Iedereen werkt dan met dezelfde lijst.',
+        'Het doel is nu dat de cliënt zo comfortabel mogelijk is, en dat de familie zich gesteund voelt.',
+      ],
+      punten: [
+        'Je kijkt elke dienst hoe het met de cliënt gaat.',
+        'Je legt dat vast in het zorgpad, per onderwerp.',
+      ],
+    },
+    {
+      kop: 'Wat je kunt zien',
+      beeld: 'dienst',
+      tekst: [
+        'In de laatste dagen verandert er veel. De ademhaling kan anders klinken. Iemand kan onrustig worden of pijn hebben, ook als hij dat niet meer kan zeggen. Let dan op het gezicht en op hoe iemand ligt.',
+        'Slikken gaat vaak slecht. De mond droogt dan snel uit. Mondverzorging doe je met een nat gaasje of mondspray.',
+        'Over medicatie tegen pijn of onrust beslist de verpleegkundige met de arts. Zij moeten dus weten wat jij ziet.',
+      ],
+    },
+    {
+      kop: 'De familie',
+      beeld: 'familie',
+      tekst: [
+        'Familie zit vaak lang aan het bed en heeft vragen. Niemand weet precies hoe lang het sterven duurt. Een schatting klopt vaak niet.',
+        'Je hoeft niet alle antwoorden te hebben. Blijf even, vertel wat je ziet en vraag of ze iemand willen spreken.',
+      ],
+    },
+    {
+      kop: 'Waar het staat in Nedap ONS',
+      beeld: 'ons',
+      tekst: [
+        'Bij De Wilgenhof staat het zorgpad stervensfase als vragenlijst in het dossier. Je vindt het onder Vragenlijsten. Per onderwerp vul je in wat je zag.',
+        'In het volgende deel klikken we dat samen een keer door.',
+      ],
+    },
+  ],
+  doorklik: {
+    client: 'H Koster',
+    klaar: 'Zo leg je een waarneming vast in het zorgpad: Vragenlijsten in het menu, het zorgpad openen, Wijzig, per onderwerp invullen en opslaan.',
+    stappen: [
+      {
+        zeg: 'Je hebt het dossier van meneer Koster open. Bij Episodes zie je dat het zorgpad stervensfase loopt.',
+        doe: 'Klik in het menu op Vragenlijsten',
+        menu: 'Overzicht',
+        doel: { menu: 'Vragenlijsten' },
+        pagina: {
+          kaarten: [
+            { kop: 'Waarschuwingen', regels: ['Geen waarschuwingen'] },
+            { kop: 'Episodes', regels: ['Zorgpad stervensfase, sinds 07-10-2026'] },
+            { kop: 'Belangrijke rapportages', regels: ['Geen belangrijke rapportages'] },
+          ],
+        },
+      },
+      {
+        zeg: 'Onder Actueel staan de vragenlijsten die nu lopen. Het zorgpad staat bovenaan. Je maakt geen nieuwe lijst aan, je werkt in deze.',
+        doe: 'Open het zorgpad stervensfase',
+        menu: 'Vragenlijsten',
+        doel: { regel: 'Zorgpad stervensfase' },
+        pagina: {
+          titel: 'Vragenlijsten',
+          tabs: ['Actueel', 'Archief'],
+          knoppen: ['+ Nieuwe vragenlijst'],
+          kaarten: [
+            { kop: 'Actueel', regels: ['Zorgpad stervensfase', 'Mikzo Kompas® (2025.1)'] },
+          ],
+        },
+      },
+      {
+        zeg: 'Je ziet de onderwerpen van het zorgpad en wat de vorige dienst invulde. Lees dat eerst. Daarna vul je jouw dienst in.',
+        doe: 'Klik op Wijzig',
+        menu: 'Vragenlijsten',
+        doel: { knop: 'Wijzig' },
+        pagina: {
+          titel: 'Zorgpad stervensfase',
+          knoppen: ['Meer', 'Wijzig'],
+          kaarten: [
+            { kop: 'Pijn', regels: ['Vroege dienst: geen tekenen van pijn'] },
+            { kop: 'Onrust', regels: ['Vroege dienst: ligt rustig'] },
+            { kop: 'Ademhaling', regels: ['Vroege dienst: rustig, soms een pauze'] },
+            { kop: 'Mondverzorging', regels: ['Vroege dienst: mond verzorgd met gaasje'] },
+          ],
+        },
+      },
+      {
+        zeg: 'Per onderwerp schrijf je kort wat je zag en wat je deed. Wijkt er iets af, dan bel je ook de verpleegkundige.',
+        doe: 'Klik op Opslaan',
+        menu: 'Vragenlijsten',
+        doel: { knop: 'Opslaan' },
+        pagina: {
+          titel: 'Zorgpad stervensfase, late dienst',
+          knoppen: ['Opslaan'],
+          velden: [
+            { label: 'Pijn', waarde: 'Wat zag je, wat deed je?' },
+            { label: 'Onrust', waarde: 'Wat zag je, wat deed je?' },
+            { label: 'Ademhaling', waarde: 'Wat zag je, wat deed je?' },
+            { label: 'Mondverzorging', waarde: 'Wat zag je, wat deed je?' },
+          ],
+        },
+      },
+    ],
+  },
   startKnop: 'Ik ga naar meneer Koster',
   intro: {
     tijd: 'Donderdag 19.30 uur, late dienst op De Linde',

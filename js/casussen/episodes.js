@@ -4,6 +4,128 @@
 export default {
   id: 'episodes',
   stapNamen: ['Situatie', 'Vastleggen', 'Indelen', 'Afsluiten'],
+  les: [
+    {
+      kop: 'Zorg die even duurt',
+      beeld: 'episode',
+      tekst: [
+        'Soms speelt er iets wat na een paar dagen of weken weer over is. Denk aan griep, een wondje na een val of een nieuwe pil waar je extra op let.',
+        'Voor zo\'n korte zorgvraag maak je in Nedap ONS een episode. Daarin staat wat er speelt en wat iedereen moet doen zolang het duurt. Elke dienst ziet hem bij de cliënt staan.',
+      ],
+    },
+    {
+      kop: 'Drie plekken in het dossier',
+      beeld: 'zorgplan',
+      tekst: [
+        'Elk soort informatie heeft een eigen plek. Zo vindt de volgende dienst snel wat hij zoekt.',
+      ],
+      punten: [
+        'Het zorgplan: zorg en gewoontes die blijven.',
+        'De episode: wat nu even speelt, en wat iedereen dan extra doet.',
+        'De rapportage: wat jij vandaag zag en deed.',
+      ],
+    },
+    {
+      kop: 'Een episode sluit je af',
+      beeld: 'overdracht',
+      tekst: [
+        'Een open episode zegt tegen iedereen: dit speelt nu. Is het over, dan sluit je hem af en schrijf je dat in de rapportage. Afgesloten blijft hij terug te lezen.',
+        'Komt hetzelfde steeds terug, bespreek dan met de EVV\'er of het in het zorgplan hoort.',
+      ],
+    },
+    {
+      kop: 'Waar het staat in Nedap ONS',
+      beeld: 'ons',
+      tekst: [
+        'Op het Overzicht van het dossier staat de kaart Episodes. Daar maak je een nieuwe episode met een titel, een startdatum en een hoofddoel. Bij een rapportage kies je onder Koppel aan episodes bij welke episode hij hoort.',
+        'In het volgende deel klikken we dat samen door bij mevrouw Kok.',
+      ],
+    },
+  ],
+  doorklik: {
+    client: 'G Kok',
+    klaar: 'Zo leg je een episode vast: de plusknop bij Episodes op het Overzicht, titel en datum invullen, opslaan, en je rapportages koppelen aan de episode.',
+    stappen: [
+      {
+        zeg: 'Je hebt het dossier van mevrouw Kok open op het Overzicht. Bij Episodes staat nog niets. Met de plusknop maak je een nieuwe.',
+        doe: 'Klik op de plusknop bij Episodes',
+        menu: 'Overzicht',
+        doel: { knop: '+', label: 'Nieuwe episode' },
+        pagina: {
+          knoppen: ['+'],
+          kaarten: [
+            { kop: 'Episodes', regels: ['Geen relevante episodes'] },
+            { kop: 'Waarschuwingen', regels: ['Geen waarschuwingen'] },
+          ],
+        },
+      },
+      {
+        zeg: 'Je geeft de episode een korte titel die iedereen snapt. De startdatum is vandaag. Bij Hoofddoel schrijf je wat je wilt bereiken. De einddatum laat je leeg, want het speelt nog.',
+        doe: 'Klik op Opslaan',
+        menu: 'Overzicht',
+        doel: { knop: 'Opslaan' },
+        pagina: {
+          titel: 'Nieuwe episode',
+          knoppen: ['Opslaan'],
+          velden: [
+            { label: 'Titel', waarde: 'Blaasontsteking' },
+            { label: 'Startdatum', waarde: '08-10-2026' },
+            { label: 'Einddatum', waarde: '' },
+            { label: 'Hoofddoel', waarde: 'Mevrouw heeft geen pijn meer bij het plassen.' },
+          ],
+        },
+      },
+      {
+        zeg: 'De episode staat nu op het Overzicht. Elke collega die het dossier opent, ziet hem meteen. Nu schrijf je wat je vanochtend zag.',
+        doe: 'Klik in het menu op Rapportages',
+        menu: 'Overzicht',
+        doel: { menu: 'Rapportages' },
+        pagina: {
+          kaarten: [
+            { kop: 'Episodes', regels: ['08-10-2026 · Blaasontsteking'] },
+            { kop: 'Waarschuwingen', regels: ['Geen waarschuwingen'] },
+          ],
+        },
+      },
+      {
+        zeg: 'Hier staan de rapportages van mevrouw Kok. Rechtsboven staat de blauwe plusknop.',
+        doe: 'Klik op de plusknop',
+        menu: 'Rapportages',
+        doel: { knop: '+', label: 'Nieuwe rapportage' },
+        pagina: {
+          titel: 'Rapportages',
+          knoppen: ['Acties bekijken', '+'],
+          kaarten: [
+            { kop: 'Fatima Amrani · gisteren 16.30', regels: ['Huisarts geweest. Mevrouw start morgen met een antibioticakuur.'] },
+          ],
+        },
+      },
+      {
+        zeg: 'Je kiest het soort rapportage. Je schrijft een gewone rapportage.',
+        doe: 'Kies Rapportage',
+        menu: 'Rapportages',
+        doel: { optie: 'Rapportage' },
+        pagina: {
+          venster: { titel: 'Rapportagetype toevoegen', opties: ['Rapportage', 'SOEP', 'Gewicht', 'Bloeddruk', 'Pijnscore', 'Fotorapportage'] },
+        },
+      },
+      {
+        zeg: 'Onder het tekstvak koppel je de rapportage aan de episode. Zo staat alles over de blaasontsteking bij elkaar.',
+        doe: 'Klik op Opslaan',
+        menu: 'Rapportages',
+        doel: { knop: 'Opslaan' },
+        pagina: {
+          titel: 'Nieuw - Rapportage',
+          knoppen: ['Opslaan'],
+          velden: [
+            { label: 'Tekst', waarde: 'Eerste tablet van de kuur ingenomen bij het ontbijt. Mevrouw zegt dat het plassen nog pijn doet.' },
+            { label: 'Zichtbaar voor', waarde: 'Iedereen' },
+            { label: 'Koppel aan episodes', waarde: 'Blaasontsteking' },
+          ],
+        },
+      },
+    ],
+  },
   startKnop: 'Ik ga het vastleggen',
   intro: {
     tijd: 'Donderdag 8.05 uur, vroege dienst op De Linde',

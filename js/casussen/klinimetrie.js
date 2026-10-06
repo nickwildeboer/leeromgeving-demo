@@ -4,6 +4,131 @@
 export default {
   id: 'klinimetrie',
   stapNamen: ['Situatie', 'Wegen', 'Signaleren', 'Actie'],
+  les: [
+    {
+      kop: 'Waarom je meet',
+      beeld: 'meten',
+      tekst: [
+        'Met een meting zie je hoe het gaat met een cliënt. Gewicht en pijn zijn de metingen die je het meest doet.',
+        'Eén meting zegt weinig. Je ziet pas iets als je hem vergelijkt met de vorige. Dat lukt alleen als je elke keer op dezelfde manier meet.',
+      ],
+      punten: [
+        'Dezelfde weegschaal.',
+        'Hetzelfde moment van de dag, bijvoorbeeld voor het ontbijt.',
+        'Dezelfde kleding.',
+      ],
+    },
+    {
+      kop: 'Pijn meten',
+      beeld: 'vragenlijst',
+      tekst: [
+        'Pijn meet je met een score van 0 tot 10. De cliënt zegt zelf hoeveel pijn hij heeft. 0 is geen pijn, 10 is de ergste pijn die hij kan bedenken.',
+        'Kan een cliënt dat niet zeggen, bijvoorbeeld door dementie? Dan kijk je naar zijn gedrag. Bij De Wilgenhof gebruik je daar een observatielijst voor pijn voor.',
+      ],
+    },
+    {
+      kop: 'Een meting vraagt soms om actie',
+      beeld: 'escaleren',
+      tekst: [
+        'Een getal in Nedap ONS helpt niemand als niemand ernaar kijkt. Na elke meting vergelijk je met de vorige en vraag je je af of er iets moet gebeuren.',
+        'Schrijf er in de rapportage bij wat je ziet. Eet een cliënt minder of zit zijn kleding losser? Dan helpt dat de EVV\'er en de diëtist.',
+      ],
+      punten: [
+        'Meer dan 2 kilo eraf in een maand: melden bij de EVV\'er.',
+        'Pijnscore 4 of hoger, of veel hoger dan eerst: overleggen met de EVV\'er.',
+        'Iets acuuts, zoals pijn na een val: meteen de arts bellen.',
+      ],
+    },
+    {
+      kop: 'Waar het staat in Nedap ONS',
+      beeld: 'ons',
+      tekst: [
+        'Een gewicht of een pijnscore leg je vast als rapportage. Bij Rapportages klik je op de blauwe plusknop en kies je het soort, zoals Gewicht of Pijnscore.',
+        'Onder Klinimetrie in het menu staan de meetinstrumenten, zoals de observatielijst voor pijn.',
+        'In het volgende deel klikken we dat samen door.',
+      ],
+    },
+  ],
+  doorklik: {
+    client: 'K de Vries',
+    klaar: 'Zo leg je een meting vast: Rapportages, de plusknop, het soort meting kiezen en opslaan. Daarna vergelijk je met de vorige meting. Meetinstrumenten vind je onder Klinimetrie.',
+    stappen: [
+      {
+        zeg: 'Je hebt het dossier van meneer De Vries open. Je hebt hem net gewogen en het gewicht opgeschreven. Nu zet je het in Nedap ONS.',
+        doe: 'Klik in het menu op Rapportages',
+        menu: 'Overzicht',
+        doel: { menu: 'Rapportages' },
+        pagina: {
+          kaarten: [
+            { kop: 'Waarschuwingen', regels: ['Geen waarschuwingen'] },
+            { kop: 'Belangrijke rapportages', regels: ['Geen belangrijke rapportages'] },
+          ],
+        },
+      },
+      {
+        zeg: 'Hier staan de rapportages van meneer De Vries. Een meting is ook een rapportage. Rechtsboven staat de blauwe plusknop.',
+        doe: 'Klik op de plusknop',
+        menu: 'Rapportages',
+        doel: { knop: '+', label: 'Nieuwe rapportage' },
+        pagina: {
+          titel: 'Rapportages',
+          knoppen: ['Acties bekijken', '+'],
+          kaarten: [
+            { kop: 'Joost Hendriks · gisteren 18.30', regels: ['Meneer heeft de helft van zijn warme maaltijd laten staan.'] },
+          ],
+        },
+      },
+      {
+        zeg: 'Nedap ONS vraagt welk soort rapportage je maakt. Voor een gewicht kies je Gewicht. Dan komt het getal ook in het overzicht van zijn metingen.',
+        doe: 'Kies Gewicht',
+        menu: 'Rapportages',
+        doel: { optie: 'Gewicht' },
+        pagina: {
+          venster: { titel: 'Rapportagetype toevoegen', opties: ['Gewicht', 'Bloeddruk', 'Temperatuur', 'Bloedsuiker', 'Pijnscore', 'Rapportage'] },
+        },
+      },
+      {
+        zeg: 'Je vult het gewicht in, zoals je het hebt afgelezen. Bij de opmerking schrijf je hoe je gewogen hebt.',
+        doe: 'Klik op Opslaan',
+        menu: 'Rapportages',
+        doel: { knop: 'Opslaan' },
+        pagina: {
+          titel: 'Nieuw - Gewicht',
+          knoppen: ['Opslaan'],
+          velden: [
+            { label: 'Gewicht (kg)', waarde: '64,2' },
+            { label: 'Opmerking', waarde: 'Stoelweegschaal, voor het ontbijt, in pyjama.' },
+          ],
+        },
+      },
+      {
+        zeg: 'Het gewicht staat erin. Kijk nu naar de vorige keer: vorige maand woog meneer 67,5 kilo. Meetinstrumenten, zoals de observatielijst voor pijn, staan onder Klinimetrie.',
+        doe: 'Klik in het menu op Klinimetrie',
+        menu: 'Rapportages',
+        doel: { menu: 'Klinimetrie' },
+        pagina: {
+          titel: 'Rapportages',
+          knoppen: ['Acties bekijken', '+'],
+          kaarten: [
+            { kop: 'Gewicht · vandaag 7.50', regels: ['64,2 kg'] },
+            { kop: 'Gewicht · 2 september 7.45', regels: ['67,5 kg'] },
+          ],
+        },
+      },
+      {
+        zeg: 'Hier staan de metingen met een meetinstrument. Met de knop rechtsboven start je een nieuwe meting, bijvoorbeeld de observatielijst voor pijn.',
+        doe: 'Klik op + Nieuwe meting',
+        menu: 'Klinimetrie',
+        doel: { knop: '+ Nieuwe meting' },
+        pagina: {
+          tabs: ['Klinimetrie', 'Zorgvraagtypering', 'Tijdlijn'],
+          titel: 'Klinimetrie',
+          knoppen: ['+ Nieuwe meting'],
+          kaarten: [{ regels: ['Er zijn nog geen metingen'] }],
+        },
+      },
+    ],
+  },
   startKnop: 'Ik ga wegen',
   intro: {
     tijd: 'Woensdag 7.45 uur, vroege dienst op De Linde',

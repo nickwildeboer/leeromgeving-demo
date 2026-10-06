@@ -28,7 +28,6 @@ for (const bestand of bestanden) {
     assert.ok(m && m.id !== 'rondleiding', 'id hoort bij een module, niet de rondleiding');
 
     // Eerst uitleg, dan samen doorklikken, pas daarna de vragen.
-    if (c.les) {
     assert.ok(Array.isArray(c.les) && c.les.length >= 2 && c.les.length <= 4, 'les: 2 tot 4 pagina\'s uitleg');
     for (const [i, p] of c.les.entries()) {
       const waar = `les ${i + 1}`;
@@ -60,7 +59,6 @@ for (const bestand of bestanden) {
       }[soort];
       assert.ok(bestaat && bestaat(), `${waar}: het doel ${soort} "${waarde}" staat op het scherm`);
       if (s.menu) assert.ok(ONS_MENU.includes(s.menu), `${waar}: menu "${s.menu}" bestaat in ONS`);
-    }
     }
 
     assert.ok(isTekst(c.startKnop), 'startKnop');

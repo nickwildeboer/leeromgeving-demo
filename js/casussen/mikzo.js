@@ -4,6 +4,128 @@
 export default {
   id: 'mikzo',
   stapNamen: ['Situatie', 'Domeinen', 'Welzijn', 'Veiligheid'],
+  les: [
+    {
+      kop: 'Kijken naar het hele leven',
+      beeld: 'zorgplan',
+      tekst: [
+        'Een cliënt is meer dan zijn ziekte. Hij heeft een verleden, gewoontes en dingen die hij graag doet. Ook zijn kamer en zijn veiligheid tellen mee.',
+        'Bij De Wilgenhof werk je daarom met Mikzo. Mikzo deelt het leven van een cliënt op in vijf domeinen: persoonsgerichte zorg, wonen, welzijn, veiligheid en gezondheid. Zo vergeet je geen deel.',
+      ],
+    },
+    {
+      kop: 'Wat hoort bij welk domein',
+      beeld: 'vragenlijst',
+      tekst: [
+        'Wat je ziet en hoort in je dienst, past bijna altijd bij één domein. Een paar voorbeelden van andere cliënten:',
+      ],
+      punten: [
+        'Mevrouw wil eerst koffie en dan pas douchen: persoonsgerichte zorg.',
+        'Meneer wil foto\'s van zijn kleinkinderen aan de muur: wonen.',
+        'Mevrouw zong vroeger in een koor en mist dat: welzijn.',
+        'Meneer loopt zonder rollator naar de wc: veiligheid.',
+      ],
+    },
+    {
+      kop: 'Vraag door en geef het door',
+      beeld: 'overdracht',
+      tekst: [
+        'Zegt een cliënt iets wat ertoe doet, vraag dan door. Wat deed hij vroeger graag? Waarom stond hij op? Zijn antwoord is de basis voor een goed doel.',
+        'Je rapporteert wat hij zegt bij het goede domein. De EVV\'er maakt er samen met de cliënt een doel van. Bij veiligheid zoek je een oplossing die past bij wat de cliënt zelf wil.',
+      ],
+    },
+    {
+      kop: 'Waar het staat in Nedap ONS',
+      beeld: 'ons',
+      tekst: [
+        'Bij Vragenlijsten staat het Mikzo Kompas. Dat vult de EVV\'er samen met de cliënt in. Bij Plan staat het zorgplan, ingedeeld per domein. Jouw rapportages staan bij Rapportages.',
+        'In het volgende deel klikken we samen door het dossier van meneer Hendriks.',
+      ],
+    },
+  ],
+  doorklik: {
+    client: 'W Hendriks',
+    klaar: 'Zo werk je met Mikzo in Nedap ONS: het Mikzo Kompas bij Vragenlijsten, de domeinen en doelen bij Plan, en wat je ziet en hoort bij Rapportages.',
+    stappen: [
+      {
+        zeg: 'Je hebt het dossier van meneer Hendriks open. Je ziet eerst het overzicht. Je wilt weten wat er al over hem bekend is.',
+        doe: 'Klik in het menu op Vragenlijsten',
+        menu: 'Overzicht',
+        doel: { menu: 'Vragenlijsten' },
+        pagina: {
+          kaarten: [
+            { kop: 'Waarschuwingen', regels: ['Geen waarschuwingen'] },
+            { kop: 'Episodes', regels: ['Geen relevante episodes'] },
+            { kop: 'Belangrijke rapportages', regels: ['Geen belangrijke rapportages'] },
+          ],
+        },
+      },
+      {
+        zeg: 'Hier staat het Mikzo Kompas van meneer Hendriks. De EVV\'er heeft het bij de verhuizing met hem en zijn zoon ingevuld. Het staat nog op Concept, want het eerste gesprek is net geweest.',
+        doe: 'Klik in het menu op Plan',
+        menu: 'Vragenlijsten',
+        doel: { menu: 'Plan' },
+        pagina: {
+          titel: 'Vragenlijsten',
+          tabs: ['Actueel', 'Archief'],
+          knoppen: ['+ Nieuwe vragenlijst'],
+          kaarten: [
+            { kop: 'Concept', regels: ['Mikzo Kompas® (2025.1) · gemaakt door Sanne Visser'] },
+          ],
+        },
+      },
+      {
+        zeg: 'Het zorgplan is ingedeeld per domein. Bij elk domein staan de doelen van meneer. Bij welzijn staat nog niets. Wat hij jou vertelt, kan hier later een doel worden.',
+        doe: 'Klik in het menu op Rapportages',
+        menu: 'Plan',
+        doel: { menu: 'Rapportages' },
+        pagina: {
+          tabs: ['Zorgplan', 'Onvrijwillige zorg'],
+          kaarten: [
+            { kop: 'Persoonsgerichte zorg', regels: ['Meneer houdt zijn eigen ritme aan bij het opstaan.'] },
+            { kop: 'Welzijn', regels: ['Nog geen doel'] },
+            { kop: 'Gezondheid', regels: ['Bloedsuiker blijft binnen de waarden van de huisarts.'] },
+          ],
+        },
+      },
+      {
+        zeg: 'Hier schrijf je wat je ziet en hoort. Zo komt het bij de EVV\'er terecht.',
+        doe: 'Klik op de plusknop',
+        menu: 'Rapportages',
+        doel: { knop: '+', label: 'Nieuwe rapportage' },
+        pagina: {
+          titel: 'Rapportages',
+          knoppen: ['Acties bekijken', '+'],
+          kaarten: [
+            { kop: 'Fatma Yilmaz · gisteren 22.10', regels: ['Meneer keek tot laat tv in de huiskamer. Om 23.00 uur naar bed.'] },
+          ],
+        },
+      },
+      {
+        zeg: 'Je kiest het soort rapportage. Voor wat meneer vertelt, kies je een gewone rapportage.',
+        doe: 'Kies Rapportage',
+        menu: 'Rapportages',
+        doel: { optie: 'Rapportage' },
+        pagina: {
+          venster: { titel: 'Rapportagetype toevoegen', opties: ['Rapportage', 'SOEP', 'Gewicht', 'Bloeddruk', 'Pijnscore', 'Fotorapportage'] },
+        },
+      },
+      {
+        zeg: 'Bij De Wilgenhof zet je het domein vooraan in je tekst. Zo ziet de EVV\'er meteen waar het bij hoort.',
+        doe: 'Klik op Opslaan',
+        menu: 'Rapportages',
+        doel: { knop: 'Opslaan' },
+        pagina: {
+          titel: 'Nieuw - Rapportage',
+          knoppen: ['Opslaan'],
+          velden: [
+            { label: 'Tekst', waarde: 'Welzijn: meneer vertelt dat hij elke zondag met zijn zoon belt. Dat wil hij graag zo houden.' },
+            { label: 'Zichtbaar voor', waarde: 'Iedereen' },
+          ],
+        },
+      },
+    ],
+  },
   startKnop: 'Ik ga aan de slag',
   intro: {
     tijd: 'Vrijdag 14.15 uur, middag op De Linde',

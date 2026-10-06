@@ -4,6 +4,83 @@
 export default {
   id: 'authenticator',
   stapNamen: ['Situatie', 'Nieuwe telefoon', 'Inloggen'],
+  les: [
+    {
+      kop: 'Waarom je een code nodig hebt',
+      beeld: 'authenticator',
+      tekst: [
+        'In Nedap ONS staan gegevens over de gezondheid van cliënten. Daarom is een wachtwoord niet genoeg. Na je wachtwoord vraagt Nedap ONS ook om een code.',
+        'Die code staat in de authenticator-app op je telefoon. De code is maar kort geldig en daarna komt er een nieuwe. Wie alleen je wachtwoord heeft, komt er dus niet in.',
+      ],
+    },
+    {
+      kop: 'Jouw inlog is van jou',
+      beeld: 'ons',
+      tekst: [
+        'Alles wat je in Nedap ONS doet, staat op naam van wie is ingelogd. Een rapportage, een aftekening, een meting. Zo weet iedereen wie wat deed.',
+        'Werk je met de inlog van een collega, dan staat jouw werk op haar naam. Daar is zij dan verantwoordelijk voor.',
+      ],
+      punten: [
+        'Je deelt je wachtwoord en je code met niemand.',
+        'Je logt niet in voor een ander.',
+      ],
+    },
+    {
+      kop: 'Een nieuwe telefoon',
+      beeld: 'authenticator',
+      tekst: [
+        'De koppeling met Nedap ONS zit in de app op je oude telefoon. Die gaat niet vanzelf mee naar een nieuwe telefoon.',
+        'Bij De Wilgenhof koppelt de servicedesk de app opnieuw. Op de pc verschijnt dan een QR-code die je scant met de app. Regel dat het liefst voor je dienst begint.',
+        'In het volgende deel doen we dat samen een keer in de app.',
+      ],
+    },
+  ],
+  doorklik: {
+    plek: 'telefoon',
+    app: 'Authenticator',
+    klaar: 'Zo koppel je de app op een nieuwe telefoon: de plusknop, QR-code scannen, De Wilgenhof kiezen en de code overnemen.',
+    stappen: [
+      {
+        zeg: 'De servicedesk heeft een nieuwe koppeling klaargezet. Op de pc zie je een QR-code. Op je telefoon open je de authenticator-app. Die is nog leeg.',
+        doe: 'Tik op de plusknop',
+        doel: { knop: '+', label: 'Account toevoegen' },
+        pagina: {
+          balk: 'Authenticator',
+          knoppen: ['+'],
+          kaarten: [{ kop: 'Accounts', regels: ['Nog geen accounts'] }],
+        },
+      },
+      {
+        zeg: 'De app vraagt hoe je het account wilt toevoegen. De QR-code staat al op de pc.',
+        doe: 'Kies QR-code scannen',
+        doel: { optie: 'QR-code scannen' },
+        pagina: {
+          balk: 'Authenticator',
+          venster: { titel: 'Account toevoegen', opties: ['QR-code scannen', 'Code handmatig invoeren'] },
+        },
+      },
+      {
+        zeg: 'Je hebt de QR-code gescand. Het account van De Wilgenhof staat nu in de lijst.',
+        doe: 'Tik op De Wilgenhof',
+        doel: { regel: 'De Wilgenhof' },
+        pagina: {
+          balk: 'Authenticator',
+          knoppen: ['+'],
+          kaarten: [{ kop: 'Accounts', regels: ['De Wilgenhof'] }],
+        },
+      },
+      {
+        zeg: 'Je ziet een code van zes cijfers. De cirkel ernaast laat zien hoe lang hij nog geldig is. Neem hem meteen over in Nedap ONS.',
+        doe: 'Tik op Code kopiëren',
+        doel: { knop: 'Code kopiëren' },
+        pagina: {
+          balk: 'De Wilgenhof',
+          knoppen: ['Code kopiëren'],
+          kaarten: [{ kop: 'Eenmalige code', regels: ['482 913', 'Nog 21 seconden geldig'] }],
+        },
+      },
+    ],
+  },
   startKnop: 'Ik ga inloggen',
   intro: {
     tijd: 'Maandag 7.05 uur, vroege dienst op De Linde',

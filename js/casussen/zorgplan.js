@@ -4,6 +4,108 @@
 export default {
   id: 'zorgplan',
   stapNamen: ['Situatie', 'Voorbereiden', 'Lezen', 'Bijsturen'],
+  les: [
+    {
+      kop: 'Wat er in het zorgplan staat',
+      beeld: 'zorgplan',
+      tekst: [
+        'In het zorgplan staat wat je met een cliënt hebt afgesproken. Hoe help je bij het wassen? Hoe loopt de cliënt? Wat eet en drinkt hij?',
+        'Na een ziekenhuisopname verandert er vaak veel. Wat je van vroeger weet, klopt dan misschien niet meer.',
+      ],
+      punten: [
+        'Lees het zorgplan na een opname.',
+        'Lees het als je een cliënt een tijd niet hebt gezien, bijvoorbeeld na je vakantie.',
+      ],
+    },
+    {
+      kop: 'Doelen en acties',
+      beeld: 'vragenlijst',
+      tekst: [
+        'Het zorgplan bestaat uit doelen en acties. Een doel is wat de cliënt wil bereiken. Een actie is wat jij doet om daar te komen.',
+        'Een doel beschrijft de cliënt: wat hij kan, wil of houdt. Een actie begint vaak met een werkwoord voor jou, zoals "geef", "help" of "let op".',
+      ],
+      punten: [
+        'Doel: meneer slaapt de nacht door.',
+        'Actie: doe om 22.00 uur het grote licht uit en laat het nachtlampje aan.',
+      ],
+    },
+    {
+      kop: 'Wie het zorgplan aanpast',
+      beeld: 'familie',
+      tekst: [
+        'Bij De Wilgenhof past de EVV\'er het zorgplan aan, samen met de cliënt. Soms praat de familie of de fysiotherapeut mee.',
+        'Zie jij dat een afspraak niet meer past? Dan houd je je eerst aan het zorgplan. Je rapporteert wat je zag en je bespreekt het met de EVV\'er.',
+      ],
+    },
+    {
+      kop: 'Waar het staat in Nedap ONS',
+      beeld: 'ons',
+      tekst: [
+        'Het zorgplan vind je in het dossier onder Plan, op de tab Zorgplan. Daar staan de doelen. Klik je op een doel, dan zie je de acties die erbij horen.',
+        'In het volgende deel klikken we dat samen door.',
+      ],
+    },
+  ],
+  doorklik: {
+    client: 'J Peters',
+    klaar: 'Zo lees je het zorgplan: Plan in het menu, een doel openen en de acties lezen. Zie je iets wat niet meer past, dan rapporteer je het via Rapportages.',
+    stappen: [
+      {
+        zeg: 'Je hebt het dossier van mevrouw Peters open. Op het overzicht zie je dat het zorgplan na haar opname is aangepast.',
+        doe: 'Klik in het menu op Plan',
+        menu: 'Overzicht',
+        doel: { menu: 'Plan' },
+        pagina: {
+          kaarten: [
+            { kop: 'Waarschuwingen', regels: ['Valrisico'] },
+            { kop: 'Belangrijke rapportages', regels: ['Zorgplan aangepast na ziekenhuisopname'] },
+            { kop: 'Betrokken medewerkers', regels: ['Sanne Visser, EVV\'er'] },
+          ],
+        },
+      },
+      {
+        zeg: 'Dit is het zorgplan van mevrouw Peters. Bovenaan zie je sinds wanneer het geldt. Daaronder staan haar doelen. Het doel over lopen is na de opname veranderd.',
+        doe: 'Open het doel over lopen',
+        menu: 'Plan',
+        doel: { regel: 'Mevrouw loopt veilig door haar kamer en over de gang.' },
+        pagina: {
+          tabs: ['Zorgplan', 'Onvrijwillige zorg(0)'],
+          titel: 'Zorgplan',
+          knoppen: ['Dagoverzicht'],
+          kaarten: [
+            { kop: 'Actueel zorgplan', regels: ['Geldig vanaf 05-10-2026', 'Laatst bijgewerkt op 05-10-2026 door Sanne Visser'] },
+            { kop: 'Doelen', regels: ['Mevrouw loopt veilig door haar kamer en over de gang.', 'Mevrouw kiest zelf welke kleren ze aantrekt.'] },
+          ],
+        },
+      },
+      {
+        zeg: 'Bij het doel staan de acties: wat jij doet. Je ziet ook wie het heeft aangepast en waarom. Zie je in je dienst iets anders, dan pas je dit niet zelf aan. Je rapporteert het.',
+        doe: 'Klik in het menu op Rapportages',
+        menu: 'Plan',
+        doel: { menu: 'Rapportages' },
+        pagina: {
+          titel: 'Mevrouw loopt veilig door haar kamer en over de gang.',
+          kaarten: [
+            { kop: 'Acties', regels: ['Blijf bij mevrouw als ze loopt, ook op de gang.', 'Zet de rollator binnen handbereik als mevrouw opstaat.', 'Zet \'s nachts het nachtlampje aan.'] },
+            { kop: 'Toelichting', regels: ['Aangepast op 05-10-2026 door Sanne Visser, na overleg met de fysiotherapeut.'] },
+          ],
+        },
+      },
+      {
+        zeg: 'Hier rapporteer je wat je zag. Bij De Wilgenhof koppel je de rapportage aan het doel. Dan leest de EVV\'er het terug als ze het zorgplan bespreekt.',
+        doe: 'Klik op de plusknop',
+        menu: 'Rapportages',
+        doel: { knop: '+', label: 'Nieuwe rapportage' },
+        pagina: {
+          titel: 'Rapportages',
+          knoppen: ['Acties bekijken', '+'],
+          kaarten: [
+            { kop: 'Sanne Visser · 05-10-2026', regels: ['Zorgplan aangepast na ziekenhuisopname. Besproken met mevrouw en haar zoon.'] },
+          ],
+        },
+      },
+    ],
+  },
   startKnop: 'Ik ga naar mevrouw Peters',
   intro: {
     tijd: 'Donderdag 7.30 uur, vroege dienst op De Linde',
