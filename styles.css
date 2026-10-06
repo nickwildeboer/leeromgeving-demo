@@ -714,3 +714,70 @@ body[data-rol="gast"] .voet{display:none}
   body:has(.certificaat) .cert-pagina{width:auto;max-width:none;margin:0;padding:0}
   .certificaat{width:297mm;height:209.5mm;aspect-ratio:auto;border-radius:0;box-shadow:none;break-inside:avoid;page-break-inside:avoid}
 }
+
+/* ---------- uitleg en samen doorklikken (eerste twee fasen van een module) ---------- */
+.les__grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:28px;align-items:center}
+.les__tekst h2{margin-top:.3em}
+.les__figuur{margin:0;padding:18px;border-radius:var(--r);background:var(--grond)}
+.les__beeld{display:block;width:100%;height:auto;max-width:340px;margin:0 auto}
+.les__punten{list-style:none;padding:16px 18px;margin:16px 0 0;display:grid;gap:8px;border-radius:16px;background:var(--zacht)}
+.les__punten li{display:flex;gap:10px;align-items:flex-start}
+.les__punten svg{flex:none;width:20px;height:20px;margin-top:3px;fill:none;stroke:var(--merk-tekst);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.les__stippen{display:flex;gap:8px;margin-top:22px}
+.les__stippen span{width:10px;height:10px;border-radius:50%;background:var(--lijn)}
+.les__stippen .is-klaar{background:var(--merk)}
+.les__stippen .is-nu{width:28px;border-radius:5px;background:var(--actie)}
+.les__knoppen{justify-content:space-between}
+.les__knoppen .btn--actie:only-child{margin-left:auto}
+.doorklik__zeg{font-size:1.05rem}
+.doorklik__hint{display:flex;gap:8px;align-items:flex-start;margin:12px 0 0;color:var(--tekst-zacht);font-size:.95rem}
+.doorklik__hint svg{flex:none;width:20px;height:20px;margin-top:2px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ons--doorklik{margin:18px 0 0}
+.ons--doorklik .ons__menu button.ons__menu-item{width:100%;border:0;background:none;font:inherit;text-align:left;cursor:pointer}
+.dk-stil{cursor:default}
+.dk-knoppen{display:flex;flex-wrap:wrap;gap:8px}
+.dk-kaart__kop{margin-bottom:8px!important;color:var(--ons-paars);font-weight:600;font-size:.98rem}
+.dk-regels{list-style:none;margin:0;padding:0;display:grid;gap:2px;font-size:.82rem;color:var(--ons-tekst)}
+.dk-regels li{padding:7px 4px;border-bottom:1px solid var(--ons-lijn)}
+.dk-regels li:last-child{border-bottom:0}
+.dk-regels li:has(.dk-regel){padding:2px 0}
+.dk-regel{display:block;width:100%;padding:6px 4px;border:0;border-radius:4px;background:none;font:inherit;color:var(--ons-paars);text-align:left;text-decoration:underline;cursor:pointer}
+.dk-tab{border:0;background:none;font:inherit;color:inherit;padding:0;cursor:pointer}
+.ons__tabs span:has(.dk-tab){padding:4px 8px}
+.dk-venster{margin:6px 0 12px;border-radius:8px;overflow:hidden;background:#fff;box-shadow:0 10px 30px -10px rgba(0,0,0,.3)}
+.dk-venster__kop{padding:10px 16px;background:var(--ons-app);color:#fff;font-weight:600;font-size:.9rem}
+.dk-venster__opties{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;padding:12px}
+.dk-optie{display:flex;align-items:center;justify-content:center;min-height:44px;padding:8px;border:1px solid var(--ons-lijn);border-radius:6px;background:#fff;color:var(--ons-tekst);font:inherit;font-size:.8rem;text-align:center}
+button.dk-optie{cursor:pointer}
+/* Het onderdeel waar je op klikt licht op, de rest van het scherm doet niets. */
+.dk-doel{position:relative;z-index:1;box-shadow:0 0 0 3px var(--actie);animation:dk-licht 1.6s var(--ease) infinite}
+.dk-doel:focus-visible{outline:3px solid var(--tekst);outline-offset:3px}
+@keyframes dk-licht{0%,100%{box-shadow:0 0 0 3px var(--actie)}50%{box-shadow:0 0 0 3px var(--actie),0 0 0 9px color-mix(in srgb,var(--actie) 28%,transparent)}}
+@media (prefers-reduced-motion:reduce){.dk-doel{animation:none}}
+/* Een app op de telefoon */
+.tel{display:flex;justify-content:center;margin:18px 0 0}
+.tel__rand{width:min(100%,320px);padding:12px 10px 18px;border-radius:34px;background:#1F2523;box-shadow:var(--schaduw)}
+.tel__balk{padding:14px 16px 12px;border-radius:24px 24px 0 0;background:var(--merk);color:var(--op-merk);font-weight:700;font-size:.95rem}
+.tel__inhoud{--ons-paars:var(--merk-tekst);--ons-lijn:#E6E6E6;--ons-tekst:#1B1A17;--ons-app:var(--merk);min-height:360px;padding:12px;border-radius:0 0 24px 24px;background:#F4F4F2;font-size:.9rem}
+.tel__inhoud .ons__titel{font-size:1.05rem}
+.tel__inhoud .ons__kaart{padding:12px}
+.tel__inhoud .ons__tabs{display:flex;gap:4px;border-bottom:1px solid #D0D0D0;font-size:.85rem}
+.tel__inhoud .ons__tabs span{padding:6px 10px}
+.tel__knop{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 16px;border:0;border-radius:999px;background:var(--merk);color:var(--op-merk);font:inherit;font-weight:600;font-size:.85rem}
+span.tel__knop{background:#fff;color:var(--tekst);border:1px solid #CFCFCF}
+@media (max-width:820px){
+  .les__grid{grid-template-columns:1fr;gap:16px}
+  .les__figuur{order:-1;padding:12px}
+  .les__beeld{max-width:240px}
+}
+@media (max-width:600px){
+  /* In de doorklik blijft het menu van ONS zichtbaar, als een rij om opzij te schuiven. */
+  .ons--doorklik .ons__menu{position:relative;display:flex;flex-direction:row;padding:6px;overflow-x:auto;border-bottom:1px solid var(--ons-lijn)}
+  .ons--doorklik .ons__menu ul{display:flex;margin:0;gap:2px}
+  .ons--doorklik .ons__menu li{flex:none}
+  .ons--doorklik .ons__terug,.ons--doorklik .ons__groep,.ons--doorklik .ons__inklappen,.ons--doorklik .ons__nedap{display:none}
+  .ons--doorklik .ons__menu .ons__menu-item{white-space:nowrap;min-height:44px;margin:4px}
+  .ons--doorklik .ons__inhoud{padding-bottom:16px}
+  .les__knoppen{flex-wrap:wrap}
+}
+.dk-plus{width:34px;padding:0;justify-content:center;border-radius:50%;font-size:1.2rem}

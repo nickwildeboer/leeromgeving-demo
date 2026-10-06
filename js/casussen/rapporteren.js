@@ -4,6 +4,98 @@
 export default {
   id: 'rapporteren',
   stapNamen: ['Situatie', 'Rapporteren', 'Koppelen', 'Overdracht'],
+  les: [
+    {
+      kop: 'Waarom je rapporteert',
+      beeld: 'rapport',
+      tekst: [
+        'Na jouw dienst neemt een collega het over. Die collega weet alleen wat jij opschrijft. Wat niet in Nedap ONS staat, is voor de volgende dienst niet gebeurd.',
+        'Een goede rapportage scheelt een telefoontje na je dienst. En de cliënt hoeft niet twee keer hetzelfde te vertellen.',
+      ],
+      punten: [
+        'Je rapporteert in je eigen dienst, niet pas de volgende dag.',
+        'Je schrijft over wat afwijkt van het gewone, en over wat je deed.',
+      ],
+    },
+    {
+      kop: 'Schrijf wat je ziet',
+      beeld: 'overdracht',
+      tekst: [
+        'Schrijf op wat je zag, hoorde en deed. Een collega moet het kunnen lezen alsof die er zelf bij was.',
+        'Laat een oordeel weg. "Lastig" of "slechte bui" zegt niets over wat er gebeurde. Bij De Wilgenhof leest de familie ook mee.',
+      ],
+      punten: [
+        'Niet: "Mevrouw was lastig." Wel: "Mevrouw wilde eerst niet ontbijten."',
+        'Niet: "Plekje op de voet." Wel: "Rode plek rechterhiel, huid heel, ongeveer 2 cm."',
+      ],
+    },
+    {
+      kop: 'Waar het staat in Nedap ONS',
+      beeld: 'ons',
+      tekst: [
+        'Je rapporteert in het dossier van de cliënt. Links in het menu staat Rapportages. Met de blauwe plusknop maak je een nieuwe rapportage.',
+        'Daarna kies je het soort rapportage. Voor een gewone rapportage kies je Rapportage. Je schrijft je tekst en klikt op Opslaan.',
+        'In het volgende deel klikken we dat samen een keer door.',
+      ],
+    },
+  ],
+  doorklik: {
+    client: 'A Bakker',
+    klaar: 'Zo maak je een rapportage: Rapportages in het menu, de plusknop, het soort kiezen, schrijven en opslaan.',
+    stappen: [
+      {
+        zeg: 'Je hebt het dossier van mevrouw Bakker open. Je ziet eerst het overzicht. Links staat het menu van het dossier.',
+        doe: 'Klik in het menu op Rapportages',
+        menu: 'Overzicht',
+        doel: { menu: 'Rapportages' },
+        pagina: {
+          kaarten: [
+            { kop: 'Waarschuwingen', regels: ['Geen waarschuwingen'] },
+            { kop: 'Episodes', regels: ['Decubitus voorkomen, sinds 12-09-2026'] },
+            { kop: 'Belangrijke rapportages', regels: ['Geen belangrijke rapportages'] },
+          ],
+        },
+      },
+      {
+        zeg: 'Hier staan alle rapportages van mevrouw Bakker, de nieuwste bovenaan. Lees ze aan het begin van je dienst. Rechtsboven staat de blauwe plusknop.',
+        doe: 'Klik op de plusknop',
+        menu: 'Rapportages',
+        doel: { knop: '+', label: 'Nieuwe rapportage' },
+        pagina: {
+          titel: 'Rapportages',
+          knoppen: ['Acties bekijken', '+'],
+          kaarten: [
+            { kop: 'Joost Hendriks · gisteren 21.40', regels: ['Mevrouw rustig gaan slapen. Wilde de deur op een kier.'] },
+            { kop: 'Fatma Yilmaz · gisteren 13.15', regels: ['Middageten goed gegeten. Bezoek van dochter.'] },
+          ],
+        },
+      },
+      {
+        zeg: 'Nedap ONS vraagt welk soort rapportage je maakt. Voor een meting kies je bijvoorbeeld Gewicht of Bloeddruk. Jij schrijft een gewone rapportage.',
+        doe: 'Kies Rapportage',
+        menu: 'Rapportages',
+        doel: { optie: 'Rapportage' },
+        pagina: {
+          venster: { titel: 'Rapportagetype toevoegen', opties: ['Rapportage', 'SOEP', 'Gewicht', 'Bloeddruk', 'Pijnscore', 'Fotorapportage'] },
+        },
+      },
+      {
+        zeg: 'Je tekst staat erin: wat je zag en wat je deed. Onder het tekstvak kies je voor wie hij zichtbaar is en aan welke episode hij hoort.',
+        doe: 'Klik op Opslaan',
+        menu: 'Rapportages',
+        doel: { knop: 'Opslaan' },
+        pagina: {
+          titel: 'Nieuw - Rapportage',
+          knoppen: ['Opslaan'],
+          velden: [
+            { label: 'Tekst', waarde: 'Rode plek rechterhiel, huid heel, ongeveer 2 cm. Hiel vrijgelegd.' },
+            { label: 'Zichtbaar voor', waarde: 'Iedereen' },
+            { label: 'Koppel aan episodes', waarde: 'Decubitus voorkomen' },
+          ],
+        },
+      },
+    ],
+  },
   startKnop: 'Ik ga rapporteren',
   intro: {
     tijd: 'Dinsdag 10.40 uur, vroege dienst op De Linde',

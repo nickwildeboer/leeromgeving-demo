@@ -3,6 +3,7 @@ import { CASUSSEN, NORM } from './casussen/index.js';
 import { bereken, cssVariabelen, STANDAARD, VERPLICHT, OPTIONEEL, LABELS, isHex, contrast } from './theme.js';
 import { laad, zet, nu, opnieuw } from './state.js';
 import { startRondleiding, stopRondleiding } from './tour.js';
+import { viewLes, viewDoorklik, beginStap, fasen, richtDoel } from './doorklik.js';
 import { beloonAfronding, toonWachtendMoment, badgeBlok, deelBadge, certificaatPagina, aantalBadges, badgeTeller, delenMetModules } from './beloning.js';
 
 const DEMO_VANDAAG = '2026-10-06';
@@ -331,7 +332,7 @@ function startTour() {
 let casus = null;
 
 function nieuweCasus(id) {
-  return { id, stap: 'intro', keuze: null, koppel: {}, volgorde: null, gecontroleerd: false, antwoorden: {} };
+  return { id, stap: beginStap(CASUSSEN[id]), lesPagina: 0, klik: 0, keuze: null, koppel: {}, volgorde: null, gecontroleerd: false, antwoorden: {} };
 }
 
 function deelVan(m) {
@@ -382,7 +383,7 @@ function viewModule(id) {
 }
 
 function stapper(c, actief) {
-  const stappen = [...c.stapNamen, c.toets?.length ? 'Toets' : 'Afronden'];
+  const stappen = [...fasen(c), ...c.stapNamen, c.toets?.length ? 'Toets' : 'Afronden'];
   return `<ol class="stapper" aria-label="Stappen in deze casus">${stappen.map((s, i) => `<li class="${i < actief ? 'is-klaar' : i === actief ? 'is-nu' : ''}"${i === actief ? ' aria-current="step"' : ''}><span>${i < actief ? ICOON.vink : i + 1}</span>${esc(s)}</li>`).join('')}</ol>`;
 }
 
@@ -390,9 +391,18 @@ function viewCasus(m) {
   if (!casus || casus.id !== m.id) casus = nieuweCasus(m.id);
   const c = CASUSSEN[m.id];
   let inhoud = '';
-  let stapNr = 0;
+  const voor = fasen(c).length;
+  let stapNr = voor;
+  // Bundel van wat app.js aan bouwstenen van Nedap ONS heeft, voor de doorklik.
+  const h = { esc, ICOON, onsBovenbalk, onsIcoon, onsClient, ONS_MENU, ONS_MENU_ADMIN };
 
-  if (casus.stap === 'intro') {
+  if (casus.stap === 'les') {
+    stapNr = 0;
+    inhoud = viewLes(c, casus, h);
+  } else if (casus.stap === 'doorklik') {
+    stapNr = voor - 1;
+    inhoud = viewDoorklik(c, casus, h);
+  } else if (casus.stap === 'intro') {
     inhoud = `
       <article class="werkpaneel situatie">
         <p class="situatie__tijd">${esc(c.intro.tijd)}</p>
@@ -401,17 +411,17 @@ function viewCasus(m) {
         <button type="button" class="btn btn--actie" data-actie="casus-start">${esc(c.startKnop || 'Begin')} ${ICOON.pijl}</button>
       </article>`;
   } else if (['toets', 'uitslag', 'afronden'].includes(casus.stap)) {
-    stapNr = c.stappen.length + 1;
+    stapNr = voor + c.stappen.length + 1;
     inhoud = casus.stap === 'toets' ? viewToets(c) : casus.stap === 'uitslag' ? viewUitslag(c) : viewAfronden(c);
   } else {
     const stap = c.stappen[casus.stap];
-    stapNr = casus.stap + 1;
+    stapNr = voor + casus.stap + 1;
     inhoud = stap.type === 'keuze' ? viewKeuze(stap) : stap.type === 'volgorde' ? viewVolgorde(stap) : viewKoppel(stap);
   }
 
   return schil(`
     <section class="paneel">
-      <div class="paneel__in module-kop${casus.stap === 'intro' ? '' : ' module-kop--compact'}">
+      <div class="paneel__in module-kop${casus.stap === beginStap(c) && !casus.lesPagina ? '' : ' module-kop--compact'}">
         <a class="terug" href="#/overzicht">${ICOON.terug} Mijn overzicht</a>
         <p class="bovenregel">${esc(deelVan(m))} · Casus</p>
         <h1>${esc(m.titel)}</h1>
@@ -1118,6 +1128,7 @@ function render(opties = {}) {
 
 // Een nieuwe stap in de casus: schuif naar de vraag en zet de focus erop, ook op een telefoon.
 function naarStap() {
+  richtDoel(app);
   const kop = app.querySelector('.casus .werkpaneel h2');
   if (!kop) return;
   kop.setAttribute('tabindex', '-1');
@@ -1194,6 +1205,45 @@ const ACTIES = {
     markeer(knop.dataset.id, 'klaar');
     meld('Klaar. Je opleider ziet het vinkje ook.');
     ga('/overzicht');
+  },
+  'les-volgende'() {
+    markeer(casus.id, 'bezig');
+    casus.lesPagina += 1;
+    render({ houdScroll: true });
+    naarStap();
+  },
+  'les-vorige'() {
+    casus.lesPagina = Math.max(0, casus.lesPagina - 1);
+    render({ houdScroll: true });
+    naarStap();
+  },
+  'les-klaar'() {
+    markeer(casus.id, 'bezig');
+    casus.stap = CASUSSEN[casus.id].doorklik ? 'doorklik' : 'intro';
+    casus.klik = 0;
+    render({ houdScroll: true });
+    naarStap();
+  },
+  'doorklik-verder'() {
+    markeer(casus.id, 'bezig');
+    casus.klik += 1;
+    render({ houdScroll: true });
+    naarStap();
+  },
+  'doorklik-terug'() {
+    casus.klik = Math.max(0, casus.klik - 1);
+    render({ houdScroll: true });
+    naarStap();
+  },
+  'doorklik-opnieuw'() {
+    casus.klik = 0;
+    render({ houdScroll: true });
+    naarStap();
+  },
+  'doorklik-klaar'() {
+    casus.stap = 'intro';
+    render({ houdScroll: true });
+    naarStap();
   },
   'casus-start'() {
     markeer(casus.id, 'bezig');

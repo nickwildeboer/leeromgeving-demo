@@ -6,6 +6,8 @@ Eén bestand per module: `js/casussen/<module-id>.js`, met `export default { ...
 export default {
   id: 'klinimetrie',                 // gelijk aan de bestandsnaam en aan het id in js/data.js
   stapNamen: ['Situatie', 'Meten', 'Signaleren'], // 'Situatie' plus één korte naam per stap
+  les: [ /* uitleg, zie hieronder */ ],
+  doorklik: { /* samen door ONS, zie hieronder */ },
   startKnop: 'Ik ga meten',          // tekst op de knop onder de situatie
   intro: {
     tijd: 'Woensdag 8.15 uur, vroege dienst op De Linde',
@@ -17,6 +19,48 @@ export default {
   samenvatting: ['regel', 'regel'],  // 2 tot 4 regels: wat je meeneemt naar je volgende dienst
 };
 ```
+
+## Opbouw: eerst uitleg, dan samen klikken, dan de vragen
+
+Elke module begint met uitleg (`les`), daarna klikt de medewerker samen met ons door Nedap ONS of door de app (`doorklik`). Pas daarna komt de situatie (`intro`) met de vragen (`stappen`) en de toets. Besluit van Nick, 6 oktober 2026: niet meteen de vragen in.
+
+```js
+  les: [ // 2 tot 4 pagina's
+    {
+      kop: 'Waarom je rapporteert',
+      beeld: 'rapport',               // naam van een tekening in js/illustraties.js
+      tekst: ['alinea', 'alinea'],    // 1 tot 3 alinea's
+      punten: ['punt', 'punt'],       // mag weg, 1 tot 4 korte punten in een groen kader
+    },
+  ],
+  doorklik: {
+    plek: 'ons',                      // 'ons' (standaard) of 'telefoon' voor een app
+    client: 'A Bakker',               // bij 'ons': de cliënt zoals ONS hem toont
+    app: 'Wondzorgapp',               // bij 'telefoon': naam van de app
+    klaar: 'Zo maak je een rapportage: ...', // één zin die de route samenvat
+    stappen: [ // 3 tot 6
+      {
+        zeg: 'Wat de medewerker ziet en waarom.',
+        doe: 'Klik in het menu op Rapportages', // de opdracht, wordt de kop
+        menu: 'Overzicht',            // bij 'ons': het actieve menu-item op dit scherm
+        doel: { menu: 'Rapportages' }, // waar je op klikt, zie hieronder
+        pagina: {                      // wat er in het scherm staat, alles mag weg
+          titel: 'Rapportages',
+          tabs: ['Actueel', 'Archief'],
+          knoppen: ['Acties bekijken', '+'],
+          kaarten: [{ kop: 'Waarschuwingen', regels: ['Geen waarschuwingen'] }],
+          velden: [{ label: 'Tekst', waarde: '...' }],
+          venster: { titel: 'Rapportagetype toevoegen', opties: ['Rapportage', 'SOEP'] },
+          balk: 'Wondfoto',            // bij 'telefoon': titel boven in de app
+        },
+      },
+    ],
+  },
+```
+
+Het `doel` is precies één van `menu`, `knop`, `tab`, `regel` of `optie`, met de tekst zoals die op het scherm staat. Dat onderdeel licht op en is het enige waar je op kunt klikken. Bij de plusknop schrijf je `knop: '+'` met `label: 'Nieuwe rapportage'` voor de schermlezer. `menu` bestaat alleen bij `ons`. De menunamen zijn die van Nedap ONS: Overzicht, Vragenlijsten, Plan, Rapportages, Agenda, Klinimetrie, Snelkoppelingen, Algemeen, Cliëntnetwerk, Financieel, Documenten.
+
+De tekeningen voor `beeld`: rapport, overdracht, zoeken, meten, zorgplan, vragenlijst, episode, escaleren, familie, zp10, mic, authenticator, wond, dossier-app, dienst, ons.
 
 ## Soorten stappen
 
