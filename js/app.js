@@ -1,0 +1,1094 @@
+import { ORGANISATIE, PROFIELEN, DELEN, MODULES, MEDEWERKER, COLLEGAS, TIPS, TOEWIJZING, HUISSTIJL_VOORBEELDEN } from './data.js';
+import { RAPPORTEREN, NORM } from './casus.js';
+import { bereken, cssVariabelen, STANDAARD, VERPLICHT, OPTIONEEL, LABELS, isHex, contrast } from './theme.js';
+import { laad, zet, nu, opnieuw } from './state.js';
+import { startRondleiding, stopRondleiding } from './tour.js';
+
+const DEMO_VANDAAG = '2026-10-06';
+const app = document.getElementById('app');
+const melding = document.getElementById('melding');
+
+// ---------- hulpjes ----------
+
+const esc = (t) => String(t ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+const ICOON = {
+  vink: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7"/></svg>',
+  pijl: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg>',
+  terug: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H6M11 6l-6 6 6 6"/></svg>',
+  speel: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg>',
+  lamp: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1 2V16h5.2v-.2c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/></svg>',
+  vraag: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.6 9.3a2.5 2.5 0 1 1 3.3 2.4c-.6.3-.9.8-.9 1.4v.6M12 16.8v.2"/></svg>',
+  slot: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
+  mail: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="M4 7l8 6 8-6"/></svg>',
+  gebouw: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V8l8-4 8 4v12M9 20v-5h6v5M3 20h18"/></svg>',
+  boek: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5zM4 20.5A2.5 2.5 0 0 0 6.5 21H20"/></svg>',
+  mensen: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 19c.6-3.2 3-5 6-5s5.4 1.8 6 5"/><circle cx="17" cy="9" r="2.5"/><path d="M16.5 14c2.4.2 4 1.7 4.5 4"/></svg>',
+  palet: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18c1.2 0 1.8-.8 1.8-1.7 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-1 .8-1.7 1.8-1.7h2.1A4.3 4.3 0 0 0 21 11c0-4.4-4-8-9-8z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10" cy="7" r="1"/><circle cx="14.5" cy="7" r="1"/></svg>',
+  let: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4l9 16H3zM12 10v4M12 17v.2"/></svg>',
+};
+
+const WILG_LOGO = `<svg class="logo-wilg" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="19" fill="currentColor" opacity=".14"/><path d="M20 31V14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" fill="none"/><path d="M20 14c-5 1-8 5-9 11M20 14c5 1 8 5 9 11M20 18c-3 1.4-5 4.4-5.4 9M20 18c3 1.4 5 4.4 5.4 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>`;
+
+const OOM_MERK = `<span class="oom"><span class="oom__a">Ons</span> <span class="oom__b">Op&nbsp;Maat<svg viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><path d="M2 7.2C18 3.6 36 2.4 52 3.4c15 .9 30 2.9 46 1.2"/></svg></span></span>`;
+
+function meld(tekst) {
+  melding.textContent = tekst;
+  melding.classList.add('is-zichtbaar');
+  clearTimeout(meld.t);
+  meld.t = setTimeout(() => melding.classList.remove('is-zichtbaar'), 4200);
+}
+
+function orgNaam() {
+  return nu().huisstijl.naam?.trim() || ORGANISATIE.naam;
+}
+
+function logo(huisstijl = nu().huisstijl) {
+  const naam = esc(huisstijl.naam?.trim() || ORGANISATIE.naam);
+  if (huisstijl.logo === 'wilg') return `<span class="org-logo">${WILG_LOGO}<span class="org-logo__naam">${naam}</span></span>`;
+  if (huisstijl.logo && huisstijl.logo.startsWith('data:image/')) return `<span class="org-logo"><img src="${esc(huisstijl.logo)}" alt="${naam}"></span>`;
+  return `<span class="org-logo"><span class="org-logo__naam">${naam}</span></span>`;
+}
+
+function groet() {
+  const uur = new Date().getHours();
+  if (uur < 12) return 'Goedemorgen';
+  if (uur < 18) return 'Goedemiddag';
+  return 'Goedenavond';
+}
+
+// ---------- huisstijl toepassen ----------
+
+function pasHuisstijlToe(standaard) {
+  const { kleuren } = bereken(standaard ? {} : nu().huisstijl.kleuren);
+  const vars = cssVariabelen(kleuren);
+  const root = document.documentElement;
+  for (const [k, v] of Object.entries(vars)) root.style.setProperty(k, v);
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', kleuren.paneel);
+}
+
+// ---------- modules van Sanne ----------
+
+function mijnModules() {
+  const lijst = nu().toewijzing[MEDEWERKER.profiel] || TOEWIJZING[MEDEWERKER.profiel];
+  return MODULES.filter((m) => lijst.includes(m.id));
+}
+
+function isKlaar(id) {
+  return nu().voortgang[id] === 'klaar';
+}
+
+function markeer(id, status) {
+  const voortgang = { ...nu().voortgang };
+  if (voortgang[id] !== 'klaar') voortgang[id] = status;
+  zet({ voortgang, laatst: id });
+}
+
+function volgendeModule() {
+  const lijst = mijnModules();
+  const bezig = lijst.find((m) => nu().voortgang[m.id] === 'bezig');
+  return bezig || lijst.find((m) => !isKlaar(m.id)) || null;
+}
+
+function metaRegel(m) {
+  const delen = [`${m.min} min`];
+  if (m.varianten) delen.push(`casus met ${m.varianten} ${m.varianten === 1 ? 'variant' : 'varianten'}`);
+  if (m.toets) delen.push('toets');
+  return delen.join(' · ');
+}
+
+// ---------- schil: bovenbalk en voet ----------
+
+function schil(inhoud, opties = {}) {
+  const rol = nu().rol;
+  const route = opties.route || '';
+  const navs = {
+    medewerker: [['#/overzicht', 'Mijn overzicht'], ['#/module/rondleiding', 'Rondleiding']],
+    opleider: [['#/opleider', 'Dashboard'], ['#/opleider/profielen', 'Profielen']],
+    beheer: [['#/beheer', 'Modules'], ['#/beheer/klanten', 'Klanten'], ['#/beheer/huisstijl', 'Huisstijl']],
+  };
+  const wie = { medewerker: `${MEDEWERKER.naam} ${MEDEWERKER.achternaam}`, opleider: 'Opleider De Wilgenhof', beheer: 'Nick en Erwin' }[rol] || '';
+  const merk = rol === 'beheer'
+    ? `<a class="balk__merk" href="#/beheer">${OOM_MERK}<span class="balk__sub">Beheercentrum</span></a>`
+    : `<a class="balk__merk" href="${rol === 'opleider' ? '#/opleider' : '#/overzicht'}">${logo()}<span class="balk__sub">Leren bij ${esc(orgNaam())}</span></a>`;
+  const links = (navs[rol] || []).map(([href, tekst]) => {
+    const hier = route === href || (href !== '#/beheer' && href !== '#/opleider' && route.startsWith(href));
+    return `<a href="${href}"${hier ? ' aria-current="page"' : ''}>${tekst}</a>`;
+  }).join('');
+  return `
+    <header class="balk${rol === 'beheer' ? ' balk--beheer' : ''}">
+      <div class="balk__in">
+        ${merk}
+        <nav class="balk__nav" aria-label="Menu">${links}</nav>
+        <div class="balk__wie">
+          <span class="avatar" aria-hidden="true">${esc(wie.slice(0, 1))}</span>
+          <span class="balk__naam">${esc(wie)}</span>
+          <button type="button" class="btn btn--stil btn--op-paneel" data-actie="uitloggen">Uitloggen</button>
+        </div>
+      </div>
+    </header>
+    <main id="inhoud" tabindex="-1">${inhoud}</main>
+    ${voet()}`;
+}
+
+function voet() {
+  return `
+    <footer class="voet">
+      <div class="voet__in">
+        <p class="voet__gemaakt">Gemaakt door ${OOM_MERK}</p>
+        <p class="voet__demo">Demo met verzonnen gegevens. Er staan geen echte cliënten of medewerkers in.
+          <button type="button" class="linkknop" data-actie="opnieuw">Demo opnieuw beginnen</button></p>
+      </div>
+    </footer>`;
+}
+
+// ---------- inloggen ----------
+
+function viewInloggen() {
+  return `
+    <main class="inlog" id="inhoud" tabindex="-1">
+      <section class="inlog__paneel">
+        <div class="inlog__logo">${logo()}</div>
+        <div class="inlog__tekst">
+          <p class="bovenregel">Zo werkt het bij ons</p>
+          <h1>Leren bij ${esc(orgNaam())}</h1>
+          <p class="lead">Hier leer je hoe wij werken in Nedap ONS. Op jouw afdeling, met onze afspraken, in korte casussen uit je eigen dienst.</p>
+        </div>
+        <p class="inlog__gemaakt">Gemaakt door ${OOM_MERK}</p>
+      </section>
+      <section class="inlog__werk">
+        <div class="werkpaneel inlog__kaart">
+          <h2>Inloggen</h2>
+          <button type="button" class="btn btn--merk btn--breed" data-actie="sso">${ICOON.gebouw} Inloggen met je account van ${esc(orgNaam())}</button>
+          <p class="scheiding"><span>of met je e-mailadres</span></p>
+          <form class="inlog__form" data-form="mail" novalidate>
+            <label for="mail">E-mailadres</label>
+            <input id="mail" name="mail" type="email" autocomplete="email" placeholder="naam@dewilgenhof.nl">
+            <button type="submit" class="btn btn--rand btn--breed">${ICOON.mail} Stuur me een inloglink</button>
+          </form>
+          <div class="demo-keuze">
+            <h3>Demo: kies als wie je binnenkomt</h3>
+            <div class="rollen">
+              <button type="button" class="rol" data-actie="rol" data-rol="medewerker">
+                <span class="rol__naam">Sanne, verzorgende IG</span>
+                <span class="rol__wat">Nieuwe medewerker, eerste dag</span>
+                <span class="rol__pijl">${ICOON.pijl}</span>
+              </button>
+              <button type="button" class="rol" data-actie="rol" data-rol="opleider">
+                <span class="rol__naam">Opleider van ${esc(orgNaam())}</span>
+                <span class="rol__wat">Voortgang zien en onderdelen toewijzen</span>
+                <span class="rol__pijl">${ICOON.pijl}</span>
+              </button>
+              <button type="button" class="rol" data-actie="rol" data-rol="beheer">
+                <span class="rol__naam">Ons Op Maat</span>
+                <span class="rol__wat">Beheercentrum: modules, klanten en huisstijl</span>
+                <span class="rol__pijl">${ICOON.pijl}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>`;
+}
+
+// ---------- medewerker: welkom ----------
+
+function viewWelkom() {
+  const aantal = mijnModules().length;
+  return schil(`
+    <section class="paneel paneel--groot">
+      <div class="paneel__in welkom">
+        <div class="welkom__tekst">
+          <p class="bovenregel">Je eerste dag</p>
+          <h1>Hoi ${MEDEWERKER.naam}, welkom bij ${esc(orgNaam())}.</h1>
+          <p class="lead">Vandaag leer je hoe wij werken in Nedap ONS. Niet hoe het systeem in het algemeen werkt, maar hoe wij het hier gebruiken. Er staan ${aantal} korte modules voor je klaar.</p>
+          <p class="lead">Je hoeft niet alles vandaag te doen. Je kunt hier altijd terugkomen, ook later als je iets wilt opzoeken.</p>
+          <div class="knoppen">
+            <button type="button" class="btn btn--actie btn--groot" data-actie="start-rondleiding">Start de rondleiding ${ICOON.pijl}</button>
+            <button type="button" class="btn btn--stil btn--op-paneel" data-actie="sla-welkom-over">Sla over, naar mijn overzicht</button>
+          </div>
+        </div>
+        <figure class="video" aria-label="Welkomstvideo, komt later">
+          <div class="video__vlak">
+            <span class="video__speel" aria-hidden="true">${ICOON.speel}</span>
+            <p class="video__titel">Welkomstvideo</p>
+            <p class="video__wat">Hier komt een rustige video van ongeveer anderhalve minuut. Een collega laat zien hoe een dienst bij ons loopt, van de overdracht tot het rapporteren. Met ondertiteling.</p>
+          </div>
+          <figcaption>De video wordt nog gemaakt.</figcaption>
+        </figure>
+      </div>
+    </section>`, { route: '#/welkom' });
+}
+
+// ---------- medewerker: overzicht ----------
+
+function viewOverzicht() {
+  const lijst = mijnModules();
+  const klaar = lijst.filter((m) => isKlaar(m.id)).length;
+  const pct = lijst.length ? Math.round((klaar / lijst.length) * 100) : 0;
+  const volgende = volgendeModule();
+  const profiel = PROFIELEN[MEDEWERKER.profiel];
+  const tipIndex = (nu().tip ?? new Date().getDate()) % TIPS.length;
+  const tip = TIPS[tipIndex];
+  let nummer = 0;
+
+  const delen = DELEN.map((deel, di) => {
+    const mods = lijst.filter((m) => m.deel === deel.id);
+    if (!mods.length) return '';
+    const deelKlaar = mods.filter((m) => isKlaar(m.id)).length;
+    const rijen = mods.map((m) => {
+      nummer += 1;
+      const status = nu().voortgang[m.id];
+      const label = status === 'klaar' ? 'Klaar' : status === 'bezig' ? 'Bezig' : m.id === volgende?.id ? 'Volgende' : '';
+      return `
+        <li>
+          <a class="module${status === 'klaar' ? ' is-klaar' : ''}${m.id === volgende?.id ? ' is-volgende' : ''}" href="#/module/${m.id}">
+            <span class="module__nr" aria-hidden="true">${status === 'klaar' ? ICOON.vink : nummer}</span>
+            <span class="module__tekst">
+              <span class="module__titel">${esc(m.titel)}</span>
+              <span class="module__meta">${metaRegel(m)}</span>
+            </span>
+            ${label ? `<span class="module__status">${label}</span>` : ''}
+            <span class="module__pijl" aria-hidden="true">${ICOON.pijl}</span>
+          </a>
+        </li>`;
+    }).join('');
+    return `
+      <section class="deel" ${deel.id === 'tijdens' ? 'data-tour="deel"' : ''} aria-labelledby="deel-${deel.id}">
+        <header class="deel__kop">
+          <div>
+            <p class="deel__nr">Deel ${di + 1}</p>
+            <h2 id="deel-${deel.id}">${esc(deel.titel)}</h2>
+            <p class="deel__uitleg">${esc(deel.uitleg)}</p>
+          </div>
+          <p class="deel__teller${deelKlaar === mods.length ? ' is-klaar' : ''}">${deelKlaar === mods.length ? ICOON.vink : ''}${deelKlaar} van ${mods.length}</p>
+        </header>
+        <ol class="modules">${rijen}</ol>
+      </section>`;
+  }).join('');
+
+  const knopTekst = klaar === 0 && !nu().voortgang.rondleiding ? `Begin met ${esc(volgende?.titel.split(':')[0] || 'de eerste module')}` : volgende ? `Verder waar je was: ${esc(volgende.titel.split(':')[0])}` : 'Alles klaar, bekijk je modules';
+
+  return schil(`
+    <section class="paneel">
+      <div class="paneel__in overzicht-kop">
+        <div>
+          <p class="bovenregel">${esc(profiel.naam)} · ${esc(MEDEWERKER.afdeling)}</p>
+          <h1>${groet()} ${MEDEWERKER.naam}</h1>
+          <p class="lead">Er staan ${lijst.length} modules voor je klaar, omdat je ${esc(profiel.jij)} bent.</p>
+          <div class="voortgang" data-tour="voortgang">
+            <div class="voortgang__balk" role="progressbar" aria-valuemin="0" aria-valuemax="${lijst.length}" aria-valuenow="${klaar}" aria-label="Voortgang"><span style="width:${pct}%"></span></div>
+            <p class="voortgang__tekst"><strong>${klaar} van ${lijst.length}</strong> klaar</p>
+          </div>
+          ${volgende ? `<a class="btn btn--actie btn--groot" data-tour="verder" href="#/module/${volgende.id}">${knopTekst} ${ICOON.pijl}</a>` : ''}
+        </div>
+        <aside class="tip" data-tour="tip" aria-labelledby="tip-kop">
+          <p class="tip__label">${ICOON.lamp} Tip van de dag</p>
+          <h2 id="tip-kop">${esc(tip.kop)}</h2>
+          <p>${esc(tip.tekst)}</p>
+          <button type="button" class="linkknop" data-actie="volgende-tip">Nog een tip</button>
+        </aside>
+      </div>
+    </section>
+    <div class="wrap overzicht">
+      ${delen}
+      <aside class="hulp" data-tour="hulp">
+        <span class="hulp__icoon" aria-hidden="true">${ICOON.vraag}</span>
+        <div>
+          <h2>Kom je er niet uit?</h2>
+          <p>Vraag het de key-user van jouw afdeling. Op De Linde is dat Fatima. Ze werkt op maandag, woensdag en vrijdag.</p>
+        </div>
+      </aside>
+    </div>`, { route: '#/overzicht' });
+}
+
+const RONDLEIDING = [
+  { doel: '[data-tour="voortgang"]', kop: 'Hier zie je hoe ver je bent', tekst: 'Elke module die je afrondt krijgt een vinkje. Je opleider ziet ook hoe ver je bent, zodat je inwerkchecklist vanzelf bijblijft.' },
+  { doel: '[data-tour="verder"]', kop: 'Met deze knop ga je verder', tekst: 'Kom je terug, dan begin je hier. Hij brengt je naar de module waar je gebleven was.' },
+  { doel: '[data-tour="deel"]', kop: 'Je modules staan in vijf delen', tekst: 'Van het starten van je dienst tot de apps op je telefoon. Elke module is een casus uit je eigen werk. Je kiest, en je ziet wat er daarna gebeurt.' },
+  { doel: '[data-tour="tip"]', kop: 'Elke dag een tip', tekst: 'Korte tips over hoe wij hier werken. Wil je er meer? Klik op Nog een tip.' },
+  { doel: '[data-tour="hulp"]', kop: 'Kom je er niet uit?', tekst: 'Dan weet je hier bij wie je terechtkunt. Klaar? Begin met de eerste module.' },
+];
+
+function startTour() {
+  startRondleiding(RONDLEIDING, (klaar) => {
+    if (klaar) {
+      markeer('rondleiding', 'klaar');
+      zet({ rondleidingKlaar: true });
+      render();
+      meld('Rondleiding klaar. Je eerste vinkje staat erin.');
+    }
+  });
+}
+
+// ---------- medewerker: module ----------
+
+let casus = null;
+
+function nieuweCasus() {
+  return { stap: 'intro', keuze: null, koppel: {}, gecontroleerd: false, antwoorden: {}, ingeleverd: false };
+}
+
+function viewModule(id) {
+  const m = MODULES.find((x) => x.id === id);
+  if (!m) return viewNietGevonden();
+  if (m.uitgewerkt) return viewCasus(m);
+  const deelIndex = DELEN.findIndex((d) => d.id === m.deel);
+  const klaar = isKlaar(m.id);
+  const isRondleiding = m.id === 'rondleiding';
+  return schil(`
+    <section class="paneel">
+      <div class="paneel__in module-kop">
+        <a class="terug" href="#/overzicht">${ICOON.terug} Mijn overzicht</a>
+        <p class="bovenregel">Deel ${deelIndex + 1} · ${esc(DELEN[deelIndex].titel)}</p>
+        <h1>${esc(m.titel)}</h1>
+        <p class="lead">${esc(m.leer)}</p>
+        <p class="module-kop__meta">${metaRegel(m)}</p>
+      </div>
+    </section>
+    <div class="wrap smal">
+      <div class="werkpaneel">
+        ${isRondleiding ? `
+          <h2>De rondleiding</h2>
+          <p>We lopen samen langs je overzicht: waar je je voortgang ziet, hoe je verdergaat, en bij wie je terechtkunt.</p>
+          <button type="button" class="btn btn--actie" data-actie="start-rondleiding">${klaar ? 'Doe de rondleiding opnieuw' : 'Start de rondleiding'} ${ICOON.pijl}</button>
+        ` : `
+          <h2>Zo ziet deze module eruit</h2>
+          <ol class="stappenuitleg">
+            <li><strong>Een situatie uit je dienst.</strong> Een cliënt, een collega, een moment waarop je iets moet doen.</li>
+            <li><strong>Jij kiest.</strong> Bij elke keuze zie je wat er daarna gebeurt.${m.varianten ? ` Er zijn ${m.varianten} ${m.varianten === 1 ? 'variant' : 'varianten'}.` : ''}</li>
+            ${m.toets ? '<li><strong>Een korte toets.</strong> Heb je 80 procent goed, dan is de module klaar.</li>' : '<li><strong>Kort samengevat.</strong> Wat je meeneemt naar je volgende dienst.</li>'}
+          </ol>
+          <p class="opmerking">In deze demo is alleen de module Rapporteren helemaal uitgewerkt.</p>
+          <div class="knoppen">
+            <a class="btn btn--actie" href="#/module/rapporteren">Probeer de casus Rapporteren ${ICOON.pijl}</a>
+            ${klaar ? `<span class="klaar-label">${ICOON.vink} Klaar</span>` : `<button type="button" class="btn btn--rand" data-actie="markeer-klaar" data-id="${m.id}">Zet op klaar voor de demo</button>`}
+          </div>
+        `}
+      </div>
+    </div>`, { route: `#/module/${id}` });
+}
+
+function stapper(actief) {
+  const stappen = ['Situatie', 'Rapporteren', 'Koppelen', 'Overdracht', 'Toets'];
+  return `<ol class="stapper" aria-label="Stappen in deze casus">${stappen.map((s, i) => `<li class="${i < actief ? 'is-klaar' : i === actief ? 'is-nu' : ''}"${i === actief ? ' aria-current="step"' : ''}><span>${i < actief ? ICOON.vink : i + 1}</span>${s}</li>`).join('')}</ol>`;
+}
+
+function viewCasus(m) {
+  if (!casus) casus = nieuweCasus();
+  const c = RAPPORTEREN;
+  let inhoud = '';
+  let stapNr = 0;
+
+  if (casus.stap === 'intro') {
+    stapNr = 0;
+    inhoud = `
+      <article class="werkpaneel situatie">
+        <p class="situatie__tijd">${esc(c.intro.tijd)}</p>
+        <h2>${esc(c.intro.kop)}</h2>
+        ${c.intro.tekst.map((t) => `<p>${esc(t)}</p>`).join('')}
+        <p class="opmerking">${esc(c.intro.noot)}</p>
+        <button type="button" class="btn btn--actie" data-actie="casus-start">Ik ga rapporteren ${ICOON.pijl}</button>
+      </article>`;
+  } else if (casus.stap === 'toets' || casus.stap === 'uitslag') {
+    stapNr = 4;
+    inhoud = casus.stap === 'toets' ? viewToets() : viewUitslag();
+  } else {
+    const stap = c.stappen[casus.stap];
+    stapNr = casus.stap + 1;
+    inhoud = stap.type === 'keuze' ? viewKeuze(stap) : viewKoppel(stap);
+  }
+
+  return schil(`
+    <section class="paneel">
+      <div class="paneel__in module-kop">
+        <a class="terug" href="#/overzicht">${ICOON.terug} Mijn overzicht</a>
+        <p class="bovenregel">Deel 3 · Tijdens je dienst · Casus</p>
+        <h1>${esc(m.titel)}</h1>
+        <p class="lead">${esc(m.leer)}</p>
+        ${stapper(stapNr)}
+      </div>
+    </section>
+    <div class="wrap smal casus" aria-live="polite">${inhoud}</div>`, { route: `#/module/${m.id}` });
+}
+
+function viewKeuze(stap) {
+  const gekozen = casus.keuze;
+  const optie = gekozen !== null ? stap.opties[gekozen] : null;
+  return `
+    <article class="werkpaneel">
+      <h2>${esc(stap.vraag)}</h2>
+      <div class="keuzes" role="radiogroup" aria-label="${esc(stap.vraag)}">
+        ${stap.opties.map((o, i) => `
+          <button type="button" role="radio" aria-checked="${gekozen === i}" class="keuze${gekozen === i ? (o.goed ? ' is-goed' : ' is-fout') : ''}" data-actie="kies" data-i="${i}" ${gekozen !== null ? 'disabled' : ''}>
+            <span class="keuze__letter">${'ABC'[i]}</span>
+            <span class="keuze__tekst">${esc(o.tekst)}</span>
+          </button>`).join('')}
+      </div>
+      ${optie ? `
+        <div class="variant ${optie.goed ? 'variant--goed' : 'variant--fout'}">
+          <p class="variant__label">${optie.goed ? ICOON.vink + ' Zo loopt het af' : ICOON.let + ' Zo loopt het af'}</p>
+          <h3>${esc(optie.variant.kop)}</h3>
+          <p>${esc(optie.variant.tekst)}</p>
+          <p class="variant__uitleg"><strong>${optie.goed ? 'Goed gedaan.' : 'Wat ging er mis?'}</strong> ${esc(optie.uitleg)}</p>
+        </div>
+        <div class="knoppen">
+          ${optie.goed ? `<button type="button" class="btn btn--actie" data-actie="casus-verder">Verder ${ICOON.pijl}</button>` : `<button type="button" class="btn btn--actie" data-actie="casus-opnieuw-keuze">Probeer een ander antwoord</button>`}
+        </div>` : ''}
+    </article>`;
+}
+
+function viewKoppel(stap) {
+  const goed = stap.regels.every((r, i) => casus.koppel[i] === r.goed);
+  const alles = stap.regels.every((r, i) => casus.koppel[i]);
+  return `
+    <article class="werkpaneel">
+      <h2>${esc(stap.vraag)}</h2>
+      <p>${esc(stap.uitleg)}</p>
+      <div class="ecd" aria-label="Nagebouwd scherm in eigen vormgeving">
+        <div class="ecd__balk"><span>Rapportage · mevrouw Bakker</span><span class="ecd__klein">nagebouwd scherm, fictieve cliënt</span></div>
+        <div class="ecd__body">
+          ${stap.regels.map((r, i) => `
+            <div class="ecd__rij">
+              <label for="koppel-${i}">${esc(r.waarneming)}</label>
+              <select id="koppel-${i}" data-koppel="${i}" ${casus.gecontroleerd && goed ? 'disabled' : ''}>
+                <option value="">Kies een domein</option>
+                ${stap.domeinen.map((d) => `<option value="${d.id}" ${casus.koppel[i] === d.id ? 'selected' : ''}>${esc(d.naam)}</option>`).join('')}
+              </select>
+              ${casus.gecontroleerd ? `<span class="ecd__check ${casus.koppel[i] === r.goed ? 'is-goed' : 'is-fout'}">${casus.koppel[i] === r.goed ? ICOON.vink : ICOON.let}<span class="sr">${casus.koppel[i] === r.goed ? 'goed' : 'nog niet goed'}</span></span>` : ''}
+            </div>`).join('')}
+        </div>
+      </div>
+      ${casus.gecontroleerd ? `<div class="variant ${goed ? 'variant--goed' : 'variant--fout'}"><p>${esc(goed ? stap.goedTekst : stap.foutTekst)}</p></div>` : ''}
+      <div class="knoppen">
+        ${casus.gecontroleerd && goed
+          ? `<button type="button" class="btn btn--actie" data-actie="casus-verder">Verder ${ICOON.pijl}</button>`
+          : `<button type="button" class="btn btn--actie" data-actie="koppel-check" ${alles ? '' : 'disabled'}>Controleer</button>`}
+      </div>
+    </article>`;
+}
+
+function viewToets() {
+  const t = RAPPORTEREN.toets;
+  const alles = t.every((_, i) => casus.antwoorden[i] !== undefined);
+  return `
+    <article class="werkpaneel">
+      <p class="bovenregel bovenregel--merk">Toets</p>
+      <h2>Vijf korte vragen</h2>
+      <p>Heb je er vier of vijf goed, dan is de module klaar.</p>
+      <form class="toets" data-form="toets">
+        ${t.map((v, i) => `
+          <fieldset class="vraag">
+            <legend><span class="vraag__nr">${i + 1}</span> ${esc(v.vraag)}</legend>
+            ${v.opties.map((o, j) => `
+              <label class="optie">
+                <input type="radio" name="v${i}" value="${j}" ${casus.antwoorden[i] === j ? 'checked' : ''}>
+                <span>${esc(o)}</span>
+              </label>`).join('')}
+          </fieldset>`).join('')}
+        <button type="submit" class="btn btn--actie" ${alles ? '' : 'disabled'}>Lever in</button>
+      </form>
+    </article>`;
+}
+
+function viewUitslag() {
+  const t = RAPPORTEREN.toets;
+  const goed = t.filter((v, i) => casus.antwoorden[i] === v.goed).length;
+  const gehaald = goed / t.length >= NORM;
+  return `
+    <article class="werkpaneel uitslag ${gehaald ? 'is-gehaald' : ''}">
+      <span class="uitslag__icoon" aria-hidden="true">${gehaald ? ICOON.vink : ICOON.let}</span>
+      <h2>${gehaald ? 'Module klaar' : 'Bijna'}</h2>
+      <p class="uitslag__score">Je had er <strong>${goed} van de ${t.length}</strong> goed.</p>
+      <ul class="uitslag__lijst">
+        ${t.map((v, i) => `<li class="${casus.antwoorden[i] === v.goed ? 'is-goed' : 'is-fout'}">${casus.antwoorden[i] === v.goed ? ICOON.vink : ICOON.let}<span>${esc(v.vraag)}${casus.antwoorden[i] === v.goed ? '' : ` <em>Goed antwoord: ${esc(v.opties[v.goed])}</em>`}</span></li>`).join('')}
+      </ul>
+      <div class="knoppen">
+        ${gehaald
+          ? `<a class="btn btn--actie" href="#/overzicht">Terug naar mijn overzicht ${ICOON.pijl}</a>`
+          : `<button type="button" class="btn btn--actie" data-actie="toets-opnieuw">Doe de toets opnieuw</button>`}
+      </div>
+    </article>`;
+}
+
+// ---------- opleider ----------
+
+function dagenTussen(a, b) {
+  return Math.round((Date.parse(b) - Date.parse(a)) / 864e5);
+}
+
+function rijenOpleider() {
+  const sanneKlaar = mijnModules().filter((m) => isKlaar(m.id)).length;
+  const sanneScore = nu().scores.rapporteren ?? null;
+  const sanne = { naam: `${MEDEWERKER.naam} ${MEDEWERKER.achternaam}`, profiel: 'vig', afdeling: MEDEWERKER.afdeling, start: DEMO_VANDAAG, klaar: sanneKlaar, toets: sanneScore, live: true };
+  return [sanne, ...COLLEGAS].map((r) => {
+    const totaal = (nu().toewijzing[r.profiel] || []).length;
+    const klaar = Math.min(r.klaar, totaal);
+    const pct = totaal ? klaar / totaal : 0;
+    const dagen = dagenTussen(r.start, DEMO_VANDAAG);
+    const status = klaar === totaal ? 'klaar' : dagen > 14 && pct < 0.6 ? 'achter' : 'schema';
+    return { ...r, totaal, klaar, pct, status };
+  });
+}
+
+function vinkjesPerDeel(r) {
+  const lijst = MODULES.filter((m) => (nu().toewijzing[r.profiel] || []).includes(m.id));
+  let over = r.klaar;
+  return DELEN.map((d) => {
+    const n = lijst.filter((m) => m.deel === d.id).length;
+    if (!n) return '';
+    const k = r.live ? lijst.filter((m) => m.deel === d.id && isKlaar(m.id)).length : Math.max(0, Math.min(n, over));
+    if (!r.live) over -= n;
+    const klasse = k === n ? 'is-klaar' : k > 0 ? 'is-half' : '';
+    return `<span class="deelvink ${klasse}" title="${esc(d.titel)}: ${k} van ${n}">${k === n ? ICOON.vink : ''}<span class="sr">${esc(d.titel)}: ${k} van ${n}</span></span>`;
+  }).join('');
+}
+
+function viewOpleider() {
+  const filter = nu().filter || 'alle';
+  const alle = rijenOpleider();
+  const rijen = alle.filter((r) => filter === 'alle' || r.profiel === filter);
+  const scores = alle.filter((r) => r.toets !== null);
+  const gem = scores.length ? Math.round(scores.reduce((s, r) => s + r.toets, 0) / scores.length) : 0;
+  const tegel = (getal, tekst) => `<div class="tegel"><p class="tegel__getal">${getal}</p><p class="tegel__tekst">${tekst}</p></div>`;
+  const statusTekst = { klaar: 'Klaar met inwerken', achter: 'Loopt achter', schema: 'Op schema' };
+  return schil(`
+    <section class="paneel">
+      <div class="paneel__in">
+        <p class="bovenregel">Dashboard opleider</p>
+        <h1>Inwerken bij ${esc(orgNaam())}</h1>
+        <p class="lead">Zo ver zijn je nieuwe collega's met hun modules. Alle namen en cijfers zijn verzonnen, behalve die van Sanne: die volgt wat je in de demo doet.</p>
+        <div class="tegels">
+          ${tegel(alle.length, 'nieuwe medewerkers')}
+          ${tegel(alle.filter((r) => r.status === 'klaar').length, 'klaar met inwerken')}
+          ${tegel(alle.filter((r) => r.status === 'achter').length, 'lopen achter')}
+          ${tegel(gem + '%', 'gemiddelde toetsscore')}
+        </div>
+      </div>
+    </section>
+    <div class="wrap">
+      <div class="werkpaneel werkpaneel--vol">
+        <div class="tabelkop">
+          <h2>Medewerkers</h2>
+          <div class="filter" role="group" aria-label="Filter op profiel">
+            ${[['alle', 'Alle profielen'], ['vig', 'Verzorgende IG'], ['helpende', 'Helpende en wzo']].map(([id, t]) => `<button type="button" class="chip" aria-pressed="${filter === id}" data-actie="filter" data-filter="${id}">${t}</button>`).join('')}
+          </div>
+        </div>
+        <div class="tabelwrap">
+          <table class="tabel">
+            <thead><tr><th scope="col">Naam</th><th scope="col">Profiel</th><th scope="col">Afdeling</th><th scope="col">Gestart</th><th scope="col">Voortgang</th><th scope="col">Per deel</th><th scope="col">Toets</th><th scope="col">Status</th></tr></thead>
+            <tbody>
+              ${rijen.map((r) => `
+                <tr${r.live ? ' class="is-live"' : ''}>
+                  <th scope="row">${esc(r.naam)}${r.live ? ' <span class="live">jij in de demo</span>' : ''}</th>
+                  <td>${esc(PROFIELEN[r.profiel].naam)}</td>
+                  <td>${esc(r.afdeling)}</td>
+                  <td>${new Date(r.start).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })}</td>
+                  <td><div class="minibalk" role="img" aria-label="${r.klaar} van ${r.totaal} klaar"><span style="width:${Math.round(r.pct * 100)}%"></span></div><span class="klein">${r.klaar} van ${r.totaal}</span></td>
+                  <td><span class="deelvinken">${vinkjesPerDeel(r)}</span></td>
+                  <td>${r.toets === null ? '<span class="klein">nog niet</span>' : r.toets + '%'}</td>
+                  <td><span class="status status--${r.status}">${statusTekst[r.status]}</span></td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+        <p class="opmerking">Loopt achter betekent: langer dan twee weken gestart en minder dan 60 procent klaar.</p>
+      </div>
+    </div>`, { route: '#/opleider' });
+}
+
+function viewProfielen() {
+  const t = nu().toewijzing;
+  const kolommen = Object.values(PROFIELEN);
+  return schil(`
+    <section class="paneel">
+      <div class="paneel__in">
+        <p class="bovenregel">Profielen</p>
+        <h1>Welke modules horen bij welk profiel?</h1>
+        <p class="lead">Zet een vinkje en de module staat in het overzicht van iedereen met dat profiel. Sanne is verzorgende IG, dus wat je daar aanpast zie je meteen bij haar.</p>
+      </div>
+    </section>
+    <div class="wrap">
+      <div class="werkpaneel werkpaneel--vol">
+        <div class="tabelwrap">
+          <table class="tabel tabel--matrix">
+            <thead><tr><th scope="col">Module</th>${kolommen.map((p) => `<th scope="col">${esc(p.naam)}<span class="klein">${t[p.id].length} modules</span></th>`).join('')}</tr></thead>
+            ${DELEN.map((d, di) => `
+              <tbody>
+                <tr class="tabel__deel"><th colspan="${kolommen.length + 1}" scope="colgroup">Deel ${di + 1} · ${esc(d.titel)}</th></tr>
+                ${MODULES.filter((m) => m.deel === d.id).map((m) => `
+                  <tr>
+                    <th scope="row">${esc(m.titel)}<span class="klein">${metaRegel(m)}</span></th>
+                    ${kolommen.map((p) => `<td><label class="vinkvak"><input type="checkbox" data-toewijs="${p.id}" value="${m.id}" ${t[p.id].includes(m.id) ? 'checked' : ''}><span class="sr">${esc(m.titel)} voor ${esc(p.naam)}</span><span class="vinkvak__box" aria-hidden="true">${ICOON.vink}</span></label></td>`).join('')}
+                  </tr>`).join('')}
+              </tbody>`).join('')}
+          </table>
+        </div>
+        <div class="knoppen">
+          <button type="button" class="btn btn--rand" data-actie="toewijzing-standaard">Terug naar de standaard van Ons Op Maat</button>
+          <a class="btn btn--actie" href="#/opleider">Naar het dashboard ${ICOON.pijl}</a>
+        </div>
+      </div>
+    </div>`, { route: '#/opleider/profielen' });
+}
+
+// ---------- beheercentrum Ons Op Maat ----------
+
+function viewBeheerModules() {
+  return schil(`
+    <section class="paneel">
+      <div class="paneel__in">
+        <p class="bovenregel">Beheercentrum · alleen voor Ons Op Maat</p>
+        <h1>De bibliotheek</h1>
+        <p class="lead">Elke module is een casus met varianten. De generieke laag is voor elke klant hetzelfde. De klantlaag maakt hem van De Wilgenhof: hun schermen, hun afspraken, hun namen.</p>
+      </div>
+    </section>
+    <div class="wrap">
+      <div class="werkpaneel werkpaneel--vol">
+        <div class="tabelkop"><h2>${MODULES.length} modules voor Nedap ONS</h2></div>
+        <div class="tabelwrap">
+          <table class="tabel">
+            <thead><tr><th scope="col">Module</th><th scope="col">Deel</th><th scope="col">Varianten</th><th scope="col">Toets</th><th scope="col">Lagen</th><th scope="col">Stand</th></tr></thead>
+            <tbody>
+              ${MODULES.map((m) => `
+                <tr>
+                  <th scope="row">${esc(m.titel)}</th>
+                  <td>${esc(DELEN.find((d) => d.id === m.deel).titel)}</td>
+                  <td>${m.varianten || '<span class="klein">geen</span>'}</td>
+                  <td>${m.toets ? ICOON.vink + '<span class="sr">ja</span>' : '<span class="klein">nee</span>'}</td>
+                  <td><span class="laag">Generiek</span> <span class="laag laag--klant">De Wilgenhof</span></td>
+                  <td>${m.uitgewerkt ? '<span class="status status--klaar">Uitgewerkt in demo</span>' : '<span class="status">Opzet</span>'}</td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+        <p class="opmerking">De bibliotheek groeit met elke klant. Wat generiek is, maak je één keer. Zie de kennisbank, wat-we-leveren.</p>
+      </div>
+    </div>`, { route: '#/beheer' });
+}
+
+function viewBeheerKlanten() {
+  const h = nu().huisstijl;
+  const { kleuren } = bereken(h.kleuren);
+  const aantal = rijenOpleider().length;
+  return schil(`
+    <section class="paneel">
+      <div class="paneel__in">
+        <p class="bovenregel">Beheercentrum · alleen voor Ons Op Maat</p>
+        <h1>Klanten</h1>
+        <p class="lead">Per klant zet je de profielen, de modules per profiel en de huisstijl klaar. Daarna kan de opleider van de klant zelf toewijzen en meekijken.</p>
+      </div>
+    </section>
+    <div class="wrap">
+      <div class="klanten">
+        <article class="werkpaneel klant">
+          <div class="klant__kop" style="background:${kleuren.paneel};color:${kleuren.opPaneel}">${logo(h)}</div>
+          <h2>${esc(ORGANISATIE.voluit)}</h2>
+          <dl class="feiten">
+            <div><dt>ECD</dt><dd>${ORGANISATIE.ecd}</dd></div>
+            <div><dt>Profielen</dt><dd>${Object.values(PROFIELEN).map((p) => esc(p.naam)).join(', ')}</dd></div>
+            <div><dt>Medewerkers in de demo</dt><dd>${aantal}</dd></div>
+            <div><dt>Inloggen</dt><dd>eigen inlog of SSO via het portaal van de klant</dd></div>
+          </dl>
+          <div class="stalen" aria-label="Huisstijlkleuren">${['paneel', 'merk', 'actie', 'zacht'].map((k) => `<span style="background:${kleuren[k]}" title="${LABELS[k].naam} ${kleuren[k]}"></span>`).join('')}</div>
+          <div class="knoppen">
+            <a class="btn btn--actie" href="#/beheer/huisstijl">Huisstijl instellen ${ICOON.pijl}</a>
+            <a class="btn btn--rand" href="#/opleider/profielen" data-actie="als-opleider">Profielen bekijken</a>
+          </div>
+        </article>
+        <article class="werkpaneel klant klant--nieuw">
+          <span class="klant__plus" aria-hidden="true">+</span>
+          <h2>Nieuwe klant</h2>
+          <p>Een klant aanmaken komt in de echte versie. Dan kies je het ECD, de profielen en de modules uit de bibliotheek.</p>
+        </article>
+      </div>
+    </div>`, { route: '#/beheer/klanten' });
+}
+
+// concept van de huisstijl, los van wat al is toegepast
+let concept = null;
+
+function viewHuisstijl() {
+  if (!concept) concept = JSON.parse(JSON.stringify(nu().huisstijl));
+  const { kleuren, waarschuwingen } = bereken(concept.kleuren);
+  const veld = (k, verplicht) => {
+    const eigen = isHex(concept.kleuren[k]);
+    const waarde = kleuren[k];
+    return `
+      <div class="kleurveld${!verplicht && !eigen ? ' is-auto' : ''}">
+        <input type="color" id="kleur-${k}" value="${waarde.toLowerCase()}" data-kleur="${k}" aria-describedby="uitleg-${k}">
+        <div class="kleurveld__tekst">
+          <label for="kleur-${k}">${LABELS[k].naam}</label>
+          <span id="uitleg-${k}" class="klein">${LABELS[k].waar}</span>
+        </div>
+        <input type="text" class="kleurveld__hex" value="${waarde}" data-hex="${k}" aria-label="${LABELS[k].naam} als hexcode" spellcheck="false" maxlength="7">
+        ${verplicht ? '' : `<label class="kleurveld__auto"><input type="checkbox" data-auto="${k}" ${eigen ? '' : 'checked'}> automatisch</label>`}
+      </div>`;
+  };
+  const vars = Object.entries(cssVariabelen(kleuren)).map(([k, v]) => `${k}:${v}`).join(';');
+  const paren = [
+    ['Tekst op paneel', kleuren.opPaneel, kleuren.paneel],
+    ['Tekst op hoofdknop', kleuren.opActie, kleuren.actie],
+    ['Tekst op merkkleur', kleuren.opMerk, kleuren.merk],
+    ['Tekst op grond', kleuren.tekst, kleuren.grond],
+    ['Links op grond', kleuren.merkTekst, kleuren.grond],
+  ];
+  return schil(`
+    <section class="paneel">
+      <div class="paneel__in">
+        <p class="bovenregel">Beheercentrum · De Wilgenhof</p>
+        <h1>Huisstijl</h1>
+        <p class="lead">Vier kleuren vul je altijd in. De andere vier rekent de leeromgeving zelf uit, tenzij je ze zet. Lettertype en vormen blijven gelijk, zodat het één product blijft.</p>
+      </div>
+    </section>
+    <div class="wrap huisstijl">
+      <form class="werkpaneel huisstijl__form" data-form="huisstijl">
+        <h2>Organisatie</h2>
+        <label class="veld" for="orgnaam">Naam in de leeromgeving
+          <input id="orgnaam" type="text" value="${esc(concept.naam)}" data-naam maxlength="40">
+        </label>
+        <p class="klein">De leeromgeving heet dan: Leren bij ${esc(concept.naam || ORGANISATIE.naam)}.</p>
+
+        <h2>Snel kiezen</h2>
+        <div class="voorbeelden">
+          ${HUISSTIJL_VOORBEELDEN.map((v) => {
+            const kl = bereken(v.kleuren).kleuren;
+            return `<button type="button" class="voorbeeld${concept.voorbeeld === v.id ? ' is-actief' : ''}" data-actie="voorbeeld" data-id="${v.id}"><span class="stalen stalen--klein">${['paneel', 'merk', 'actie', 'zacht'].map((k) => `<span style="background:${kl[k]}"></span>`).join('')}</span>${esc(v.naam)}</button>`;
+          }).join('')}
+        </div>
+
+        <h2>Vier vaste kleuren</h2>
+        ${VERPLICHT.map((k) => veld(k, true)).join('')}
+
+        <h2>Vier extra kleuren</h2>
+        <p class="klein">Staat automatisch aan, dan rekenen we de kleur uit de vaste kleuren.</p>
+        ${OPTIONEEL.map((k) => veld(k, false)).join('')}
+
+        <h2>Logo</h2>
+        <div class="logoveld">
+          <div class="logoveld__voorbeeld" style="background:${kleuren.paneel};color:${kleuren.opPaneel}">${logo(concept)}</div>
+          <div>
+            <label class="btn btn--rand btn--klein" for="logo-bestand">Kies een logo</label>
+            <input class="sr" id="logo-bestand" type="file" accept="image/png,image/svg+xml,image/jpeg,image/webp" data-logo>
+            ${concept.logo ? '<button type="button" class="linkknop" data-actie="logo-weg">Logo weghalen</button>' : ''}
+            <p class="klein">SVG of PNG, het liefst een versie die op een donker vlak werkt. Hooguit 300 kB.</p>
+          </div>
+        </div>
+      </form>
+
+      <div class="huisstijl__rechts">
+        <div class="werkpaneel">
+          <h2>Zo ziet het eruit</h2>
+          <div class="preview" style="${vars}">
+            <div class="preview__paneel">
+              <div class="preview__logo">${logo(concept)}</div>
+              <p class="preview__boven">Verzorgende IG · De Linde</p>
+              <p class="preview__kop">Goedemorgen Sanne</p>
+              <div class="preview__balk"><span style="width:40%"></span></div>
+              <span class="preview__knop">Verder waar je was</span>
+            </div>
+            <div class="preview__grond">
+              <div class="preview__vlak">
+                <span class="preview__nr">${ICOON.vink}</span>
+                <span><strong>Rapporteren</strong><br><span class="preview__meta">4 min · casus · toets</span></span>
+              </div>
+              <div class="preview__tip"><strong>Tip van de dag</strong> Schrijf voor de volgende dienst.</div>
+              <p class="preview__fout">${ICOON.let} Zo loopt het af: de plek is nu open.</p>
+              <a class="preview__link">Mijn overzicht</a>
+            </div>
+          </div>
+        </div>
+        <div class="werkpaneel">
+          <h2>Leesbaarheid</h2>
+          <ul class="contrast">
+            ${paren.map(([naam, voor, achter]) => {
+              const c = contrast(voor, achter);
+              const ok = c >= 4.5;
+              return `<li class="${ok ? 'is-goed' : 'is-fout'}"><span class="contrast__staal" style="background:${achter};color:${voor}">Aa</span><span>${naam}</span><strong>${(Math.round(c * 10) / 10).toString().replace('.', ',')} : 1</strong>${ok ? ICOON.vink : ICOON.let}</li>`;
+            }).join('')}
+          </ul>
+          ${waarschuwingen.length ? `<div class="waarschuwing">${ICOON.let}<div>${waarschuwingen.map((w) => `<p>${esc(w.wat)}</p>`).join('')}</div></div>` : '<p class="klein">Alles haalt de norm van 4,5 : 1 voor gewone tekst. Witte of donkere tekst kiezen we zelf.</p>'}
+        </div>
+        <div class="knoppen knoppen--plak">
+          <button type="button" class="btn btn--actie" data-actie="huisstijl-toepassen">Toepassen op ${esc(concept.naam || ORGANISATIE.naam)}</button>
+          <button type="button" class="btn btn--rand" data-actie="huisstijl-terug">Terug naar wat er stond</button>
+        </div>
+      </div>
+    </div>`, { route: '#/beheer/huisstijl' });
+}
+
+function viewNietGevonden() {
+  return schil(`<div class="wrap smal"><div class="werkpaneel"><h1>Deze pagina bestaat niet</h1><p><a href="#/">Terug naar het begin</a></p></div></div>`);
+}
+
+// ---------- router ----------
+
+function route() {
+  return window.location.hash.replace(/^#/, '') || '/';
+}
+
+function render(opties = {}) {
+  const pad = route();
+  const rol = nu().rol;
+  let html;
+  let beheer = false;
+  if (pad === '/' || !rol) {
+    html = viewInloggen();
+  } else if (rol === 'medewerker') {
+    if (pad === '/welkom') html = viewWelkom();
+    else if (pad === '/overzicht') html = viewOverzicht();
+    else if (pad.startsWith('/module/')) html = viewModule(pad.split('/')[2]);
+    else html = viewOverzicht();
+  } else if (rol === 'opleider') {
+    html = pad === '/opleider/profielen' ? viewProfielen() : viewOpleider();
+  } else if (rol === 'beheer') {
+    beheer = true;
+    if (pad === '/beheer/klanten') html = viewBeheerKlanten();
+    else if (pad === '/beheer/huisstijl') html = viewHuisstijl();
+    else html = viewBeheerModules();
+  }
+  pasHuisstijlToe(beheer);
+  document.body.dataset.rol = rol || 'gast';
+  app.innerHTML = html;
+  const titels = { '/': 'Inloggen', '/welkom': 'Welkom', '/overzicht': 'Mijn overzicht', '/opleider': 'Dashboard', '/opleider/profielen': 'Profielen', '/beheer': 'Bibliotheek', '/beheer/klanten': 'Klanten', '/beheer/huisstijl': 'Huisstijl' };
+  document.title = `${titels[pad] || 'Module'} · Leren bij ${orgNaam()}`;
+  if (!opties.houdScroll) {
+    window.scrollTo(0, 0);
+    document.getElementById('inhoud')?.focus({ preventScroll: true });
+  }
+}
+
+function ga(pad) {
+  if (route() === pad) render();
+  else window.location.hash = pad;
+}
+
+// ---------- acties ----------
+
+const ACTIES = {
+  rol(knop) {
+    const rol = knop.dataset.rol;
+    zet({ rol });
+    if (rol === 'medewerker') ga(nu().welkomGezien ? '/overzicht' : '/welkom');
+    else if (rol === 'opleider') ga('/opleider');
+    else ga('/beheer');
+  },
+  sso() {
+    meld(`In de echte versie log je hier in met je account van ${orgNaam()}. Kies in de demo hieronder als wie je binnenkomt.`);
+  },
+  uitloggen() {
+    zet({ rol: null });
+    casus = null;
+    concept = null;
+    ga('/');
+  },
+  opnieuw() {
+    opnieuw();
+    casus = null;
+    concept = null;
+    ga('/');
+    meld('De demo begint opnieuw. De huisstijl is bewaard.');
+  },
+  'start-rondleiding'() {
+    zet({ welkomGezien: true });
+    if (route() !== '/overzicht') {
+      window.location.hash = '/overzicht';
+      setTimeout(startTour, 80);
+    } else startTour();
+  },
+  'sla-welkom-over'() {
+    zet({ welkomGezien: true });
+    ga('/overzicht');
+  },
+  'volgende-tip'() {
+    const huidig = nu().tip ?? new Date().getDate();
+    zet({ tip: (huidig + 1) % TIPS.length });
+    render({ houdScroll: true });
+  },
+  'markeer-klaar'(knop) {
+    markeer(knop.dataset.id, 'klaar');
+    meld('Klaar. Je opleider ziet het vinkje ook.');
+    ga('/overzicht');
+  },
+  'casus-start'() {
+    markeer('rapporteren', 'bezig');
+    casus.stap = 0;
+    casus.keuze = null;
+    render();
+  },
+  kies(knop) {
+    casus.keuze = Number(knop.dataset.i);
+    render({ houdScroll: true });
+    document.querySelector('.variant')?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  },
+  'casus-opnieuw-keuze'() {
+    casus.keuze = null;
+    render({ houdScroll: true });
+  },
+  'casus-verder'() {
+    const volgende = casus.stap + 1;
+    casus.keuze = null;
+    casus.gecontroleerd = false;
+    casus.stap = volgende < RAPPORTEREN.stappen.length ? volgende : 'toets';
+    render();
+  },
+  'koppel-check'() {
+    casus.gecontroleerd = true;
+    render({ houdScroll: true });
+  },
+  'toets-opnieuw'() {
+    casus.antwoorden = {};
+    casus.stap = 'toets';
+    render();
+  },
+  filter(knop) {
+    zet({ filter: knop.dataset.filter });
+    render({ houdScroll: true });
+  },
+  'toewijzing-standaard'() {
+    zet({ toewijzing: { vig: [...TOEWIJZING.vig], helpende: [...TOEWIJZING.helpende] } });
+    render({ houdScroll: true });
+    meld('De standaard van Ons Op Maat staat er weer.');
+  },
+  'als-opleider'(knop, e) {
+    e.preventDefault();
+    zet({ rol: 'opleider' });
+    ga('/opleider/profielen');
+  },
+  voorbeeld(knop) {
+    const v = HUISSTIJL_VOORBEELDEN.find((x) => x.id === knop.dataset.id);
+    concept = { ...concept, voorbeeld: v.id, kleuren: { ...v.kleuren }, logo: v.logo || null };
+    render({ houdScroll: true });
+  },
+  'logo-weg'() {
+    concept.logo = null;
+    render({ houdScroll: true });
+  },
+  'huisstijl-toepassen'() {
+    zet({ huisstijl: JSON.parse(JSON.stringify(concept)) });
+    render({ houdScroll: true });
+    meld(`Toegepast. Log in als Sanne of als opleider om Leren bij ${orgNaam()} in deze kleuren te zien.`);
+  },
+  'huisstijl-terug'() {
+    concept = JSON.parse(JSON.stringify(nu().huisstijl));
+    render({ houdScroll: true });
+  },
+};
+
+app.addEventListener('click', (e) => {
+  const knop = e.target.closest('[data-actie]');
+  if (!knop || knop.disabled) return;
+  const actie = ACTIES[knop.dataset.actie];
+  if (actie) actie(knop, e);
+});
+
+document.addEventListener('click', (e) => {
+  const knop = e.target.closest('.voet [data-actie]');
+  if (knop && !app.contains(knop)) ACTIES[knop.dataset.actie]?.(knop, e);
+});
+
+app.addEventListener('submit', (e) => {
+  const form = e.target.closest('[data-form]');
+  if (!form) return;
+  e.preventDefault();
+  if (form.dataset.form === 'mail') {
+    meld('In de echte versie krijg je nu een mail met een inloglink, zonder wachtwoord. Kies in de demo hieronder als wie je binnenkomt.');
+  }
+  if (form.dataset.form === 'toets') {
+    casus.stap = 'uitslag';
+    const t = RAPPORTEREN.toets;
+    const goed = t.filter((v, i) => casus.antwoorden[i] === v.goed).length;
+    const score = Math.round((goed / t.length) * 100);
+    zet({ scores: { ...nu().scores, rapporteren: Math.max(score, nu().scores.rapporteren || 0) } });
+    if (goed / t.length >= NORM) {
+      markeer('rapporteren', 'klaar');
+      meld('Rapporteren is klaar. Je opleider ziet het vinkje ook.');
+    }
+    render();
+  }
+});
+
+app.addEventListener('change', (e) => {
+  const el = e.target;
+  if (el.dataset.koppel !== undefined) {
+    casus.koppel[el.dataset.koppel] = el.value;
+    casus.gecontroleerd = false;
+    render({ houdScroll: true });
+    document.getElementById(el.id)?.focus();
+  }
+  if (el.name && /^v\d+$/.test(el.name)) {
+    casus.antwoorden[Number(el.name.slice(1))] = Number(el.value);
+    const knop = app.querySelector('[data-form="toets"] [type="submit"]');
+    if (knop) knop.disabled = !RAPPORTEREN.toets.every((_, i) => casus.antwoorden[i] !== undefined);
+  }
+  if (el.dataset.toewijs) {
+    const p = el.dataset.toewijs;
+    const huidig = new Set(nu().toewijzing[p]);
+    if (el.checked) huidig.add(el.value);
+    else huidig.delete(el.value);
+    const volgorde = MODULES.map((m) => m.id).filter((id) => huidig.has(id));
+    zet({ toewijzing: { ...nu().toewijzing, [p]: volgorde } });
+    render({ houdScroll: true });
+    document.querySelector(`[data-toewijs="${p}"][value="${el.value}"]`)?.focus();
+  }
+  if (el.dataset.auto) {
+    const k = el.dataset.auto;
+    const kleuren = { ...concept.kleuren };
+    if (el.checked) delete kleuren[k];
+    else kleuren[k] = bereken(concept.kleuren).kleuren[k];
+    concept = { ...concept, kleuren, voorbeeld: null };
+    render({ houdScroll: true });
+  }
+  if (el.dataset.logo !== undefined) {
+    const bestand = el.files?.[0];
+    if (!bestand) return;
+    if (bestand.size > 300 * 1024) return meld('Dit logo is groter dan 300 kB. Kies een kleiner bestand.');
+    if (!/^image\/(png|svg\+xml|jpeg|webp)$/.test(bestand.type)) return meld('Kies een SVG, PNG, JPG of WebP.');
+    const lezer = new FileReader();
+    lezer.onload = () => {
+      concept = { ...concept, logo: String(lezer.result) };
+      render({ houdScroll: true });
+    };
+    lezer.readAsDataURL(bestand);
+  }
+});
+
+let invoerTimer;
+app.addEventListener('input', (e) => {
+  const el = e.target;
+  if (el.dataset.kleur || el.dataset.hex) {
+    const k = el.dataset.kleur || el.dataset.hex;
+    const waarde = el.value.startsWith('#') ? el.value : '#' + el.value;
+    if (!isHex(waarde)) return;
+    concept = { ...concept, kleuren: { ...concept.kleuren, [k]: waarde.toUpperCase() }, voorbeeld: null };
+    clearTimeout(invoerTimer);
+    const id = el.id;
+    invoerTimer = setTimeout(() => {
+      render({ houdScroll: true });
+      if (id) document.getElementById(id)?.focus();
+    }, el.dataset.kleur ? 60 : 250);
+  }
+  if (el.dataset.naam !== undefined) {
+    concept = { ...concept, naam: el.value };
+    clearTimeout(invoerTimer);
+    invoerTimer = setTimeout(() => {
+      const pos = el.selectionStart;
+      render({ houdScroll: true });
+      const nieuw = document.getElementById('orgnaam');
+      if (nieuw) {
+        nieuw.focus();
+        nieuw.setSelectionRange(pos, pos);
+      }
+    }, 300);
+  }
+});
+
+window.addEventListener('hashchange', () => {
+  stopRondleiding();
+  if (!route().startsWith('/module/rapporteren')) casus = null;
+  if (route() !== '/beheer/huisstijl') concept = null;
+  render();
+});
+
+laad();
+render();
