@@ -17,6 +17,6 @@ Nederlands, B1, korte actieve zinnen, "je" en "jouw". Geen em-dashes en geen pun
 
 ## Werkwijze
 
-- Alles gaat naar `main`. Commit en push zodra iets af is.
+- Alles gaat naar `main`. Commit en push zodra iets af is, naar beide repo's: `onsopmaat/leeromgeving` en de kopie `nickwildeboer/leeromgeving-demo`. Die kopie bestaat omdat Vercel op het gratis account geen repo van een organisatie kan importeren. Houd ze gelijk.
 - Raakt een wijziging hier het product of een besluit, werk dan de kennisbank in dezelfde beurt bij en zet een regel in `00-canon/log.md`.
 - Draai `npm test` voor je pusht. Kijk na een wijziging in de vormgeving op 390 px breed of de pagina niet horizontaal scrolt.

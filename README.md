@@ -30,7 +30,7 @@ Test de kleurberekening (contrast, afgeleide kleuren) en de demodata.
 
 ## Hosting
 
-Bedoeld voor Vercel, net als de website. `vercel.json` zet `noindex` op alles. Publiceren gebeurt alleen met de ja van Nick of Erwin.
+Bedoeld voor Vercel, net als de website. Vercel importeert de kopie `nickwildeboer/leeromgeving-demo`, omdat het gratis account geen repo van een organisatie aankan. Push daarom naar beide repo's. `vercel.json` zet `noindex` op alles. Publiceren gebeurt alleen met de ja van Nick of Erwin.
 
 ## Opbouw
 
