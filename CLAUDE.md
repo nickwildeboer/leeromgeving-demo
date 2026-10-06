@@ -8,7 +8,7 @@ Dit is de klikbare demo van de leeromgeving van Ons Op Maat. De kennis staat in 
 - **Geen materiaal van een opdrachtgever van Nick** zonder schriftelijke toestemming.
 - **Publiceren en deployen** gebeurt alleen met de ja van Nick of Erwin.
 - **Geen prijzen** uit `00-canon/prijzen.md` in de demo.
-- **Geen kleuren of logo van Nedap.** Schrijf "Nedap ONS" voluit.
+- **Nedap-uiterlijk alleen in de oefenschermen.** Die bouwen we één op één na zoals Nedap ONS eruitziet, met logo en kleuren (besluit Nick, 6 oktober 2026). De rest van de leeromgeving blijft in de stijl van Ons Op Maat of de klant. Schrijf "Nedap ONS" voluit.
 - Geen harde garanties over effect of besparing in de teksten.
 
 ## Schrijfregels
