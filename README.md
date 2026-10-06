@@ -4,7 +4,7 @@ Klikbare demo van de leeromgeving van Ons Op Maat. Bedoeld voor gesprekken met z
 
 ## Wat je kunt laten zien
 
-- **Medewerker** (Sanne Visser, verzorgende IG): inloggen, welkom, een rondleiding door het scherm, het overzicht met 15 modules in 5 delen, en de uitgewerkte casus **Rapporteren** met varianten en een toets.
+- **Medewerker** (Sanne Visser, verzorgende IG): inloggen, welkom, een rondleiding door het scherm, het overzicht met 15 modules in 5 delen, en alle 14 modules als casus met varianten. Modules met een toets eindigen met 5 vragen, de andere met een korte samenvatting.
 - **Opleider van de klant**: dashboard met nieuwe medewerkers en vinkjes per deel, en per profiel modules aan- en uitzetten. Wat Sanne in de demo doet, zie je hier meteen terug.
 - **Beheercentrum** (alleen Ons Op Maat): modulebibliotheek, klanten, en de huisstijl per klant met acht kleuren, een logo en een leesbaarheidscheck.
 
@@ -40,7 +40,8 @@ Bedoeld voor Vercel, net als de website. `vercel.json` zet `noindex` op alles. P
 | `styles.css` | alle vormgeving, kleuren via CSS-variabelen |
 | `js/app.js` | router, schermen en acties |
 | `js/data.js` | profielen, modules, toewijzing en verzonnen medewerkers |
-| `js/casus.js` | de casus Rapporteren |
+| `js/casussen/` | één casus per module, formaat in `FORMAAT.md` |
+| `docs/zorginhoud-check.md` | punten die Erwin nog nakijkt |
 | `js/theme.js` | huisstijl: kleuren aanvullen en contrast bewaken |
 | `js/tour.js` | de rondleiding |
 | `js/state.js` | de stand in de browser |

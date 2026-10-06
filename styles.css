@@ -18,7 +18,7 @@
 *,*::before,*::after{box-sizing:border-box}
 html{scroll-padding-top:100px;-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--grond);color:var(--tekst);font:400 1.125rem/1.6 var(--body);-webkit-font-smoothing:antialiased}
-h1,h2,h3{font-family:var(--kop);font-weight:650;letter-spacing:-.02em;line-height:1.12;margin:0 0 .5em}
+h1,h2,h3{font-family:var(--kop);font-weight:650;letter-spacing:-.02em;line-height:1.12;margin:0 0 .5em;overflow-wrap:break-word;hyphens:auto}
 h1{font-size:clamp(2rem,4.2vw,3.2rem)}
 h2{font-size:clamp(1.35rem,2.2vw,1.7rem)}
 h3{font-size:1.2rem}
