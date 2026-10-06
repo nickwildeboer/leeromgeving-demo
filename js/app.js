@@ -411,7 +411,7 @@ function viewCasus(m) {
 
   return schil(`
     <section class="paneel">
-      <div class="paneel__in module-kop">
+      <div class="paneel__in module-kop${casus.stap === 'intro' ? '' : ' module-kop--compact'}">
         <a class="terug" href="#/overzicht">${ICOON.terug} Mijn overzicht</a>
         <p class="bovenregel">${esc(deelVan(m))} · Casus</p>
         <h1>${esc(m.titel)}</h1>
@@ -571,9 +571,12 @@ function viewVolgorde(stap) {
     </article>`;
 }
 
+const nogOpen = (n) => (n ? `Nog ${n} ${n === 1 ? 'vraag' : 'vragen'} open` : 'Alles ingevuld');
+
 function viewToets(c) {
   const t = c.toets;
-  const alles = t.every((_, i) => casus.antwoorden[i] !== undefined);
+  const open = t.filter((_, i) => casus.antwoorden[i] === undefined).length;
+  const alles = open === 0;
   const nodig = Math.ceil(t.length * NORM);
   return `
     <article class="werkpaneel">
@@ -590,7 +593,10 @@ function viewToets(c) {
                 <span>${esc(o)}</span>
               </label>`).join('')}
           </fieldset>`).join('')}
-        <button type="submit" class="btn btn--actie" ${alles ? '' : 'disabled'}>Lever in</button>
+        <div class="toets__onder">
+          <button type="submit" class="btn btn--actie" aria-describedby="toets-open" ${alles ? '' : 'disabled'}>Lever in</button>
+          <p class="toets__open" id="toets-open" aria-live="polite">${nogOpen(open)}</p>
+        </div>
       </form>
     </article>`;
 }
@@ -705,20 +711,20 @@ function viewOpleider() {
           </div>
         </div>
         <div class="tabelwrap">
-          <table class="tabel">
+          <table class="tabel tabel--kaarten">
             <thead><tr><th scope="col">Naam</th><th scope="col">Profiel</th><th scope="col">Afdeling</th><th scope="col">Gestart</th><th scope="col">Voortgang</th><th scope="col">Per deel</th><th scope="col">Badges</th><th scope="col">Toets</th><th scope="col">Status</th></tr></thead>
             <tbody>
               ${rijen.map((r) => `
                 <tr${r.live ? ' class="is-live"' : ''}>
                   <th scope="row">${esc(r.naam)}${r.live ? ' <span class="live">jij</span>' : ''}</th>
-                  <td>${esc(PROFIELEN[r.profiel].naam)}</td>
-                  <td>${esc(r.afdeling)}</td>
-                  <td>${new Date(r.start).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })}</td>
-                  <td><div class="minibalk" role="img" aria-label="${r.klaar} van ${r.totaal} klaar"><span style="width:${Math.round(r.pct * 100)}%"></span></div><span class="klein">${r.klaar} van ${r.totaal}</span></td>
-                  <td><span class="deelvinken">${vinkjesPerDeel(r)}</span></td>
-                  <td>${badgeTeller(aantalBadges(r, nu().toewijzing[r.profiel] || [], nu().voortgang), delenMetModules(nu().toewijzing[r.profiel] || []).length)}</td>
-                  <td>${r.toets === null ? '<span class="klein">nog niet</span>' : r.toets + '%'}</td>
-                  <td><span class="status status--${r.status}">${statusTekst[r.status]}</span></td>
+                  <td data-label="Profiel" class="tabel__breed">${esc(PROFIELEN[r.profiel].naam)}</td>
+                  <td data-label="Afdeling">${esc(r.afdeling)}</td>
+                  <td data-label="Gestart">${new Date(r.start).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })}</td>
+                  <td data-label="Voortgang" class="tabel__breed"><div class="minibalk" role="img" aria-label="${r.klaar} van ${r.totaal} klaar"><span style="width:${Math.round(r.pct * 100)}%"></span></div><span class="klein">${r.klaar} van ${r.totaal}</span></td>
+                  <td data-label="Per deel"><span class="deelvinken">${vinkjesPerDeel(r)}</span></td>
+                  <td data-label="Badges">${badgeTeller(aantalBadges(r, nu().toewijzing[r.profiel] || [], nu().voortgang), delenMetModules(nu().toewijzing[r.profiel] || []).length)}</td>
+                  <td data-label="Toets">${r.toets === null ? '<span class="klein">nog niet</span>' : r.toets + '%'}</td>
+                  <td data-label="Status"><span class="status status--${r.status}">${statusTekst[r.status]}</span></td>
                 </tr>`).join('')}
             </tbody>
           </table>
@@ -995,6 +1001,20 @@ function render(opties = {}) {
   toonWachtendMoment();
 }
 
+// Een nieuwe stap in de casus: schuif naar de vraag en zet de focus erop, ook op een telefoon.
+function naarStap() {
+  const kop = app.querySelector('.casus .werkpaneel h2');
+  if (!kop) return;
+  kop.setAttribute('tabindex', '-1');
+  kop.focus({ preventScroll: true });
+  window.scrollTo(0, 0);
+  // Past de vraag niet ruim in beeld (telefoon), dan schuift hij naar boven.
+  if (kop.getBoundingClientRect().bottom > window.innerHeight * 0.55) {
+    const rustig = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    kop.scrollIntoView({ block: 'start', behavior: rustig ? 'auto' : 'smooth' });
+  }
+}
+
 function ga(pad) {
   if (route() === pad) render();
   else window.location.hash = pad;
@@ -1064,16 +1084,21 @@ const ACTIES = {
     markeer(casus.id, 'bezig');
     casus.stap = 0;
     casus.keuze = null;
-    render();
+    render({ houdScroll: true });
+    naarStap();
   },
   kies(knop) {
     casus.keuze = Number(knop.dataset.i);
     render({ houdScroll: true });
-    document.querySelector('.variant')?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    const variant = document.querySelector('.variant');
+    variant?.setAttribute('tabindex', '-1');
+    variant?.focus({ preventScroll: true });
+    variant?.scrollIntoView({ block: 'nearest', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
   },
   'casus-opnieuw-keuze'() {
     casus.keuze = null;
     render({ houdScroll: true });
+    app.querySelector('.keuze')?.focus();
   },
   'casus-verder'() {
     const volgende = casus.stap + 1;
@@ -1082,7 +1107,8 @@ const ACTIES = {
     casus.volgorde = null;
     const c = CASUSSEN[casus.id];
     casus.stap = volgende < c.stappen.length ? volgende : c.toets?.length ? 'toets' : 'afronden';
-    render();
+    render({ houdScroll: true });
+    naarStap();
   },
   'volgorde-op'(knop) {
     schuif(Number(knop.dataset.i), -1);
@@ -1103,7 +1129,8 @@ const ACTIES = {
   'toets-opnieuw'() {
     casus.antwoorden = {};
     casus.stap = 'toets';
-    render();
+    render({ houdScroll: true });
+    naarStap();
   },
   filter(knop) {
     zet({ filter: knop.dataset.filter });
@@ -1183,7 +1210,10 @@ app.addEventListener('change', (e) => {
   if (el.name && /^v\d+$/.test(el.name)) {
     casus.antwoorden[Number(el.name.slice(1))] = Number(el.value);
     const knop = app.querySelector('[data-form="toets"] [type="submit"]');
-    if (knop) knop.disabled = !CASUSSEN[casus.id].toets.every((_, i) => casus.antwoorden[i] !== undefined);
+    const open = CASUSSEN[casus.id].toets.filter((_, i) => casus.antwoorden[i] === undefined).length;
+    if (knop) knop.disabled = open > 0;
+    const teller = app.querySelector('#toets-open');
+    if (teller) teller.textContent = nogOpen(open);
   }
   if (el.dataset.toewijs) {
     const p = el.dataset.toewijs;

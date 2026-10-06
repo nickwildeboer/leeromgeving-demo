@@ -14,11 +14,14 @@
   --schaduw:0 24px 48px -24px rgba(10,43,35,.28);
   --schaduw-hoog:0 32px 64px -28px rgba(10,43,35,.38);
   --ease:cubic-bezier(.22,1,.36,1);
+  /* focusring: donker op lichte vlakken, actiekleur op het paneel. Zo haalt hij overal 3:1. */
+  --focus:var(--merk-tekst);
 }
+.balk,.paneel__in,.inlog__paneel,.cert-kaart,.preview__paneel,.certificaat__kop,.melding{--focus:var(--actie)}
 *,*::before,*::after{box-sizing:border-box}
 html{scroll-padding-top:100px;-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--grond);color:var(--tekst);font:400 1.125rem/1.6 var(--body);-webkit-font-smoothing:antialiased}
-h1,h2,h3{font-family:var(--kop);font-weight:650;letter-spacing:-.02em;line-height:1.12;margin:0 0 .5em;overflow-wrap:break-word;hyphens:auto}
+h1,h2,h3{font-family:var(--kop);font-weight:650;letter-spacing:-.02em;line-height:1.12;margin:0 0 .5em;overflow-wrap:break-word;hyphens:auto;text-wrap:balance}
 h1{font-size:clamp(2rem,4.2vw,3.2rem)}
 h2{font-size:clamp(1.35rem,2.2vw,1.7rem)}
 h3{font-size:1.2rem}
@@ -27,12 +30,13 @@ a{color:var(--merk-tekst)}
 img{max-width:100%;display:block}
 svg{flex:none}
 button,input,select{font:inherit;color:inherit}
-:focus-visible{outline:3px solid var(--actie);outline-offset:3px;border-radius:6px}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:6px}
+a,button,label,summary,[role="button"]{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 main:focus{outline:none}
 .sr{position:absolute!important;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;padding:0}
 .naar-inhoud{position:absolute;left:12px;top:-60px;z-index:100;padding:10px 16px;border-radius:999px;background:var(--actie);color:var(--op-actie);font-weight:600}
 .naar-inhoud:focus{top:12px}
-#app{min-height:100vh;display:flex;flex-direction:column}
+#app{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
 .wrap{width:min(100%,calc(var(--max) + 56px));margin:0 auto;padding:0 28px}
 .wrap.smal{max-width:860px}
 .klein{display:block;font-size:.875rem;color:var(--tekst-zacht);font-weight:400;line-height:1.45}
@@ -44,8 +48,8 @@ main:focus{outline:none}
 /* ---------- knoppen ---------- */
 .btn{display:inline-flex;min-height:50px;padding:.75em 1.45em;border:1.5px solid transparent;border-radius:999px;align-items:center;justify-content:center;gap:.55em;cursor:pointer;font:600 1rem/1.25 var(--body);text-align:center;text-decoration:none;background:none;transition:transform .18s var(--ease),background-color .18s var(--ease),border-color .18s var(--ease),box-shadow .18s var(--ease)}
 .btn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.btn:hover{transform:translateY(-2px)}
-.btn:active{transform:none}
+@media (hover:hover){.btn:hover{transform:translateY(-2px)}}
+.btn:active{transform:scale(.98);transition-duration:.08s}
 .btn[disabled]{opacity:.45;cursor:not-allowed;transform:none}
 .btn--actie{background:var(--actie);color:var(--op-actie);box-shadow:0 16px 34px -20px color-mix(in srgb,var(--actie) 90%,transparent)}
 .btn--actie:hover{filter:brightness(1.06)}
@@ -53,12 +57,12 @@ main:focus{outline:none}
 .btn--rand{border-color:var(--lijn);background:var(--wit);color:var(--tekst)}
 .btn--rand:hover{border-color:var(--merk)}
 .btn--stil{min-height:44px;padding:.5em .9em;color:var(--tekst);text-decoration:underline;text-underline-offset:3px}
-.btn--stil:hover{transform:none}
+.btn--stil:hover,.btn--stil:active{transform:none}
 .btn--op-paneel{color:var(--op-paneel)}
 .btn--groot{min-height:58px;padding:.9em 1.7em;font-size:1.06rem}
-.btn--klein{min-height:42px;padding:.5em 1.1em;font-size:.95rem}
+.btn--klein{min-height:44px;padding:.5em 1.1em;font-size:.95rem}
 .btn--breed{width:100%}
-.linkknop{padding:0;border:0;background:none;color:inherit;font-weight:600;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.linkknop{display:inline-flex;align-items:center;min-height:44px;padding:0;border:0;background:none;color:inherit;font-weight:600;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 .knoppen{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:1.4em}
 .klaar-label{display:inline-flex;align-items:center;gap:.4em;color:var(--merk-tekst);font-weight:600}
 .klaar-label svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.4}
@@ -69,9 +73,9 @@ main:focus{outline:none}
 .balk__merk{display:flex;align-items:center;gap:14px;color:inherit;text-decoration:none;min-width:0}
 .balk__sub{font-size:.9rem;opacity:.82;white-space:nowrap;padding-left:14px;border-left:1px solid color-mix(in srgb,currentColor 30%,transparent)}
 .balk__nav{display:flex;gap:6px;margin-left:auto}
-.balk__nav a{padding:.5em .9em;border-radius:999px;color:inherit;text-decoration:none;font-weight:600;font-size:.98rem;opacity:.86}
+.balk__nav a{display:inline-flex;align-items:center;min-height:44px;padding:.5em .9em;border-radius:999px;color:inherit;text-decoration:none;font-weight:600;font-size:.98rem;opacity:.86}
 .balk__nav a:hover{opacity:1;background:color-mix(in srgb,currentColor 10%,transparent)}
-.balk__nav a[aria-current="page"]{opacity:1;background:color-mix(in srgb,currentColor 14%,transparent)}
+.balk__nav a[aria-current="page"]{opacity:1;background:color-mix(in srgb,currentColor 14%,transparent);box-shadow:inset 0 -3px 0 var(--actie)}
 .balk__wie{display:flex;align-items:center;gap:10px}
 .balk__naam{font-size:.95rem;font-weight:600;white-space:nowrap}
 .avatar{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:var(--actie);color:var(--op-actie);font-weight:700}
@@ -97,7 +101,7 @@ main:focus{outline:none}
 .werkpaneel--vol{margin-top:28px}
 
 /* ---------- inloggen ---------- */
-.inlog{display:grid;grid-template-columns:1.05fr 1fr;min-height:100vh;gap:20px;padding:20px}
+.inlog{display:grid;grid-template-columns:1.05fr 1fr;min-height:100vh;min-height:100dvh;gap:20px;padding:20px}
 .inlog__paneel{position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;gap:40px;padding:clamp(32px,5vw,64px);border-radius:var(--r-groot);background:linear-gradient(150deg,var(--paneel),var(--paneel-diep));color:var(--op-paneel)}
 .inlog__paneel::after{content:"";position:absolute;right:-20%;bottom:-24%;width:80%;aspect-ratio:1;border-radius:50%;border:70px solid currentColor;opacity:.05}
 .inlog__paneel h1{font-size:clamp(2.4rem,5vw,4rem);margin-bottom:.35em}
@@ -115,7 +119,9 @@ input[type="email"]:focus,input[type="text"]:focus,select:focus{border-color:var
 .demo-keuze h3{font-family:var(--body);font-size:.95rem;font-weight:600;color:var(--tekst-zacht);margin-bottom:12px}
 .rollen{display:grid;gap:10px}
 .rol{display:grid;grid-template-columns:1fr auto;gap:2px 14px;width:100%;padding:14px 18px;border:1.5px solid var(--lijn);border-radius:var(--r);background:var(--grond);text-align:left;cursor:pointer;transition:border-color .18s var(--ease),transform .18s var(--ease),background-color .18s var(--ease)}
-.rol:hover{border-color:var(--merk);background:var(--zacht);transform:translateY(-2px)}
+.rol:hover{border-color:var(--merk);background:var(--zacht)}
+@media (hover:hover){.rol:hover{transform:translateY(-2px)}}
+.rol:active{transform:scale(.99)}
 .rol__naam{font-weight:700}
 .rol__wat{grid-column:1;font-size:.92rem;color:var(--tekst-zacht)}
 .rol__pijl{grid-row:1/3;grid-column:2;align-self:center;color:var(--merk-tekst)}
@@ -157,7 +163,9 @@ input[type="email"]:focus,input[type="text"]:focus,select:focus{border-color:var
 .deel__teller svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.6}
 .modules{list-style:none;margin:0;padding:0;display:grid;gap:10px}
 .module{display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:16px;padding:14px 18px;border-radius:var(--r);background:var(--wit);border:1.5px solid var(--lijn);color:var(--tekst);text-decoration:none;transition:border-color .18s var(--ease),transform .18s var(--ease),box-shadow .18s var(--ease)}
-.module:hover{border-color:var(--merk);transform:translateY(-2px);box-shadow:var(--schaduw)}
+.module:hover{border-color:var(--merk)}
+@media (hover:hover){.module:hover{transform:translateY(-2px);box-shadow:var(--schaduw)}}
+.module:active{transform:scale(.99)}
 .module__nr{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--grond);font-weight:700;font-size:1rem}
 .module__nr svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
 .module.is-klaar .module__nr{background:var(--merk);color:var(--op-merk)}
@@ -176,6 +184,14 @@ input[type="email"]:focus,input[type="text"]:focus,select:focus{border-color:var
 /* ---------- module en casus ---------- */
 .module-kop h1{max-width:20em}
 .module-kop__meta{margin:0;opacity:.85;font-size:.98rem}
+/* Zodra de casus loopt, krimpt de kop. De vraag staat dan meteen in beeld. */
+.module-kop--compact{padding-block:clamp(20px,3vw,32px)}
+.module-kop--compact .terug{margin-bottom:10px}
+.module-kop--compact h1{font-size:clamp(1.5rem,2.6vw,2rem);margin-bottom:.2em}
+.module-kop--compact .lead{display:none}
+.module-kop--compact .stapper{margin-top:14px}
+.werkpaneel>h2:first-child,.werkpaneel>.bovenregel+h2{scroll-margin-top:110px}
+.werkpaneel h2:focus{outline:none}
 .terug{display:inline-flex;align-items:center;gap:8px;margin-bottom:24px;color:inherit;font-weight:600;text-decoration:none;opacity:.9}
 .terug:hover{opacity:1;text-decoration:underline}
 .terug svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
@@ -191,9 +207,10 @@ input[type="email"]:focus,input[type="text"]:focus,select:focus{border-color:var
 .situatie__tijd{display:inline-block;padding:.3em .85em;border-radius:999px;background:var(--zacht);font-weight:600;font-size:.92rem}
 .keuzes{display:grid;gap:12px;margin:18px 0}
 .keuze{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start;width:100%;padding:16px 18px;border:1.5px solid var(--lijn);border-radius:var(--r);background:var(--grond);text-align:left;cursor:pointer;line-height:1.5;transition:border-color .18s var(--ease),background-color .18s var(--ease)}
-.keuze:hover:not([disabled]){border-color:var(--merk);background:var(--zacht)}
+@media (hover:hover){.keuze:hover:not([disabled]){border-color:var(--merk);background:var(--zacht)}}
+.keuze:active:not([disabled]){transform:scale(.99)}
 .keuze[disabled]{cursor:default}
-.keuze[disabled]:not(.is-goed):not(.is-fout){opacity:.55}
+.keuze[disabled]:not(.is-goed):not(.is-fout){background:transparent;color:var(--tekst-zacht);border-style:dashed}
 .keuze__letter{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--wit);border:1.5px solid var(--lijn);font-weight:700}
 .keuze.is-goed{border-color:var(--merk);background:var(--zacht)}
 .keuze.is-goed .keuze__letter{background:var(--merk);color:var(--op-merk);border-color:var(--merk)}
@@ -253,6 +270,10 @@ input[type="email"]:focus,input[type="text"]:focus,select:focus{border-color:var
 .vraag__nr{display:inline-grid;place-items:center;flex:none;width:28px;height:28px;border-radius:50%;background:var(--merk);color:var(--op-merk);font-size:.85rem}
 .optie{display:flex;gap:12px;align-items:flex-start;padding:10px 12px;border-radius:10px;cursor:pointer;line-height:1.45}
 .optie:hover{background:var(--wit)}
+.optie:has(input:checked){background:var(--zacht);font-weight:600}
+.vraag:has(input:checked){border-color:color-mix(in srgb,var(--merk) 45%,var(--lijn))}
+.toets__onder{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px}
+.toets__open{margin:0;font-size:.95rem;color:var(--tekst-zacht)}
 .optie input{width:20px;height:20px;margin:3px 0 0;accent-color:var(--merk);flex:none}
 .toets .btn{justify-self:start}
 .uitslag{text-align:center}
@@ -285,18 +306,20 @@ input[type="email"]:focus,input[type="text"]:focus,select:focus{border-color:var
 /* ---------- opleider ---------- */
 .tegels{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:30px}
 .tegel{padding:20px;border-radius:var(--r);background:color-mix(in srgb,var(--op-paneel) 8%,transparent)}
-.tegel__getal{margin:0;font:650 clamp(2rem,4vw,2.8rem)/1 var(--kop);color:var(--actie)}
+.tegel__getal{margin:0;font:650 clamp(2rem,4vw,2.8rem)/1 var(--kop);color:var(--actie);font-variant-numeric:tabular-nums}
 .tegel__tekst{margin:.4em 0 0;font-size:.95rem;opacity:.9}
 .tabelkop{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:14px;margin-bottom:18px}
 .tabelkop h2{margin:0}
 .filter{display:flex;flex-wrap:wrap;gap:8px}
-.chip{padding:.45em 1em;border:1.5px solid var(--lijn);border-radius:999px;background:var(--wit);cursor:pointer;font-weight:600;font-size:.92rem}
+.chip{display:inline-flex;align-items:center;min-height:44px;padding:.45em 1em;border:1.5px solid var(--lijn);border-radius:999px;background:var(--wit);cursor:pointer;font-weight:600;font-size:.92rem}
 .chip[aria-pressed="true"]{background:var(--merk);border-color:var(--merk);color:var(--op-merk)}
 .tabelwrap{position:relative;overflow-x:auto;margin:0 -8px;padding:0 8px}
 .tabel{width:100%;border-collapse:collapse;font-size:.98rem}
 .tabel th,.tabel td{padding:12px 12px;text-align:left;border-bottom:1px solid var(--lijn);vertical-align:middle}
 .tabel thead th{font-size:.85rem;font-weight:600;color:var(--tekst-zacht);white-space:nowrap}
-.tabel tbody th{font-weight:600}
+.tabel tbody th{font-weight:600;white-space:nowrap}
+.tabel td{font-variant-numeric:tabular-nums}
+.tabel td:nth-child(3),.tabel td:nth-child(4){white-space:nowrap}
 .tabel tr.is-live{background:color-mix(in srgb,var(--actie) 14%,var(--wit))}
 .live{display:inline-block;margin-left:6px;padding:.1em .6em;border-radius:999px;background:var(--actie);color:var(--op-actie);font-size:.78rem;font-weight:700;white-space:nowrap}
 .minibalk{width:120px;height:8px;border-radius:999px;background:var(--grond);overflow:hidden;margin-bottom:4px}
@@ -318,7 +341,7 @@ input[type="email"]:focus,input[type="text"]:focus,select:focus{border-color:var
 .vinkvak input{position:absolute;opacity:0;width:32px;height:32px;margin:0;cursor:pointer}
 .vinkvak__box{display:grid;place-items:center;width:32px;height:32px;border-radius:9px;border:2px solid var(--lijn);background:var(--wit);color:transparent;transition:background-color .15s,border-color .15s}
 .vinkvak input:checked+.sr+.vinkvak__box{background:var(--merk);border-color:var(--merk);color:var(--op-merk)}
-.vinkvak input:focus-visible+.sr+.vinkvak__box{outline:3px solid var(--actie);outline-offset:2px}
+.vinkvak input:focus-visible+.sr+.vinkvak__box{outline:3px solid var(--focus);outline-offset:2px}
 .vinkvak__box svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
 .tabel td .vinkvak__box svg{stroke:currentColor}
 
@@ -393,7 +416,7 @@ input[type="email"]:focus,input[type="text"]:focus,select:focus{border-color:var
 
 /* ---------- voet ---------- */
 .voet{margin-top:auto;padding:28px 0 40px;color:var(--tekst-zacht);font-size:.92rem}
-.voet__in{width:min(100%,calc(var(--max) + 56px));margin:0 auto;padding:22px 28px 0;border-top:1px solid var(--lijn);display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px 28px}
+.voet__in{width:min(100%,calc(var(--max) + 56px));margin:0 auto;padding:22px 28px 0;border-top:1px solid var(--lijn);display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px 28px}
 .voet p{margin:0}
 .voet__gemaakt{display:flex;align-items:baseline;gap:.5em}
 .voet .oom{color:var(--tekst);font-size:1rem}
@@ -403,7 +426,7 @@ input[type="email"]:focus,input[type="text"]:focus,select:focus{border-color:var
 body[data-rol="gast"] .voet{display:none}
 
 /* ---------- melding en rondleiding ---------- */
-.melding{position:fixed;left:50%;bottom:24px;z-index:90;max-width:min(560px,calc(100% - 32px));padding:14px 20px;border-radius:16px;background:var(--tekst);color:var(--grond);font-size:.98rem;box-shadow:var(--schaduw-hoog);transform:translate(-50%,24px);opacity:0;pointer-events:none;transition:opacity .25s var(--ease),transform .25s var(--ease)}
+.melding{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));z-index:90;max-width:min(560px,calc(100% - 32px));padding:14px 20px;border-radius:16px;background:var(--tekst);color:var(--grond);font-size:.98rem;box-shadow:var(--schaduw-hoog);transform:translate(-50%,24px);opacity:0;pointer-events:none;transition:opacity .25s var(--ease),transform .25s var(--ease)}
 .melding.is-zichtbaar{opacity:1;transform:translate(-50%,0)}
 .tour{position:fixed;inset:0;z-index:80}
 .tour__licht{position:fixed;border-radius:22px;box-shadow:0 0 0 3px var(--actie),0 0 0 9999px rgba(8,22,18,.62);transition:all .32s var(--ease);pointer-events:none}
@@ -571,6 +594,27 @@ body[data-rol="gast"] .voet{display:none}
   .moment{animation:moment-fade .25s ease both!important}
   .moment__kaart{animation:moment-fade .25s ease both!important}
   .moment__badge::before,.moment__badge .badge{animation:none!important}
+}
+
+/* ---------- telefoon: badges op één rij, medewerkers als kaarten ---------- */
+@media (max-width:600px){
+  .badges__lijst{grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+  .badges__item{padding:10px 1px 8px;border-radius:14px}
+  .badges__item .badge{width:44px;height:44px;margin-bottom:6px}
+  .badges__naam{font-size:.72rem;line-height:1.2;hyphens:auto}
+  .badges__deel{display:none}
+}
+@media (max-width:700px){
+  .tabelwrap:has(.tabel--kaarten){overflow:visible;margin:0;padding:0}
+  .tabel--kaarten thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+  .tabel--kaarten,.tabel--kaarten tbody{display:block}
+  .tabel--kaarten tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 14px;margin-bottom:12px;padding:16px;border:1.5px solid var(--lijn);border-radius:var(--r)}
+  .tabel--kaarten th,.tabel--kaarten td{display:block;padding:0;border:0;white-space:normal}
+  .tabel--kaarten tbody th{grid-column:1/-1;font-size:1.08rem}
+  .tabel--kaarten td[data-label]::before{content:attr(data-label);display:block;font-size:.8rem;font-weight:600;color:var(--tekst-zacht)}
+  .tabel--kaarten td.tabel__breed{grid-column:1/-1}
+  .tabel--kaarten .minibalk{width:100%}
+  .tabel--kaarten .status{white-space:normal;border-radius:12px}
 }
 
 @media print{
