@@ -19,8 +19,14 @@ Afspraken voor de gedeelde stijl en componenten. Getoetst aan de checklist van d
 - Na een keuze gaat de focus naar de afloop. Na "Probeer een ander antwoord" gaat hij terug naar de eerste keuze.
 - In de toets staat naast "Lever in" hoeveel vragen nog open staan. De knop blijft uit tot alles is ingevuld.
 
-## Nog niet gedaan, wel geadviseerd
+## Kleuren en tokens
 
-- Kleurrollen opnieuw indelen (geel als knopkleur eruit). Wacht op de keuze van Nick, zie het huisstijlhandboek.
-- In het dashboard de tegel "lopen achter" klikbaar maken als filter.
-- Een vaste z-index-schaal en bewegingstokens (`--t-snel`, `--t-normaal`) in `:root`.
+- De standaard volgt de merkstrategie van 6 oktober 2026: paneel `#1B4A3C`, merk `#1E6E58`, terracotta `#B9471F` als enige knopkleur, salie `#E3EFE6`, grond `#FAF6EE`, tekst `#1B1A17`, rood `#A4261B` voor let op. Nick heeft die richting nog niet formeel gekozen. Terugdraaien kan in `js/theme.js` en `:root`.
+- `--actie-op-paneel` is de actiekleur als accent op het donkere paneel. Is de actiekleur daar te donker, dan rekent `theme.js` een lichtere tint uit die 4,5:1 haalt. Gebruik hem voor bovenregels, tellers, de voortgangsbalk en de focusring op het paneel.
+- `--actie-diep` is de hoverkleur van de hoofdknop.
+- Beweging: `--t-snel` voor feedback, `--t-normaal` voor wisselingen, `--t-rustig` voor een groot moment.
+- Lagen: `--z-balk`, `--z-rondleiding`, `--z-melding`, `--z-moment`, `--z-naar-inhoud`. Geen losse getallen meer.
+
+## Dashboard
+
+- De tegel "lopen achter" is een knop. Hij filtert de tabel op wie achterloopt en zet de focus op de tabel. Nog een keer klikken laat iedereen weer zien.

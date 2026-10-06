@@ -198,7 +198,7 @@ function viewInloggen() {
 // De welkomstvideo neemt naam en kleuren over uit de huisstijl van de klant.
 function videoAdres() {
   const { kleuren } = bereken(nu().huisstijl.kleuren);
-  const q = new URLSearchParams({ ingebed: '1', org: orgNaam(), primair: kleuren.paneel, accent: kleuren.actie, grond: kleuren.grond, tekst: kleuren.tekst });
+  const q = new URLSearchParams({ ingebed: '1', org: orgNaam(), primair: kleuren.paneel, accent: kleuren.actie, opaccent: kleuren.opActie, grond: kleuren.grond, tekst: kleuren.tekst });
   return `/video/?${q}`;
 }
 
@@ -772,7 +772,8 @@ function vinkjesPerDeel(r) {
 function viewOpleider() {
   const filter = nu().filter || 'alle';
   const alle = rijenOpleider();
-  const rijen = alle.filter((r) => filter === 'alle' || r.profiel === filter);
+  const rijen = alle.filter((r) => filter === 'alle' || (filter === 'achter' ? r.status === 'achter' : r.profiel === filter));
+  const achter = alle.filter((r) => r.status === 'achter').length;
   const scores = alle.filter((r) => r.toets !== null);
   const gem = scores.length ? Math.round(scores.reduce((s, r) => s + r.toets, 0) / scores.length) : 0;
   const tegel = (getal, tekst) => `<div class="tegel"><p class="tegel__getal">${getal}</p><p class="tegel__tekst">${tekst}</p></div>`;
@@ -786,7 +787,11 @@ function viewOpleider() {
         <div class="tegels">
           ${tegel(alle.length, 'nieuwe medewerkers')}
           ${tegel(alle.filter((r) => r.status === 'klaar').length, 'klaar met inwerken')}
-          ${tegel(alle.filter((r) => r.status === 'achter').length, 'lopen achter')}
+          <button type="button" class="tegel tegel--knop${achter ? ' is-let-op' : ''}" data-actie="filter" data-filter="achter" aria-pressed="${filter === 'achter'}">
+            <span class="tegel__getal">${achter}</span>
+            <span class="tegel__tekst">${achter === 1 ? 'loopt achter' : 'lopen achter'}</span>
+            <span class="tegel__actie">${filter === 'achter' ? 'Laat iedereen zien' : 'Laat zien wie'} ${ICOON.pijl}</span>
+          </button>
           ${tegel(gem + '%', 'gemiddelde toetsscore')}
         </div>
       </div>
@@ -796,7 +801,7 @@ function viewOpleider() {
         <div class="tabelkop">
           <h2>Medewerkers</h2>
           <div class="filter" role="group" aria-label="Filter op profiel">
-            ${[['alle', 'Alle profielen'], ['vig', 'Verzorgende IG'], ['helpende', 'Helpende en wzo']].map(([id, t]) => `<button type="button" class="chip" aria-pressed="${filter === id}" data-actie="filter" data-filter="${id}">${t}</button>`).join('')}
+            ${[['alle', 'Alle profielen'], ['vig', 'Verzorgende IG'], ['helpende', 'Helpende en wzo'], ['achter', 'Lopen achter']].map(([id, t]) => `<button type="button" class="chip" aria-pressed="${filter === id}" data-actie="filter" data-filter="${id}">${t}</button>`).join('')}
           </div>
         </div>
         <div class="tabelwrap">
@@ -818,6 +823,7 @@ function viewOpleider() {
             </tbody>
           </table>
         </div>
+        ${rijen.length ? '' : '<p class="leeg">Niemand loopt achter. Mooi zo.</p>'}
         <p class="opmerking">Loopt achter betekent: langer dan twee weken gestart en minder dan 60 procent klaar.</p>
       </div>
     </div>`, { route: '#/opleider' });
@@ -954,6 +960,7 @@ function viewHuisstijl() {
   const vars = Object.entries(cssVariabelen(kleuren)).map(([k, v]) => `${k}:${v}`).join(';');
   const paren = [
     ['Tekst op paneel', kleuren.opPaneel, kleuren.paneel],
+    ['Accent op paneel', kleuren.actieOpPaneel, kleuren.paneel],
     ['Tekst op hoofdknop', kleuren.opActie, kleuren.actie],
     ['Tekst op merkkleur', kleuren.opMerk, kleuren.merk],
     ['Tekst op grond', kleuren.tekst, kleuren.grond],
@@ -1222,8 +1229,18 @@ const ACTIES = {
     naarStap();
   },
   filter(knop) {
-    zet({ filter: knop.dataset.filter });
+    const gekozen = knop.dataset.filter;
+    const vanTegel = knop.classList.contains('tegel--knop');
+    zet({ filter: vanTegel && nu().filter === gekozen ? 'alle' : gekozen });
     render({ houdScroll: true });
+    if (vanTegel) {
+      const tabel = app.querySelector('.tabelkop h2');
+      tabel?.setAttribute('tabindex', '-1');
+      tabel?.focus({ preventScroll: true });
+      tabel?.scrollIntoView({ block: 'start', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    } else {
+      app.querySelector(`[data-actie="filter"][data-filter="${gekozen}"]:not(.tegel--knop)`)?.focus();
+    }
   },
   'toewijzing-standaard'() {
     zet({ toewijzing: { vig: [...TOEWIJZING.vig], helpende: [...TOEWIJZING.helpende] } });

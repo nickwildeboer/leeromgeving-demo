@@ -2,14 +2,15 @@
 // Een optionele kleur die leeg blijft, rekenen we uit de vier verplichte.
 
 export const STANDAARD = {
-  paneel: '#14493B',
-  merk: '#1F6B5C',
-  actie: '#F7C948',
-  zacht: '#E6EFE8',
-  grond: '#F5F2EB',
-  tekst: '#12211C',
-  vlak2: '#F0E8D6',
-  signaal: '#C8622A',
+  // Merkstrategie Ons Op Maat (6 oktober 2026): dennengroen, zorggroen, terracotta als enige knopkleur, salie, daglicht, inkt en rood.
+  paneel: '#1B4A3C',
+  merk: '#1E6E58',
+  actie: '#B9471F',
+  zacht: '#E3EFE6',
+  grond: '#FAF6EE',
+  tekst: '#1B1A17',
+  vlak2: '#F2E1D5',
+  signaal: '#A4261B',
 };
 
 export const VERPLICHT = ['paneel', 'merk', 'actie', 'zacht'];
@@ -101,6 +102,9 @@ export function bereken(invoer = {}) {
     tekstZacht: haalNorm(meng(tekst, k.grond, 0.3), k.grond),
     opPaneel: tekstOp(k.paneel, tekst),
     opActie: tekstOp(k.actie, tekst),
+    // De actiekleur als accent op het donkere paneel. Is hij daar te donker, dan een lichtere tint.
+    actieOpPaneel: haalNorm(k.actie, k.paneel),
+    actieDiep: meng(k.actie, '#000000', 0.15),
     opMerk: tekstOp(k.merk, tekst),
     merkTekst: haalNorm(k.merk, k.grond),
     signaalTekst: haalNorm(k.signaal, WIT),
@@ -140,6 +144,8 @@ export function cssVariabelen(kleuren) {
     '--signaal-tekst': kleuren.signaalTekst,
     '--op-paneel': kleuren.opPaneel,
     '--op-actie': kleuren.opActie,
+    '--actie-op-paneel': kleuren.actieOpPaneel,
+    '--actie-diep': kleuren.actieDiep,
     '--op-merk': kleuren.opMerk,
     '--lijn': kleuren.lijn,
   };
