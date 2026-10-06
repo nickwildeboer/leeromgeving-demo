@@ -1,8 +1,10 @@
-// De uitgewerkte casus voor de demo: Rapporteren bij De Wilgenhof.
+// Casus Rapporteren bij De Wilgenhof.
 // Fictieve cliënt, fictieve werkafspraken. Elke keuze heeft een eigen vervolg (variant).
 
-export const RAPPORTEREN = {
+export default {
   id: 'rapporteren',
+  stapNamen: ['Situatie', 'Rapporteren', 'Koppelen', 'Overdracht'],
+  startKnop: 'Ik ga rapporteren',
   intro: {
     tijd: 'Dinsdag 10.40 uur, vroege dienst op De Linde',
     kop: 'Mevrouw Bakker had een onrustige ochtend',
@@ -55,7 +57,9 @@ export const RAPPORTEREN = {
         { waarneming: 'Rode plek op de rechterhiel', goed: 'gezondheid' },
         { waarneming: 'Onrustig, eerst niet willen ontbijten', goed: 'welzijn' },
       ],
-      domeinen: [
+      scherm: 'Rapportage · mevrouw Bakker',
+      kiesTekst: 'Kies een domein',
+      opties: [
         { id: 'persoonsgericht', naam: 'Persoonsgerichte zorg' },
         { id: 'wonen', naam: 'Wonen' },
         { id: 'welzijn', naam: 'Welzijn' },
@@ -117,6 +121,9 @@ export const RAPPORTEREN = {
       goed: 0,
     },
   ],
+  samenvatting: [
+    'Schrijf wat je zag en wat je deed, geen oordeel.',
+    'Koppel je rapportage aan het doel in het zorgplan.',
+    'Moet de volgende dienst er vandaag iets mee, zet het dan ook in de overdracht.',
+  ],
 };
-
-export const NORM = 0.8;

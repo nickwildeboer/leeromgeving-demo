@@ -1,5 +1,5 @@
 import { ORGANISATIE, PROFIELEN, DELEN, MODULES, MEDEWERKER, COLLEGAS, TIPS, TOEWIJZING, HUISSTIJL_VOORBEELDEN } from './data.js';
-import { RAPPORTEREN, NORM } from './casus.js';
+import { CASUSSEN, NORM } from './casussen/index.js';
 import { bereken, cssVariabelen, STANDAARD, VERPLICHT, OPTIONEEL, LABELS, isHex, contrast } from './theme.js';
 import { laad, zet, nu, opnieuw } from './state.js';
 import { startRondleiding, stopRondleiding } from './tour.js';
@@ -325,14 +325,21 @@ function startTour() {
 
 let casus = null;
 
-function nieuweCasus() {
-  return { stap: 'intro', keuze: null, koppel: {}, gecontroleerd: false, antwoorden: {}, ingeleverd: false };
+function nieuweCasus(id) {
+  return { id, stap: 'intro', keuze: null, koppel: {}, volgorde: null, gecontroleerd: false, antwoorden: {} };
 }
+
+function deelVan(m) {
+  const i = DELEN.findIndex((d) => d.id === m.deel);
+  return `Deel ${i + 1} · ${DELEN[i].titel}`;
+}
+
+const TELWOORD = ['nul', 'één', 'twee', 'drie', 'vier', 'vijf', 'zes', 'zeven', 'acht', 'negen', 'tien'];
 
 function viewModule(id) {
   const m = MODULES.find((x) => x.id === id);
   if (!m) return viewNietGevonden();
-  if (m.uitgewerkt) return viewCasus(m);
+  if (CASUSSEN[m.id]) return viewCasus(m);
   const deelIndex = DELEN.findIndex((d) => d.id === m.deel);
   const klaar = isKlaar(m.id);
   const isRondleiding = m.id === 'rondleiding';
@@ -359,7 +366,7 @@ function viewModule(id) {
             <li><strong>Jij kiest.</strong> Bij elke keuze zie je wat er daarna gebeurt.${m.varianten ? ` Er zijn ${m.varianten} ${m.varianten === 1 ? 'variant' : 'varianten'}.` : ''}</li>
             ${m.toets ? '<li><strong>Een korte toets.</strong> Heb je 80 procent goed, dan is de module klaar.</li>' : '<li><strong>Kort samengevat.</strong> Wat je meeneemt naar je volgende dienst.</li>'}
           </ol>
-          <p class="opmerking">In deze demo is alleen de module Rapporteren helemaal uitgewerkt.</p>
+          <p class="opmerking">Deze module is in de demo nog niet uitgewerkt. Rapporteren wel.</p>
           <div class="knoppen">
             <a class="btn btn--actie" href="#/module/rapporteren">Probeer de casus Rapporteren ${ICOON.pijl}</a>
             ${klaar ? `<span class="klaar-label">${ICOON.vink} Klaar</span>` : `<button type="button" class="btn btn--rand" data-actie="markeer-klaar" data-id="${m.id}">Zet op klaar voor de demo</button>`}
@@ -369,44 +376,43 @@ function viewModule(id) {
     </div>`, { route: `#/module/${id}` });
 }
 
-function stapper(actief) {
-  const stappen = ['Situatie', 'Rapporteren', 'Koppelen', 'Overdracht', 'Toets'];
-  return `<ol class="stapper" aria-label="Stappen in deze casus">${stappen.map((s, i) => `<li class="${i < actief ? 'is-klaar' : i === actief ? 'is-nu' : ''}"${i === actief ? ' aria-current="step"' : ''}><span>${i < actief ? ICOON.vink : i + 1}</span>${s}</li>`).join('')}</ol>`;
+function stapper(c, actief) {
+  const stappen = [...c.stapNamen, c.toets?.length ? 'Toets' : 'Afronden'];
+  return `<ol class="stapper" aria-label="Stappen in deze casus">${stappen.map((s, i) => `<li class="${i < actief ? 'is-klaar' : i === actief ? 'is-nu' : ''}"${i === actief ? ' aria-current="step"' : ''}><span>${i < actief ? ICOON.vink : i + 1}</span>${esc(s)}</li>`).join('')}</ol>`;
 }
 
 function viewCasus(m) {
-  if (!casus) casus = nieuweCasus();
-  const c = RAPPORTEREN;
+  if (!casus || casus.id !== m.id) casus = nieuweCasus(m.id);
+  const c = CASUSSEN[m.id];
   let inhoud = '';
   let stapNr = 0;
 
   if (casus.stap === 'intro') {
-    stapNr = 0;
     inhoud = `
       <article class="werkpaneel situatie">
         <p class="situatie__tijd">${esc(c.intro.tijd)}</p>
         <h2>${esc(c.intro.kop)}</h2>
         ${c.intro.tekst.map((t) => `<p>${esc(t)}</p>`).join('')}
-        <p class="opmerking">${esc(c.intro.noot)}</p>
-        <button type="button" class="btn btn--actie" data-actie="casus-start">Ik ga rapporteren ${ICOON.pijl}</button>
+        ${c.intro.noot ? `<p class="opmerking">${esc(c.intro.noot)}</p>` : ''}
+        <button type="button" class="btn btn--actie" data-actie="casus-start">${esc(c.startKnop || 'Begin')} ${ICOON.pijl}</button>
       </article>`;
-  } else if (casus.stap === 'toets' || casus.stap === 'uitslag') {
-    stapNr = 4;
-    inhoud = casus.stap === 'toets' ? viewToets() : viewUitslag();
+  } else if (['toets', 'uitslag', 'afronden'].includes(casus.stap)) {
+    stapNr = c.stappen.length + 1;
+    inhoud = casus.stap === 'toets' ? viewToets(c) : casus.stap === 'uitslag' ? viewUitslag(c) : viewAfronden(c);
   } else {
     const stap = c.stappen[casus.stap];
     stapNr = casus.stap + 1;
-    inhoud = stap.type === 'keuze' ? viewKeuze(stap) : viewKoppel(stap);
+    inhoud = stap.type === 'keuze' ? viewKeuze(stap) : stap.type === 'volgorde' ? viewVolgorde(stap) : viewKoppel(stap);
   }
 
   return schil(`
     <section class="paneel">
       <div class="paneel__in module-kop">
         <a class="terug" href="#/overzicht">${ICOON.terug} Mijn overzicht</a>
-        <p class="bovenregel">Deel 3 · Tijdens je dienst · Casus</p>
+        <p class="bovenregel">${esc(deelVan(m))} · Casus</p>
         <h1>${esc(m.titel)}</h1>
         <p class="lead">${esc(m.leer)}</p>
-        ${stapper(stapNr)}
+        ${stapper(c, stapNr)}
       </div>
     </section>
     <div class="wrap smal casus" aria-live="polite">${inhoud}</div>`, { route: `#/module/${m.id}` });
@@ -421,7 +427,7 @@ function viewKeuze(stap) {
       <div class="keuzes" role="radiogroup" aria-label="${esc(stap.vraag)}">
         ${stap.opties.map((o, i) => `
           <button type="button" role="radio" aria-checked="${gekozen === i}" class="keuze${gekozen === i ? (o.goed ? ' is-goed' : ' is-fout') : ''}" data-actie="kies" data-i="${i}" ${gekozen !== null ? 'disabled' : ''}>
-            <span class="keuze__letter">${'ABC'[i]}</span>
+            <span class="keuze__letter">${'ABCDE'[i]}</span>
             <span class="keuze__tekst">${esc(o.tekst)}</span>
           </button>`).join('')}
       </div>
@@ -444,16 +450,16 @@ function viewKoppel(stap) {
   return `
     <article class="werkpaneel">
       <h2>${esc(stap.vraag)}</h2>
-      <p>${esc(stap.uitleg)}</p>
+      ${stap.uitleg ? `<p>${esc(stap.uitleg)}</p>` : ''}
       <div class="ecd" aria-label="Nagebouwd scherm in eigen vormgeving">
-        <div class="ecd__balk"><span>Rapportage · mevrouw Bakker</span><span class="ecd__klein">nagebouwd scherm, fictieve cliënt</span></div>
+        <div class="ecd__balk"><span>${esc(stap.scherm || 'Nedap ONS')}</span><span class="ecd__klein">nagebouwd scherm, fictieve cliënt</span></div>
         <div class="ecd__body">
           ${stap.regels.map((r, i) => `
             <div class="ecd__rij">
               <label for="koppel-${i}">${esc(r.waarneming)}</label>
               <select id="koppel-${i}" data-koppel="${i}" ${casus.gecontroleerd && goed ? 'disabled' : ''}>
-                <option value="">Kies een domein</option>
-                ${stap.domeinen.map((d) => `<option value="${d.id}" ${casus.koppel[i] === d.id ? 'selected' : ''}>${esc(d.naam)}</option>`).join('')}
+                <option value="">${esc(stap.kiesTekst || 'Kies')}</option>
+                ${stap.opties.map((d) => `<option value="${d.id}" ${casus.koppel[i] === d.id ? 'selected' : ''}>${esc(d.naam)}</option>`).join('')}
               </select>
               ${casus.gecontroleerd ? `<span class="ecd__check ${casus.koppel[i] === r.goed ? 'is-goed' : 'is-fout'}">${casus.koppel[i] === r.goed ? ICOON.vink : ICOON.let}<span class="sr">${casus.koppel[i] === r.goed ? 'goed' : 'nog niet goed'}</span></span>` : ''}
             </div>`).join('')}
@@ -468,14 +474,45 @@ function viewKoppel(stap) {
     </article>`;
 }
 
-function viewToets() {
-  const t = RAPPORTEREN.toets;
+function viewVolgorde(stap) {
+  if (!casus.volgorde) casus.volgorde = [...stap.start];
+  const goed = casus.volgorde.every((n, i) => n === i);
+  const vast = casus.gecontroleerd && goed;
+  const laatste = casus.volgorde.length - 1;
+  return `
+    <article class="werkpaneel">
+      <h2>${esc(stap.vraag)}</h2>
+      ${stap.uitleg ? `<p>${esc(stap.uitleg)}</p>` : ''}
+      <ol class="volgorde">
+        ${casus.volgorde.map((n, i) => `
+          <li class="volgorde__item${casus.gecontroleerd ? (n === i ? ' is-goed' : ' is-fout') : ''}">
+            <span class="volgorde__nr">${i + 1}</span>
+            <span class="volgorde__tekst">${esc(stap.items[n])}</span>
+            ${vast ? `<span class="ecd__check is-goed">${ICOON.vink}<span class="sr">goed</span></span>` : `
+            <span class="volgorde__knoppen">
+              <button type="button" class="volgorde__knop" data-actie="volgorde-op" data-i="${i}" ${i === 0 ? 'disabled' : ''} aria-label="${esc(stap.items[n])} een plek omhoog">↑</button>
+              <button type="button" class="volgorde__knop" data-actie="volgorde-neer" data-i="${i}" ${i === laatste ? 'disabled' : ''} aria-label="${esc(stap.items[n])} een plek omlaag">↓</button>
+            </span>`}
+          </li>`).join('')}
+      </ol>
+      ${casus.gecontroleerd ? `<div class="variant ${goed ? 'variant--goed' : 'variant--fout'}"><p>${esc(goed ? stap.goedTekst : stap.foutTekst)}</p></div>` : ''}
+      <div class="knoppen">
+        ${vast
+          ? `<button type="button" class="btn btn--actie" data-actie="casus-verder">Verder ${ICOON.pijl}</button>`
+          : `<button type="button" class="btn btn--actie" data-actie="koppel-check">Controleer</button>`}
+      </div>
+    </article>`;
+}
+
+function viewToets(c) {
+  const t = c.toets;
   const alles = t.every((_, i) => casus.antwoorden[i] !== undefined);
+  const nodig = Math.ceil(t.length * NORM);
   return `
     <article class="werkpaneel">
       <p class="bovenregel bovenregel--merk">Toets</p>
-      <h2>Vijf korte vragen</h2>
-      <p>Heb je er vier of vijf goed, dan is de module klaar.</p>
+      <h2>${TELWOORD[t.length] ? TELWOORD[t.length][0].toUpperCase() + TELWOORD[t.length].slice(1) : t.length} korte vragen</h2>
+      <p>Heb je er ${TELWOORD[nodig] || nodig} of meer goed, dan is de module klaar.</p>
       <form class="toets" data-form="toets">
         ${t.map((v, i) => `
           <fieldset class="vraag">
@@ -491,8 +528,17 @@ function viewToets() {
     </article>`;
 }
 
-function viewUitslag() {
-  const t = RAPPORTEREN.toets;
+function samenvatting(c) {
+  if (!c.samenvatting?.length) return '';
+  return `
+    <div class="meenemen">
+      <h3>Dit neem je mee naar je volgende dienst</h3>
+      <ul>${c.samenvatting.map((r) => `<li>${ICOON.vink}<span>${esc(r)}</span></li>`).join('')}</ul>
+    </div>`;
+}
+
+function viewUitslag(c) {
+  const t = c.toets;
   const goed = t.filter((v, i) => casus.antwoorden[i] === v.goed).length;
   const gehaald = goed / t.length >= NORM;
   return `
@@ -503,10 +549,26 @@ function viewUitslag() {
       <ul class="uitslag__lijst">
         ${t.map((v, i) => `<li class="${casus.antwoorden[i] === v.goed ? 'is-goed' : 'is-fout'}">${casus.antwoorden[i] === v.goed ? ICOON.vink : ICOON.let}<span>${esc(v.vraag)}${casus.antwoorden[i] === v.goed ? '' : ` <em>Goed antwoord: ${esc(v.opties[v.goed])}</em>`}</span></li>`).join('')}
       </ul>
+      ${gehaald ? samenvatting(c) : ''}
       <div class="knoppen">
         ${gehaald
           ? `<a class="btn btn--actie" href="#/overzicht">Terug naar mijn overzicht ${ICOON.pijl}</a>`
           : `<button type="button" class="btn btn--actie" data-actie="toets-opnieuw">Doe de toets opnieuw</button>`}
+      </div>
+    </article>`;
+}
+
+function viewAfronden(c) {
+  const klaar = isKlaar(c.id);
+  return `
+    <article class="werkpaneel uitslag ${klaar ? 'is-gehaald' : ''}">
+      <span class="uitslag__icoon" aria-hidden="true">${ICOON.vink}</span>
+      <h2>${klaar ? 'Module klaar' : 'Je bent door de casus heen'}</h2>
+      ${samenvatting(c)}
+      <div class="knoppen">
+        ${klaar
+          ? `<a class="btn btn--actie" href="#/overzicht">Terug naar mijn overzicht ${ICOON.pijl}</a>`
+          : `<button type="button" class="btn btn--actie" data-actie="casus-afronden">Rond de module af ${ICOON.pijl}</button>`}
       </div>
     </article>`;
 }
@@ -519,7 +581,8 @@ function dagenTussen(a, b) {
 
 function rijenOpleider() {
   const sanneKlaar = mijnModules().filter((m) => isKlaar(m.id)).length;
-  const sanneScore = nu().scores.rapporteren ?? null;
+  const eigen = Object.values(nu().scores);
+  const sanneScore = eigen.length ? Math.round(eigen.reduce((a, b) => a + b, 0) / eigen.length) : null;
   const sanne = { naam: `${MEDEWERKER.naam} ${MEDEWERKER.achternaam}`, profiel: 'vig', afdeling: MEDEWERKER.afdeling, start: DEMO_VANDAAG, klaar: sanneKlaar, toets: sanneScore, live: true };
   return [sanne, ...COLLEGAS].map((r) => {
     const totaal = (nu().toewijzing[r.profiel] || []).length;
@@ -657,7 +720,7 @@ function viewBeheerModules() {
                   <td>${m.varianten || '<span class="klein">geen</span>'}</td>
                   <td>${m.toets ? ICOON.vink + '<span class="sr">ja</span>' : '<span class="klein">nee</span>'}</td>
                   <td><span class="laag">Generiek</span> <span class="laag laag--klant">De Wilgenhof</span></td>
-                  <td>${m.uitgewerkt ? '<span class="status status--klaar">Uitgewerkt in demo</span>' : '<span class="status">Opzet</span>'}</td>
+                  <td>${CASUSSEN[m.id] ? '<span class="status status--klaar">Uitgewerkt in demo</span>' : '<span class="status">Opzet</span>'}</td>
                 </tr>`).join('')}
             </tbody>
           </table>
@@ -865,6 +928,16 @@ function ga(pad) {
 
 // ---------- acties ----------
 
+function schuif(i, richting) {
+  const v = casus.volgorde;
+  const j = i + richting;
+  if (j < 0 || j >= v.length) return;
+  [v[i], v[j]] = [v[j], v[i]];
+  casus.gecontroleerd = false;
+  render({ houdScroll: true });
+  app.querySelector(`[data-actie="${richting < 0 ? 'volgorde-op' : 'volgorde-neer'}"][data-i="${j}"]:not([disabled])`)?.focus();
+}
+
 const ACTIES = {
   rol(knop) {
     const rol = knop.dataset.rol;
@@ -911,7 +984,7 @@ const ACTIES = {
     ga('/overzicht');
   },
   'casus-start'() {
-    markeer('rapporteren', 'bezig');
+    markeer(casus.id, 'bezig');
     casus.stap = 0;
     casus.keuze = null;
     render();
@@ -929,7 +1002,21 @@ const ACTIES = {
     const volgende = casus.stap + 1;
     casus.keuze = null;
     casus.gecontroleerd = false;
-    casus.stap = volgende < RAPPORTEREN.stappen.length ? volgende : 'toets';
+    casus.volgorde = null;
+    const c = CASUSSEN[casus.id];
+    casus.stap = volgende < c.stappen.length ? volgende : c.toets?.length ? 'toets' : 'afronden';
+    render();
+  },
+  'volgorde-op'(knop) {
+    schuif(Number(knop.dataset.i), -1);
+  },
+  'volgorde-neer'(knop) {
+    schuif(Number(knop.dataset.i), 1);
+  },
+  'casus-afronden'() {
+    const m = MODULES.find((x) => x.id === casus.id);
+    markeer(casus.id, 'klaar');
+    meld(`${m.titel} is klaar. Je opleider ziet het vinkje ook.`);
     render();
   },
   'koppel-check'() {
@@ -996,13 +1083,13 @@ app.addEventListener('submit', (e) => {
   }
   if (form.dataset.form === 'toets') {
     casus.stap = 'uitslag';
-    const t = RAPPORTEREN.toets;
+    const t = CASUSSEN[casus.id].toets;
     const goed = t.filter((v, i) => casus.antwoorden[i] === v.goed).length;
     const score = Math.round((goed / t.length) * 100);
-    zet({ scores: { ...nu().scores, rapporteren: Math.max(score, nu().scores.rapporteren || 0) } });
+    zet({ scores: { ...nu().scores, [casus.id]: Math.max(score, nu().scores[casus.id] || 0) } });
     if (goed / t.length >= NORM) {
-      markeer('rapporteren', 'klaar');
-      meld('Rapporteren is klaar. Je opleider ziet het vinkje ook.');
+      markeer(casus.id, 'klaar');
+      meld(`${MODULES.find((x) => x.id === casus.id).titel} is klaar. Je opleider ziet het vinkje ook.`);
     }
     render();
   }
@@ -1019,7 +1106,7 @@ app.addEventListener('change', (e) => {
   if (el.name && /^v\d+$/.test(el.name)) {
     casus.antwoorden[Number(el.name.slice(1))] = Number(el.value);
     const knop = app.querySelector('[data-form="toets"] [type="submit"]');
-    if (knop) knop.disabled = !RAPPORTEREN.toets.every((_, i) => casus.antwoorden[i] !== undefined);
+    if (knop) knop.disabled = !CASUSSEN[casus.id].toets.every((_, i) => casus.antwoorden[i] !== undefined);
   }
   if (el.dataset.toewijs) {
     const p = el.dataset.toewijs;
@@ -1085,7 +1172,7 @@ app.addEventListener('input', (e) => {
 
 window.addEventListener('hashchange', () => {
   stopRondleiding();
-  if (!route().startsWith('/module/rapporteren')) casus = null;
+  if (casus && route() !== `/module/${casus.id}`) casus = null;
   if (route() !== '/beheer/huisstijl') concept = null;
   render();
 });

@@ -24,7 +24,7 @@ export const MODULES = [
   { id: 'rondleiding', deel: 'welkom', titel: 'Rondleiding: zo werken wij bij De Wilgenhof', min: 3, toets: false, varianten: 0, leer: 'Waar je alles vindt in deze leeromgeving en in Nedap ONS, en bij wie je terechtkunt met een vraag.' },
   { id: 'overdracht', deel: 'start', titel: 'Bekijk de overdrachtsagenda en de overdrachtsrapportages', min: 3, toets: false, varianten: 2, leer: 'Wat er de vorige dienst is gebeurd, en wat je daarmee doet voordat je de eerste kamer in gaat.' },
   { id: 'opzoeken', deel: 'start', titel: 'Cliënten opzoeken', min: 2, toets: false, varianten: 1, leer: 'Snel de goede cliënt vinden, ook als je op een andere afdeling invalt.' },
-  { id: 'rapporteren', deel: 'tijdens', titel: 'Rapporteren', min: 4, toets: true, varianten: 3, uitgewerkt: true, leer: 'Rapporteren zoals wij dat bij De Wilgenhof doen: wat je zag, wat je deed, en op welk doel het hoort.' },
+  { id: 'rapporteren', deel: 'tijdens', titel: 'Rapporteren', min: 4, toets: true, varianten: 3, leer: 'Rapporteren zoals wij dat bij De Wilgenhof doen: wat je zag, wat je deed, en op welk doel het hoort.' },
   { id: 'klinimetrie', deel: 'tijdens', titel: 'Klinimetrie', min: 4, toets: true, varianten: 2, leer: 'Metingen vastleggen, zoals pijn en gewicht, en wanneer een uitslag een actie vraagt.' },
   { id: 'zorgplan', deel: 'tijdens', titel: 'Het zorgplan', min: 4, toets: true, varianten: 2, leer: 'Het zorgplan lezen en gebruiken, zodat je weet wat er per cliënt is afgesproken.' },
   { id: 'mikzo', deel: 'tijdens', titel: 'Werken met Mikzo', min: 3, toets: true, varianten: 2, leer: 'De vijf domeinen van Mikzo, en hoe ze terugkomen in je dagelijkse werk.' },

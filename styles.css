@@ -235,6 +235,20 @@ input[type="email"]:focus,input[type="text"]:focus,select:focus{border-color:var
 .uitslag__lijst li{display:flex;gap:10px;align-items:flex-start;padding:10px 14px;border-radius:10px;background:var(--grond)}
 .uitslag__lijst svg{width:22px;height:22px;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;margin-top:2px}
 .uitslag__lijst .is-goed svg{stroke:var(--merk-tekst)}
+.volgorde{list-style:none;padding:0;margin:20px 0;display:grid;gap:10px}
+.volgorde__item{display:grid;grid-template-columns:36px 1fr auto;gap:12px;align-items:center;padding:12px 14px;border-radius:14px;background:var(--wit);border:1.5px solid var(--lijn)}
+.volgorde__item.is-goed{border-color:var(--merk-tekst)}
+.volgorde__item.is-fout{border-color:var(--signaal-tekst)}
+.volgorde__nr{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--zacht);font-weight:700;color:var(--merk-tekst)}
+.volgorde__knoppen{display:flex;gap:6px}
+.volgorde__knop{width:44px;height:44px;border-radius:12px;border:1.5px solid var(--lijn);background:var(--grond);color:var(--tekst);font-size:1.15rem;cursor:pointer}
+.volgorde__knop:hover:not(:disabled){border-color:var(--merk)}
+.volgorde__knop:disabled{opacity:.35;cursor:default}
+.meenemen{margin:22px auto 6px;max-width:560px;text-align:left;padding:18px 20px;border-radius:16px;background:var(--vlak2)}
+.meenemen h3{margin:0 0 10px;font-size:1.05rem}
+.meenemen ul{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.meenemen li{display:flex;gap:10px;align-items:flex-start}
+.meenemen svg{flex:none;width:20px;height:20px;margin-top:3px;fill:none;stroke:var(--merk-tekst);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
 .uitslag__lijst .is-fout svg{stroke:var(--signaal-tekst)}
 .uitslag__lijst em{display:block;font-style:normal;font-size:.92rem;color:var(--tekst-zacht)}
 .uitslag .knoppen{justify-content:center}
