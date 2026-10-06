@@ -574,7 +574,25 @@ const ONS_SCHERMEN = {
               <div class="ons__concept-knoppen">${opslaan}<span class="ons__knop ons__knop--rand" aria-hidden="true">Wijzigen</span></div>
             </div>
             <div class="ons__kaart ons__formulier">${velden}</div>`,
-    opslaan: 'Afronden',
+    knop: 'Afronden', kleur: 'groen', melding: 'Zorgplan is afgerond',
+  },
+  'nieuwe-rapportage': {
+    menu: 'Rapportages',
+    inhoud: (stap, ons, velden, opslaan) => `
+            ${onsClient(ons)}
+            <div class="ons__kaart ons__rapportage">
+              <div class="ons__rtabs" aria-hidden="true"><span></span><span class="is-actief"></span><span class="is-soep"></span><span class="ons__plus">+</span></div>
+              <div class="ons__kopregel"><h3 class="ons__titel ons__titel--klein">Nieuw - Rapportage</h3><span class="ons__kop-rechts"><span class="ons__ster"><span aria-hidden="true">★</span> Markeer als belangrijk</span>${opslaan}</span></div>
+              <span class="ons__invoer ons__tekstvak ons__tekstvak--groot${ons.tekst ? '' : ' is-leeg'}">${esc(ons.tekst || '')}</span>
+              <p class="ons__schakel" aria-hidden="true"><span class="ons__toggle"></span>Metingenherkenning <span class="ons__info">i</span></p>
+              <p class="ons__uitleg">Metingen worden tijdens het schrijven automatisch herkend en als losse metingen toegevoegd. Je hoeft deze dus niet meer apart in te voeren.</p>
+              <div class="ons__links">
+                ${velden}
+                <div class="ons__veld"><span class="ons__lbl">Zichtbaar voor:</span><span class="ons__nep-select">Iedereen (of kies deskundigheden)</span></div>
+                <div class="ons__veld"><span class="ons__lbl">Koppel aan episodes</span><span class="ons__nep-select">Selecteer episodes</span></div>
+              </div>
+            </div>`,
+    knop: 'Opslaan', kleur: 'groen', melding: 'Rapportage is opgeslagen',
   },
 };
 
@@ -585,10 +603,11 @@ function viewKoppel(stap) {
   let scherm;
   if (ons) {
     const pagina = ONS_SCHERMEN[ons.scherm];
-    const knopTekst = pagina.opslaan || 'Opslaan';
+    const knopTekst = pagina.knop || 'Opslaan';
+    const kleur = pagina.kleur || 'blauw';
     const opslaan = casus.gecontroleerd && goed
-      ? `<span class="ons__knop ons__knop--${pagina.opslaan ? 'groen' : 'blauw'} is-uit">✓ ${knopTekst}</span>`
-      : `<button type="button" class="ons__knop ons__knop--${pagina.opslaan ? 'groen' : 'blauw'}" data-actie="koppel-check" ${alles ? '' : 'disabled'}>✓ ${knopTekst}</button>`;
+      ? `<span class="ons__knop ons__knop--${kleur} is-uit">✓ ${knopTekst}</span>`
+      : `<button type="button" class="ons__knop ons__knop--${kleur}" data-actie="koppel-check" ${alles ? '' : 'disabled'}>✓ ${knopTekst}</button>`;
     const velden = stap.regels.map((r, i) => onsVeld(stap, r, i, goed)).join('');
     scherm = `
       <div class="ons" role="group" aria-label="${esc(stap.scherm)}">
@@ -597,7 +616,7 @@ function viewKoppel(stap) {
           ${onsMenu(pagina.menu)}
           <div class="ons__inhoud">${pagina.inhoud(stap, ons, velden, opslaan)}</div>
         </div>
-        ${casus.gecontroleerd && goed ? `<p class="ons__melding" role="status"><span aria-hidden="true">✓</span> ${pagina.opslaan ? 'Zorgplan is afgerond' : 'Episode is opgeslagen'}</p>` : ''}
+        ${casus.gecontroleerd && goed ? `<p class="ons__melding" role="status"><span aria-hidden="true">✓</span> ${pagina.melding || 'Episode is opgeslagen'}</p>` : ''}
       </div>`;
   } else {
     scherm = `

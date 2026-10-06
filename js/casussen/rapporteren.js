@@ -57,6 +57,7 @@ export default {
         { waarneming: 'Onrustig, eerst niet willen ontbijten', goed: 'welzijn' },
       ],
       scherm: 'Rapportage · mevrouw Bakker',
+      ons: { scherm: 'nieuwe-rapportage', naam: 'A Bakker', tekst: 'Mevrouw onrustig na een slechte nacht, wilde eerst niet ontbijten. Na een gesprek over haar kleindochter een halve boterham gegeten. Rode plek rechterhiel, huid heel, ongeveer 2 cm. Hiel vrijgelegd.' },
       kiesTekst: 'Kies een domein',
       opties: [
         { id: 'persoonsgericht', naam: 'Persoonsgerichte zorg' },

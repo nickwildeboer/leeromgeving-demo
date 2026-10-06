@@ -20,6 +20,7 @@ export default {
       vraag: 'Bij De Wilgenhof werk je met de vijf domeinen van Mikzo. Bij welk domein hoort elke waarneming?',
       uitleg: 'Met de vijf domeinen kijk je naar het hele leven van een cliënt. Gezondheid is daar één deel van.',
       scherm: 'Rapportage · meneer Hendriks',
+      ons: { scherm: 'nieuwe-rapportage', naam: 'W Hendriks' },
       kiesTekst: 'Kies een domein',
       regels: [
         { waarneming: 'Meneer wil zelf bepalen wanneer hij naar bed gaat', goed: 'persoonsgericht' },
