@@ -155,7 +155,7 @@ function viewInloggen() {
         <div class="inlog__tekst">
           <p class="bovenregel">Zo werkt het bij ons</p>
           <h1>Leren bij ${esc(orgNaam())}</h1>
-          <p class="lead">Hier leer je hoe wij werken in Nedap ONS. Op jouw afdeling, met onze afspraken, in korte casussen uit je eigen dienst.</p>
+          <p class="lead">Hier leer je hoe wij werken in Nedap ONS. Op jouw afdeling, met onze afspraken. Eerst uitleg, dan samen doorklikken, dan oefenen met situaties uit je eigen dienst.</p>
         </div>
         <p class="inlog__gemaakt">Gemaakt door ${OOM_MERK}</p>
       </section>
@@ -311,7 +311,7 @@ function viewOverzicht() {
 const RONDLEIDING = [
   { doel: '[data-tour="voortgang"]', kop: 'Hier zie je hoe ver je bent', tekst: 'Elke module die je afrondt krijgt een vinkje. Je opleider ziet ook hoe ver je bent, zodat je inwerkchecklist vanzelf bijblijft.' },
   { doel: '[data-tour="verder"]', kop: 'Met deze knop ga je verder', tekst: 'Kom je terug, dan begin je hier. Hij brengt je naar de module waar je gebleven was.' },
-  { doel: '[data-tour="deel"]', kop: 'Je modules staan in vijf delen', tekst: 'Van het starten van je dienst tot de apps op je telefoon. Elke module is een casus uit je eigen werk. Je kiest, en je ziet wat er daarna gebeurt.' },
+  { doel: '[data-tour="deel"]', kop: 'Je modules staan in vijf delen', tekst: 'Van het starten van je dienst tot de apps op je telefoon. In elke module krijg je eerst uitleg en klik je samen met ons door Nedap ONS. Daarna oefen je met een situatie uit je eigen werk.' },
   { doel: '[data-tour="tip"]', kop: 'Elke dag een tip', tekst: 'Korte tips over hoe wij hier werken. Wil je er meer? Klik op Nog een tip.' },
   { doel: '[data-tour="hulp"]', kop: 'Kom je er niet uit?', tekst: 'Dan weet je hier bij wie je terechtkunt. Klaar? Begin met de eerste module.' },
 ];
@@ -1052,7 +1052,7 @@ function viewHuisstijl() {
             <div class="preview__grond">
               <div class="preview__vlak">
                 <span class="preview__nr">${ICOON.vink}</span>
-                <span><strong>Rapporteren</strong><br><span class="preview__meta">4 min · casus · toets</span></span>
+                <span><strong>Rapporteren</strong><br><span class="preview__meta">7 min · casus · toets</span></span>
               </div>
               <div class="preview__tip"><strong>Tip van de dag</strong> Schrijf voor de volgende dienst.</div>
               <p class="preview__fout">${ICOON.let} Zo loopt het af: de plek is nu open.</p>
