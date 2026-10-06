@@ -448,25 +448,88 @@ function viewKeuze(stap) {
     </article>`;
 }
 
+// Oefenschermen in de vormgeving van Nedap ONS, nagebouwd naar de testomgeving.
+// De schermtitel in de casus ("Rapportage · mevrouw Bakker") bepaalt het menu-item en de cliëntkop.
+const ONS_MENU = ['Overzicht', 'Vragenlijsten', 'Plan', 'Rapportages', 'Agenda', 'Klinimetrie', 'Snelkoppelingen'];
+const ONS_MENU_ADMIN = ['Overzicht', 'Algemeen', 'Cliëntnetwerk', 'Financieel', 'Documenten'];
+const ONS_PAGINA = [
+  [/^rapportage/i, 'Rapportages'], [/^(zorgplan|zorgpad|afspraken)/i, 'Plan'],
+  [/^(metingen|klinimetrie)/i, 'Klinimetrie'], [/^(episode|wond)/i, 'Overzicht'],
+];
+
+function onsScherm(titel) {
+  const delen = String(titel || 'Nedap ONS').split(' · ');
+  const persoon = delen.find((d) => /^(mevrouw|meneer)\s/i.test(d));
+  const menu = (ONS_PAGINA.find(([re]) => re.test(delen[0])) || [null, 'Overzicht'])[1];
+  if (!persoon) return { titel: delen[0], sub: delen.slice(1).join(' · '), client: null, menu };
+  const achternaam = persoon.replace(/^(mevrouw|meneer)\s+/i, '');
+  const initialen = achternaam.split(/\s+/).map((w) => w[0].toUpperCase()).join('').slice(0, 2);
+  let n = 0;
+  for (const c of achternaam) n = (n * 31 + c.charCodeAt(0)) % 90000;
+  return {
+    titel: delen[0], sub: delen.filter((d) => d !== delen[0] && d !== persoon).join(' · '),
+    client: persoon[0].toUpperCase() + persoon.slice(1), initialen, nummer: 10000 + n, menu,
+  };
+}
+
+function onsBovenbalk() {
+  return `
+        <div class="ons__balk">
+          <span class="ons__logo" aria-hidden="true"></span>
+          <span class="ons__app">Dossier <span class="ons__raster" aria-hidden="true"></span></span>
+          <span class="ons__zoek" aria-hidden="true">Zoeken naar cliënten...</span>
+        </div>`;
+}
+
+function onsMenu(actief) {
+  const item = (naam, i) => `<li class="ons__menu-item${naam === actief && i === 0 ? ' is-actief' : ''}">${esc(naam)}</li>`;
+  return `
+          <nav class="ons__menu" aria-hidden="true">
+            <p class="ons__terug">← Cliënt zoeken</p>
+            <p class="ons__groep">Dossier</p>
+            <ul>${ONS_MENU.map((n) => item(n, 0)).join('')}</ul>
+            <p class="ons__groep">Administratie</p>
+            <ul>${ONS_MENU_ADMIN.map((n) => item(n, 1)).join('')}</ul>
+            <p class="ons__nedap">nedap</p>
+          </nav>`;
+}
+
 function viewKoppel(stap) {
+  const ons = onsScherm(stap.scherm);
   const goed = stap.regels.every((r, i) => casus.koppel[i] === r.goed);
   const alles = stap.regels.every((r, i) => casus.koppel[i]);
   return `
     <article class="werkpaneel">
       <h2>${esc(stap.vraag)}</h2>
       ${stap.uitleg ? `<p>${esc(stap.uitleg)}</p>` : ''}
-      <div class="ecd">
-        <div class="ecd__balk"><span>${esc(stap.scherm || 'Nedap ONS')}</span></div>
-        <div class="ecd__body">
-          ${stap.regels.map((r, i) => `
-            <div class="ecd__rij">
-              <label for="koppel-${i}">${esc(r.waarneming)}</label>
-              <select id="koppel-${i}" data-koppel="${i}" ${casus.gecontroleerd && goed ? 'disabled' : ''}>
-                <option value="">${esc(stap.kiesTekst || 'Kies')}</option>
-                ${stap.opties.map((d) => `<option value="${d.id}" ${casus.koppel[i] === d.id ? 'selected' : ''}>${esc(d.naam)}</option>`).join('')}
-              </select>
-              ${casus.gecontroleerd ? `<span class="ecd__check ${casus.koppel[i] === r.goed ? 'is-goed' : 'is-fout'}">${casus.koppel[i] === r.goed ? ICOON.vink : ICOON.let}<span class="sr">${casus.koppel[i] === r.goed ? 'goed' : 'nog niet goed'}</span></span>` : ''}
-            </div>`).join('')}
+      <div class="ons" role="group" aria-label="${esc(stap.scherm)}">
+        ${onsBovenbalk()}
+        <div class="ons__lijf${ons.client ? '' : ' ons__lijf--zonder-menu'}">
+          ${ons.client ? onsMenu(ons.menu) : ''}
+          <div class="ons__inhoud">
+            ${ons.client ? `
+            <div class="ons__client">
+              <span class="ons__initialen" aria-hidden="true">${esc(ons.initialen)}</span>
+              <div>
+                <p class="ons__naam">${esc(ons.client)}</p>
+                <p class="ons__gegevens">Geboortedatum is onbekend | ${ons.nummer} | Adres is onbekend</p>
+              </div>
+            </div>` : ''}
+            <h3 class="ons__titel">${esc(ons.titel)}</h3>
+            ${ons.sub ? `<p class="ons__sub">${esc(ons.sub)}</p>` : ''}
+            <div class="ons__tabel">
+              <div class="ons__kop"><span>Waarneming</span><span>${esc(stap.kiesTekst || 'Kies')}</span></div>
+              ${stap.regels.map((r, i) => `
+              <div class="ons__rij">
+                <label for="koppel-${i}">${esc(r.waarneming)}</label>
+                <select id="koppel-${i}" data-koppel="${i}" ${casus.gecontroleerd && goed ? 'disabled' : ''}>
+                  <option value="">${esc(stap.kiesTekst || 'Kies')}</option>
+                  ${stap.opties.map((d) => `<option value="${d.id}" ${casus.koppel[i] === d.id ? 'selected' : ''}>${esc(d.naam)}</option>`).join('')}
+                </select>
+                ${casus.gecontroleerd ? `<span class="ecd__check ${casus.koppel[i] === r.goed ? 'is-goed' : 'is-fout'}">${casus.koppel[i] === r.goed ? ICOON.vink : ICOON.let}<span class="sr">${casus.koppel[i] === r.goed ? 'goed' : 'nog niet goed'}</span></span>` : '<span></span>'}
+              </div>`).join('')}
+            </div>
+          </div>
         </div>
       </div>
       ${casus.gecontroleerd ? `<div class="variant ${goed ? 'variant--goed' : 'variant--fout'}"><p>${esc(goed ? stap.goedTekst : stap.foutTekst)}</p></div>` : ''}
