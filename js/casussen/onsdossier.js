@@ -12,7 +12,6 @@ export default {
       'Je helpt meneer Vermeulen met zijn steunkousen. Bij De Wilgenhof teken je dat af met Ons Dossier op je telefoon, aan het bed.',
       'Als hij opstaat, pakt hij de rand van de tafel vast. "Even duizelig," zegt hij. Na een minuut gaat het weer.',
     ],
-    noot: 'Meneer Vermeulen is verzonnen. In deze leeromgeving staan nooit echte cliënten.',
   },
   stappen: [
     {

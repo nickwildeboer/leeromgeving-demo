@@ -13,7 +13,6 @@ export default {
       'Bij de overdracht hoor je dat ze vorige week een paar dagen in het ziekenhuis lag, na een kleine beroerte. Sinds maandag is ze weer op De Linde.',
       'De EVV\'er heeft haar zorgplan aangepast. Je weet nog niet wat er veranderd is.',
     ],
-    noot: 'Mevrouw Peters is verzonnen. In deze leeromgeving staan nooit echte cliënten.',
   },
   stappen: [
     {

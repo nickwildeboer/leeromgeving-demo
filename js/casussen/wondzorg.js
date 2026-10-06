@@ -12,7 +12,6 @@ export default {
       'Mevrouw Van Dam stootte vorige week haar onderbeen tegen de rolstoel. Er zit een wond. In het wondzorgplan staat dat je bij elke verbandwissel op woensdag een foto maakt.',
       'Bij De Wilgenhof maak je wondfoto\'s alleen in de wondzorgapp. Zo komt de foto in het dossier en niet op je telefoon.',
     ],
-    noot: 'Mevrouw Van Dam is verzonnen. In deze leeromgeving staan nooit echte cliënten.',
   },
   stappen: [
     {

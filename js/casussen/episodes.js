@@ -13,7 +13,6 @@ export default {
       'Gisteren heeft de huisarts gezegd dat het een blaasontsteking is. Mevrouw Kok krijgt een antibioticakuur van vijf dagen. De huisarts wil dat ze extra drinkt.',
       'Bij de overdracht zegt Fatima: "Kun jij dit vastleggen? Dan weet iedereen deze week wat er moet gebeuren."',
     ],
-    noot: 'Mevrouw Kok is verzonnen. In deze leeromgeving staan nooit echte cliënten.',
   },
   stappen: [
     {

@@ -13,7 +13,6 @@ export default {
       'Om 17.00 uur is het avondeten. Meneer Bos zit al aan tafel. Een collega zegt: "Pas op met meneer Bos, hij verslikt zich snel. Er staat iets over in zijn dossier."',
       'Je opent Nedap ONS. Meneer Bos staat niet in jouw lijst. Je kunt zijn dossier niet openen.',
     ],
-    noot: 'Meneer Bos is verzonnen. In deze leeromgeving staan nooit echte cliënten.',
   },
   stappen: [
     {

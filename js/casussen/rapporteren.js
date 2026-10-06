@@ -13,7 +13,6 @@ export default {
       'Bij de ochtendzorg is ze onrustig en wil ze eerst niet ontbijten. Je praat even met haar over haar kleindochter, en daarna eet ze toch een halve boterham.',
       'Bij het wassen zie je een rode plek op haar rechterhiel. De huid is niet open. De plek is ongeveer zo groot als een euro.',
     ],
-    noot: 'Mevrouw Bakker is verzonnen. In deze leeromgeving staan nooit echte cliënten.',
   },
   stappen: [
     {

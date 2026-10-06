@@ -12,7 +12,6 @@ export default {
       'Je pakt de medicatie voor de middag. In de medicijnkar ligt nog het zakje van 8.00 uur van mevrouw Willems. Het is dicht en niet afgetekend.',
       'Mevrouw Willems zit in de huiskamer en voelt zich goed. Je weet niet wie vanochtend de medicatie heeft gedaan.',
     ],
-    noot: 'Mevrouw Willems is verzonnen. In deze leeromgeving staan nooit echte cliënten.',
   },
   stappen: [
     {

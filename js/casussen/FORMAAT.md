@@ -11,7 +11,6 @@ export default {
     tijd: 'Woensdag 8.15 uur, vroege dienst op De Linde',
     kop: 'Meneer De Vries eet minder',
     tekst: ['alinea', 'alinea'],     // 1 tot 4 alinea's
-    noot: 'Meneer De Vries is verzonnen. In deze leeromgeving staan nooit echte cliënten.',
   },
   stappen: [ /* 2 tot 4 stappen, zie hieronder */ ],
   toets: [ /* precies 5 vragen als de module een toets heeft, anders weglaten */ ],

@@ -13,7 +13,6 @@ export default {
       'Vandaag vertelt hij veel. Hij mist zijn tuin. Hij wil zijn eigen leunstoel op zijn kamer. En hij wil zelf weten wanneer hij naar bed gaat.',
       'In de overdracht staat dat hij vannacht twee keer op de gang stond, zonder licht en zonder pantoffels. Zijn bloedsuiker was vanochtend hoger dan normaal voor hem.',
     ],
-    noot: 'Meneer Hendriks is verzonnen. In deze leeromgeving staan nooit echte cliënten.',
   },
   stappen: [
     {

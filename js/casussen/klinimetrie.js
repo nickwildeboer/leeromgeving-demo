@@ -13,7 +13,6 @@ export default {
       'Vanochtend zie je dat zijn broek losser zit dan eerst. Hij trekt hem steeds omhoog.',
       'Het is de eerste woensdag van de maand. Bij De Wilgenhof is dat de dag waarop je de cliënten op De Linde weegt.',
     ],
-    noot: 'Meneer De Vries is verzonnen. In deze leeromgeving staan nooit echte cliënten.',
   },
   stappen: [
     {

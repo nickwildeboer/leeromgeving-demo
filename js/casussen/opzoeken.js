@@ -13,7 +13,6 @@ export default {
       'Lieke Hoekstra werkt op De Eik. Ze vraagt: "Wil jij meneer Jansen op kamer 4 helpen met eten? Hij heeft vanmiddag weinig gedronken. Wil je bijhouden hoeveel hij drinkt?"',
       'Je kent zelf ook een meneer Jansen. Die woont op De Linde, jouw eigen afdeling.',
     ],
-    noot: 'De cliënten in deze casus zijn verzonnen. In deze leeromgeving staan nooit echte cliënten.',
   },
   stappen: [
     {

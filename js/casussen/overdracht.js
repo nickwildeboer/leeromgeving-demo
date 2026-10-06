@@ -13,7 +13,6 @@ export default {
       'Bij De Wilgenhof lees je eerst de overdrachtsagenda en de overdrachtsrapportages in Nedap ONS. Pas daarna ga je de eerste kamer in.',
       'In de overdracht van vannacht staat onder andere: "Meneer Jansen om 3.40 uur naast zijn bed gevonden. Geen letsel gezien. MIC gemeld. Graag goed observeren."',
     ],
-    noot: 'Meneer Jansen, mevrouw Smit en meneer Van Leeuwen zijn verzonnen. In deze leeromgeving staan nooit echte cliënten.',
   },
   stappen: [
     {

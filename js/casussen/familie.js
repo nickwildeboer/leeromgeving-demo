@@ -13,7 +13,6 @@ export default {
       'Vlak voor het einde van je dienst houdt de dochter je aan op de gang. "Mijn moeder gaat graag naar de kerk. Vanaf nu haal ik haar elke zondag om 9.30 uur op. Kan ze dan aangekleed klaarzitten?"',
       'Ze heeft nog meer: "En als ze valt, wil ik meteen gebeld worden. Ook als het \'s nachts is."',
     ],
-    noot: 'Mevrouw Dijkstra is verzonnen. In deze leeromgeving staan nooit echte cliënten.',
   },
   stappen: [
     {

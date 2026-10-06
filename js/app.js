@@ -136,8 +136,7 @@ function voet() {
     <footer class="voet">
       <div class="voet__in">
         <p class="voet__gemaakt">Gemaakt door ${OOM_MERK}</p>
-        <p class="voet__demo">Demo met verzonnen gegevens. Er staan geen echte cliënten of medewerkers in.
-          <button type="button" class="linkknop" data-actie="opnieuw">Demo opnieuw beginnen</button></p>
+        <p class="voet__demo"><button type="button" class="linkknop" data-actie="opnieuw">Demo opnieuw beginnen</button></p>
       </div>
     </footer>`;
 }
@@ -393,7 +392,6 @@ function viewCasus(m) {
         <p class="situatie__tijd">${esc(c.intro.tijd)}</p>
         <h2>${esc(c.intro.kop)}</h2>
         ${c.intro.tekst.map((t) => `<p>${esc(t)}</p>`).join('')}
-        ${c.intro.noot ? `<p class="opmerking">${esc(c.intro.noot)}</p>` : ''}
         <button type="button" class="btn btn--actie" data-actie="casus-start">${esc(c.startKnop || 'Begin')} ${ICOON.pijl}</button>
       </article>`;
   } else if (['toets', 'uitslag', 'afronden'].includes(casus.stap)) {
@@ -451,8 +449,8 @@ function viewKoppel(stap) {
     <article class="werkpaneel">
       <h2>${esc(stap.vraag)}</h2>
       ${stap.uitleg ? `<p>${esc(stap.uitleg)}</p>` : ''}
-      <div class="ecd" aria-label="Nagebouwd scherm in eigen vormgeving">
-        <div class="ecd__balk"><span>${esc(stap.scherm || 'Nedap ONS')}</span><span class="ecd__klein">nagebouwd scherm, fictieve cliënt</span></div>
+      <div class="ecd">
+        <div class="ecd__balk"><span>${esc(stap.scherm || 'Nedap ONS')}</span></div>
         <div class="ecd__body">
           ${stap.regels.map((r, i) => `
             <div class="ecd__rij">
@@ -620,7 +618,7 @@ function viewOpleider() {
       <div class="paneel__in">
         <p class="bovenregel">Dashboard opleider</p>
         <h1>Inwerken bij ${esc(orgNaam())}</h1>
-        <p class="lead">Zo ver zijn je nieuwe collega's met hun modules. Alle namen en cijfers zijn verzonnen, behalve die van Sanne: die volgt wat je in de demo doet.</p>
+        <p class="lead">Zo ver zijn je nieuwe collega's met hun modules.</p>
         <div class="tegels">
           ${tegel(alle.length, 'nieuwe medewerkers')}
           ${tegel(alle.filter((r) => r.status === 'klaar').length, 'klaar met inwerken')}
@@ -643,7 +641,7 @@ function viewOpleider() {
             <tbody>
               ${rijen.map((r) => `
                 <tr${r.live ? ' class="is-live"' : ''}>
-                  <th scope="row">${esc(r.naam)}${r.live ? ' <span class="live">jij in de demo</span>' : ''}</th>
+                  <th scope="row">${esc(r.naam)}${r.live ? ' <span class="live">jij</span>' : ''}</th>
                   <td>${esc(PROFIELEN[r.profiel].naam)}</td>
                   <td>${esc(r.afdeling)}</td>
                   <td>${new Date(r.start).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })}</td>
@@ -720,7 +718,7 @@ function viewBeheerModules() {
                   <td>${m.varianten || '<span class="klein">geen</span>'}</td>
                   <td>${m.toets ? ICOON.vink + '<span class="sr">ja</span>' : '<span class="klein">nee</span>'}</td>
                   <td><span class="laag">Generiek</span> <span class="laag laag--klant">De Wilgenhof</span></td>
-                  <td>${CASUSSEN[m.id] ? '<span class="status status--klaar">Uitgewerkt in demo</span>' : '<span class="status">Opzet</span>'}</td>
+                  <td>${CASUSSEN[m.id] ? '<span class="status status--klaar">Uitgewerkt</span>' : '<span class="status">Opzet</span>'}</td>
                 </tr>`).join('')}
             </tbody>
           </table>
@@ -750,7 +748,7 @@ function viewBeheerKlanten() {
           <dl class="feiten">
             <div><dt>ECD</dt><dd>${ORGANISATIE.ecd}</dd></div>
             <div><dt>Profielen</dt><dd>${Object.values(PROFIELEN).map((p) => esc(p.naam)).join(', ')}</dd></div>
-            <div><dt>Medewerkers in de demo</dt><dd>${aantal}</dd></div>
+            <div><dt>Medewerkers</dt><dd>${aantal}</dd></div>
             <div><dt>Inloggen</dt><dd>eigen inlog of SSO via het portaal van de klant</dd></div>
           </dl>
           <div class="stalen" aria-label="Huisstijlkleuren">${['paneel', 'merk', 'actie', 'zacht'].map((k) => `<span style="background:${kleuren[k]}" title="${LABELS[k].naam} ${kleuren[k]}"></span>`).join('')}</div>

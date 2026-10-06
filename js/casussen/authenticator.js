@@ -12,7 +12,6 @@ export default {
       'Dit weekend heb je een nieuwe telefoon gekocht. Je oude telefoon heb je ingeleverd.',
       'Je wilt inloggen op Nedap ONS om de overdracht te lezen. Je vult je wachtwoord in en Nedap ONS vraagt om de code uit de authenticator-app. Op je nieuwe telefoon staat die app nog niet goed.',
     ],
-    noot: 'De werkafspraken in deze casus zijn verzonnen voor De Wilgenhof.',
   },
   stappen: [
     {

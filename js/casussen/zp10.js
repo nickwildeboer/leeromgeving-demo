@@ -12,7 +12,6 @@ export default {
       'Meneer Koster is 91. Gisteren hebben de arts en het team besloten dat hij in de stervensfase is. Sinds die dag loopt bij hem het zorgpad stervensfase in Nedap ONS.',
       'Zijn dochter zit bij hem. Als je binnenkomt, hoor je dat zijn ademhaling rochelt. Hij fronst en trekt aan het laken. Zijn lippen zijn droog.',
     ],
-    noot: 'Meneer Koster is verzonnen. In deze leeromgeving staan nooit echte cliënten.',
   },
   stappen: [
     {
