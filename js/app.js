@@ -448,95 +448,184 @@ function viewKeuze(stap) {
     </article>`;
 }
 
-// Oefenschermen in de vormgeving van Nedap ONS, nagebouwd naar de testomgeving.
-// De schermtitel in de casus ("Rapportage · mevrouw Bakker") bepaalt het menu-item en de cliëntkop.
-const ONS_MENU = ['Overzicht', 'Vragenlijsten', 'Plan', 'Rapportages', 'Agenda', 'Klinimetrie', 'Snelkoppelingen'];
-const ONS_MENU_ADMIN = ['Overzicht', 'Algemeen', 'Cliëntnetwerk', 'Financieel', 'Documenten'];
-const ONS_PAGINA = [
-  [/^rapportage/i, 'Rapportages'], [/^(zorgplan|zorgpad|afspraken)/i, 'Plan'],
-  [/^(metingen|klinimetrie)/i, 'Klinimetrie'], [/^(episode|wond)/i, 'Overzicht'],
+// Oefenschermen in de vormgeving van Nedap ONS Dossier, één op één nagebouwd naar schermafdrukken uit de testomgeving.
+// Een koppelstap kiest een scherm met `ons` (zie FORMAAT.md). Zonder `ons` blijft het neutrale oefenscherm staan.
+const ONS_ICOON = {
+  overzicht: '<path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/>',
+  vragenlijst: '<path d="M6 3h9l4 4v6M6 3v18h7M14 3v5h5"/><circle cx="17" cy="17" r="3"/>',
+  plan: '<path d="M3 15h4l5 3 7-4M12 11c-3-2-5-4-5-6a2.5 2.5 0 0 1 5-1 2.5 2.5 0 0 1 5 1c0 2-2 4-5 6z"/>',
+  rapportage: '<path d="M6 3h9l4 4v5M6 3v18h6M14 3v5h5M14 20l6-6 2 2-6 6h-2z"/>',
+  agenda: '<path d="M4 6h16v15H4zM4 10h16M8 3v5M16 3v5"/><path d="M12 15h3v3h-3z"/>',
+  klinimetrie: '<path d="M5 20V12M10 20V6M15 20v-9M20 20V9M3 21h19"/>',
+  link: '<path d="M10 14a4 4 0 0 1 0-6l2-2a4 4 0 0 1 6 6l-1 1M14 10a4 4 0 0 1 0 6l-2 2a4 4 0 0 1-6-6l1-1"/>',
+  algemeen: '<path d="M4 4h16v16H4z"/><circle cx="12" cy="10" r="3"/><path d="M7 18c1-3 9-3 10 0"/>',
+  netwerk: '<circle cx="8" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><path d="M3 19c1-4 9-4 10 0M11 19c1-4 9-4 10 0"/>',
+  financieel: '<path d="M17 6a7 7 0 1 0 0 12M4 10h9M4 14h9"/>',
+  documenten: '<path d="M3 6h7l2 2h9v11H3zM6 6V4h6"/>',
+  inklappen: '<path d="M3 6h12M3 12h9M3 18h12M21 8l-4 4 4 4"/>',
+};
+const ONS_MENU = [
+  ['Overzicht', 'overzicht'], ['Vragenlijsten', 'vragenlijst'], ['Plan', 'plan'], ['Rapportages', 'rapportage'],
+  ['Agenda', 'agenda'], ['Klinimetrie', 'klinimetrie'], ['Snelkoppelingen', 'link'],
 ];
+const ONS_MENU_ADMIN = [
+  ['Overzicht', 'overzicht'], ['Algemeen', 'algemeen'], ['Cliëntnetwerk', 'netwerk'], ['Financieel', 'financieel'], ['Documenten', 'documenten'],
+];
+const ONS_LIJST = 'Alle deskundigheden (of kies deskundigheid)';
 
-function onsScherm(titel) {
-  const delen = String(titel || 'Nedap ONS').split(' · ');
-  const persoon = delen.find((d) => /^(mevrouw|meneer)\s/i.test(d));
-  const menu = (ONS_PAGINA.find(([re]) => re.test(delen[0])) || [null, 'Overzicht'])[1];
-  if (!persoon) return { titel: delen[0], sub: delen.slice(1).join(' · '), client: null, menu };
-  const achternaam = persoon.replace(/^(mevrouw|meneer)\s+/i, '');
-  const initialen = achternaam.split(/\s+/).map((w) => w[0].toUpperCase()).join('').slice(0, 2);
-  let n = 0;
-  for (const c of achternaam) n = (n * 31 + c.charCodeAt(0)) % 90000;
-  return {
-    titel: delen[0], sub: delen.filter((d) => d !== delen[0] && d !== persoon).join(' · '),
-    client: persoon[0].toUpperCase() + persoon.slice(1), initialen, nummer: 10000 + n, menu,
-  };
-}
+const onsIcoon = (naam) => `<svg class="ons__icoon" viewBox="0 0 24 24" aria-hidden="true">${ONS_ICOON[naam]}</svg>`;
 
 function onsBovenbalk() {
   return `
-        <div class="ons__balk">
-          <span class="ons__logo" aria-hidden="true"></span>
-          <span class="ons__app">Dossier <span class="ons__raster" aria-hidden="true"></span></span>
-          <span class="ons__zoek" aria-hidden="true">Zoeken naar cliënten...</span>
+        <div class="ons__balk" aria-hidden="true">
+          <span class="ons__logo"></span>
+          <span class="ons__app">Dossier <span class="ons__raster"></span></span>
+          <span class="ons__zoek">Zoeken naar cliënten...</span>
+          <span class="ons__rechts">
+            <svg viewBox="0 0 24 24"><path d="M4 4h16v12H9l-5 4z"/></svg>
+            <span class="ons__bel"><svg viewBox="0 0 24 24"><path d="M6 17V11a6 6 0 0 1 12 0v6l2 2H4zM10 21h4"/></svg></span>
+            <span class="ons__avatar"></span>
+          </span>
         </div>`;
 }
 
 function onsMenu(actief) {
-  const item = (naam, i) => `<li class="ons__menu-item${naam === actief && i === 0 ? ' is-actief' : ''}">${esc(naam)}</li>`;
+  const item = ([naam, icoon], aan) => `<li class="ons__menu-item${aan ? ' is-actief' : ''}">${onsIcoon(icoon)}${esc(naam)}</li>`;
   return `
           <nav class="ons__menu" aria-hidden="true">
             <p class="ons__terug">← Cliënt zoeken</p>
             <p class="ons__groep">Dossier</p>
-            <ul>${ONS_MENU.map((n) => item(n, 0)).join('')}</ul>
+            <ul>${ONS_MENU.map((m) => item(m, m[0] === actief)).join('')}</ul>
             <p class="ons__groep">Administratie</p>
-            <ul>${ONS_MENU_ADMIN.map((n) => item(n, 1)).join('')}</ul>
-            <p class="ons__nedap">nedap</p>
+            <ul>${ONS_MENU_ADMIN.map((m) => item(m, false)).join('')}</ul>
+            <p class="ons__inklappen">${onsIcoon('inklappen')}Inklappen</p>
+            <p class="ons__nedap">☆ nedap</p>
           </nav>`;
 }
 
+function onsClient(ons) {
+  const initialen = ons.naam.split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase();
+  return `
+            <div class="ons__client">
+              <span class="ons__initialen" aria-hidden="true">${esc(initialen)}</span>
+              <div class="ons__client-tekst">
+                <p class="ons__naam">${esc(ons.naam)}${(ons.labels || []).map((l) => ` <span class="ons__label">${esc(l)}</span>`).join('')}</p>
+                <p class="ons__gegevens">Geboortedatum is onbekend | ${esc(ons.nummer || '12345')} | ••••••••• | <u>Adres is onbekend</u></p>
+              </div>
+              <span class="ons__meer" aria-hidden="true">Meer info ⌄</span>
+            </div>`;
+}
+
+function onsVeld(stap, r, i, goed) {
+  const check = casus.gecontroleerd
+    ? `<span class="ecd__check ${casus.koppel[i] === r.goed ? 'is-goed' : 'is-fout'}">${casus.koppel[i] === r.goed ? ICOON.vink : ICOON.let}<span class="sr">${casus.koppel[i] === r.goed ? 'goed' : 'nog niet goed'}</span></span>`
+    : '';
+  return `
+              <div class="ons__veld">
+                <label for="koppel-${i}">${esc(r.waarneming)}</label>
+                <div class="ons__regel">
+                  <select class="ons__select" id="koppel-${i}" data-koppel="${i}" ${casus.gecontroleerd && goed ? 'disabled' : ''}>
+                    <option value="">${esc(stap.kiesTekst || 'Kies')}</option>
+                    ${stap.opties.map((d) => `<option value="${d.id}" ${casus.koppel[i] === d.id ? 'selected' : ''}>${esc(d.naam)}</option>`).join('')}
+                  </select>
+                  ${check}
+                </div>
+              </div>`;
+}
+
+// Schermen waar we een schermafdruk van hebben. Teksten en volgorde zoals in Nedap ONS.
+const ONS_SCHERMEN = {
+  'nieuwe-episode': {
+    menu: 'Overzicht',
+    inhoud: (stap, ons, velden, opslaan) => `
+            <p class="ons__kruimel">← Episodes – Overzicht</p>
+            ${onsClient(ons)}
+            <div class="ons__kopregel"><h3 class="ons__titel">Nieuwe episode</h3>${opslaan}</div>
+            <div class="ons__kaart ons__formulier">
+              <div class="ons__rij3">
+                <div class="ons__veld"><span class="ons__lbl">Titel<b>*</b></span><span class="ons__titelveld"><span class="ons__invoer ons__invoer--kort">${esc(ons.titel || '')}</span><span class="ons__ster"><span aria-hidden="true">★</span> Markeer als belangrijk</span></span></div>
+              </div>
+              <div class="ons__rij3">
+                <div class="ons__veld"><span class="ons__lbl">Startdatum<b>*</b></span><span class="ons__invoer ons__datum">${esc(ons.datum || '06-10-2026')}</span></div>
+                <div class="ons__veld"><span class="ons__lbl">Einddatum</span><span class="ons__invoer ons__datum is-leeg">DD-MM-YYYY</span></div>
+                <div class="ons__veld"><span class="ons__lbl">Evaluatiedatum</span><span class="ons__invoer ons__datum is-leeg">DD-MM-YYYY</span></div>
+              </div>
+              <div class="ons__rij2">
+                <div class="ons__veld"><span class="ons__lbl">Hoofddoel</span><span class="ons__invoer ons__tekstvak${ons.hoofddoel ? '' : ' is-leeg'}">${esc(ons.hoofddoel || 'Optioneel')}</span></div>
+                <div>
+                  <div class="ons__veld"><span class="ons__lbl">Relevant voor</span><span class="ons__nep-select">${ONS_LIJST}</span></div>
+                  <div class="ons__veld"><span class="ons__lbl">Zichtbaar voor</span><span class="ons__nep-select">${ONS_LIJST}</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="ons__kaart ons__formulier">${velden}</div>`,
+  },
+  zorgplan: {
+    menu: 'Plan',
+    inhoud: (stap, ons, velden, opslaan) => `
+            ${onsClient(ons)}
+            <div class="ons__tabs" aria-hidden="true"><span class="is-actief">Zorgplan</span><span>Onvrijwillige zorg(0)</span></div>
+            <div class="ons__kopregel ons__kopregel--lijn"><h3 class="ons__titel">Zorgplan</h3><span class="ons__knop ons__knop--blauw" aria-hidden="true">Dagoverzicht</span></div>
+            <div class="ons__kaart ons__concept">
+              <div>
+                <p class="ons__concept-kop">Concept zorgplan</p>
+                <p>Geldig vanaf onbekend tot en met onbekend<br>Laatst bijgewerkt op ${esc(ons.datum || '06-10-2026')} door ${esc(ons.auteur || 'Sanne Visser')}</p>
+              </div>
+              <div class="ons__concept-knoppen">${opslaan}<span class="ons__knop ons__knop--rand" aria-hidden="true">Wijzigen</span></div>
+            </div>
+            <div class="ons__kaart ons__formulier">${velden}</div>`,
+    opslaan: 'Afronden',
+  },
+};
+
 function viewKoppel(stap) {
-  const ons = onsScherm(stap.scherm);
   const goed = stap.regels.every((r, i) => casus.koppel[i] === r.goed);
   const alles = stap.regels.every((r, i) => casus.koppel[i]);
+  const ons = stap.ons && ONS_SCHERMEN[stap.ons.scherm] ? stap.ons : null;
+  let scherm;
+  if (ons) {
+    const pagina = ONS_SCHERMEN[ons.scherm];
+    const knopTekst = pagina.opslaan || 'Opslaan';
+    const opslaan = casus.gecontroleerd && goed
+      ? `<span class="ons__knop ons__knop--${pagina.opslaan ? 'groen' : 'blauw'} is-uit">✓ ${knopTekst}</span>`
+      : `<button type="button" class="ons__knop ons__knop--${pagina.opslaan ? 'groen' : 'blauw'}" data-actie="koppel-check" ${alles ? '' : 'disabled'}>✓ ${knopTekst}</button>`;
+    const velden = stap.regels.map((r, i) => onsVeld(stap, r, i, goed)).join('');
+    scherm = `
+      <div class="ons" role="group" aria-label="${esc(stap.scherm)}">
+        ${onsBovenbalk()}
+        <div class="ons__lijf">
+          ${onsMenu(pagina.menu)}
+          <div class="ons__inhoud">${pagina.inhoud(stap, ons, velden, opslaan)}</div>
+        </div>
+        ${casus.gecontroleerd && goed ? `<p class="ons__melding" role="status"><span aria-hidden="true">✓</span> ${pagina.opslaan ? 'Zorgplan is afgerond' : 'Episode is opgeslagen'}</p>` : ''}
+      </div>`;
+  } else {
+    scherm = `
+      <div class="ecd">
+        <div class="ecd__balk"><span>${esc(stap.scherm || 'Nedap ONS')}</span></div>
+        <div class="ecd__body">
+          ${stap.regels.map((r, i) => `
+            <div class="ecd__rij">
+              <label for="koppel-${i}">${esc(r.waarneming)}</label>
+              <select id="koppel-${i}" data-koppel="${i}" ${casus.gecontroleerd && goed ? 'disabled' : ''}>
+                <option value="">${esc(stap.kiesTekst || 'Kies')}</option>
+                ${stap.opties.map((d) => `<option value="${d.id}" ${casus.koppel[i] === d.id ? 'selected' : ''}>${esc(d.naam)}</option>`).join('')}
+              </select>
+              ${casus.gecontroleerd ? `<span class="ecd__check ${casus.koppel[i] === r.goed ? 'is-goed' : 'is-fout'}">${casus.koppel[i] === r.goed ? ICOON.vink : ICOON.let}<span class="sr">${casus.koppel[i] === r.goed ? 'goed' : 'nog niet goed'}</span></span>` : ''}
+            </div>`).join('')}
+        </div>
+      </div>`;
+  }
   return `
     <article class="werkpaneel">
       <h2>${esc(stap.vraag)}</h2>
       ${stap.uitleg ? `<p>${esc(stap.uitleg)}</p>` : ''}
-      <div class="ons" role="group" aria-label="${esc(stap.scherm)}">
-        ${onsBovenbalk()}
-        <div class="ons__lijf${ons.client ? '' : ' ons__lijf--zonder-menu'}">
-          ${ons.client ? onsMenu(ons.menu) : ''}
-          <div class="ons__inhoud">
-            ${ons.client ? `
-            <div class="ons__client">
-              <span class="ons__initialen" aria-hidden="true">${esc(ons.initialen)}</span>
-              <div>
-                <p class="ons__naam">${esc(ons.client)}</p>
-                <p class="ons__gegevens">Geboortedatum is onbekend | ${ons.nummer} | Adres is onbekend</p>
-              </div>
-            </div>` : ''}
-            <h3 class="ons__titel">${esc(ons.titel)}</h3>
-            ${ons.sub ? `<p class="ons__sub">${esc(ons.sub)}</p>` : ''}
-            <div class="ons__tabel">
-              <div class="ons__kop"><span>Waarneming</span><span>${esc(stap.kiesTekst || 'Kies')}</span></div>
-              ${stap.regels.map((r, i) => `
-              <div class="ons__rij">
-                <label for="koppel-${i}">${esc(r.waarneming)}</label>
-                <select id="koppel-${i}" data-koppel="${i}" ${casus.gecontroleerd && goed ? 'disabled' : ''}>
-                  <option value="">${esc(stap.kiesTekst || 'Kies')}</option>
-                  ${stap.opties.map((d) => `<option value="${d.id}" ${casus.koppel[i] === d.id ? 'selected' : ''}>${esc(d.naam)}</option>`).join('')}
-                </select>
-                ${casus.gecontroleerd ? `<span class="ecd__check ${casus.koppel[i] === r.goed ? 'is-goed' : 'is-fout'}">${casus.koppel[i] === r.goed ? ICOON.vink : ICOON.let}<span class="sr">${casus.koppel[i] === r.goed ? 'goed' : 'nog niet goed'}</span></span>` : '<span></span>'}
-              </div>`).join('')}
-            </div>
-          </div>
-        </div>
-      </div>
+      ${scherm}
       ${casus.gecontroleerd ? `<div class="variant ${goed ? 'variant--goed' : 'variant--fout'}"><p>${esc(goed ? stap.goedTekst : stap.foutTekst)}</p></div>` : ''}
       <div class="knoppen">
         ${casus.gecontroleerd && goed
           ? `<button type="button" class="btn btn--actie" data-actie="casus-verder">Verder ${ICOON.pijl}</button>`
-          : `<button type="button" class="btn btn--actie" data-actie="koppel-check" ${alles ? '' : 'disabled'}>Controleer</button>`}
+          : ons ? '' : `<button type="button" class="btn btn--actie" data-actie="koppel-check" ${alles ? '' : 'disabled'}>Controleer</button>`}
       </div>
     </article>`;
 }

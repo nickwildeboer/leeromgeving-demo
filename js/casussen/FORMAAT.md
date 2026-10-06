@@ -47,8 +47,11 @@ Een foute keuze heeft een eigen, geloofwaardige afloop. Daarna kiest de medewerk
   opties: [{ id: 'id', naam: 'Naam' }],                  // 2 tot 6
   goedTekst: '...',
   foutTekst: '...',                  // legt uit wat waar hoort
+  ons: { scherm: 'nieuwe-episode', naam: 'G Kok', titel: 'Blaasontsteking' }, // mag weg, zie hieronder
 }
 ```
+
+Met `ons` staat de stap in een scherm dat één op één is nagebouwd naar Nedap ONS. Kies alleen een scherm waarvan een schermafdruk uit de testomgeving bestaat. Nu zijn dat `nieuwe-episode` en `zorgplan`. `naam` is de cliënt zoals ONS hem toont: voorletter en achternaam. Zonder `ons` krijgt de stap het neutrale oefenscherm.
 
 **volgorde**: stappen in de goede volgorde zetten met pijltjes.
 

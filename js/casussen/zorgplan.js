@@ -53,6 +53,7 @@ export default {
       vraag: 'In het zorgplan staan doelen en acties. Wat is een doel en wat is een actie?',
       uitleg: 'Bij De Wilgenhof is een doel wat je samen met de cliënt wilt bereiken. Een actie is wat jij doet om daar te komen.',
       scherm: 'Zorgplan · mevrouw Peters',
+      ons: { scherm: 'zorgplan', naam: 'J Peters' },
       kiesTekst: 'Doel of actie?',
       regels: [
         { waarneming: 'Mevrouw verslikt zich niet bij het eten en drinken.', goed: 'doel' },

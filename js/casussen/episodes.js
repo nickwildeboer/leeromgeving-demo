@@ -53,6 +53,7 @@ export default {
       vraag: 'Je zit in de episode van mevrouw Kok. Wat hoort waar?',
       uitleg: 'Bij De Wilgenhof zet je in de episode alleen wat bij de blaasontsteking hoort. Wat je vandaag zag, gaat in de rapportage. Wat altijd geldt, staat in het zorgplan.',
       scherm: 'Episode · mevrouw Kok',
+      ons: { scherm: 'nieuwe-episode', naam: 'G Kok', titel: 'Blaasontsteking' },
       kiesTekst: 'Kies een plek',
       regels: [
         { waarneming: 'Antibioticakuur van vijf dagen, tot en met maandag', goed: 'episode' },

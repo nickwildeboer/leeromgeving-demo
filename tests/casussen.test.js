@@ -47,6 +47,7 @@ for (const bestand of bestanden) {
         assert.ok(s.regels.length >= 2 && s.regels.length <= 5, `${waar}: 2 tot 5 regels`);
         for (const r of s.regels) assert.ok(isTekst(r.waarneming) && ids.includes(r.goed), `${waar}: regel ${r.waarneming} wijst naar een bestaande optie`);
         assert.ok(isTekst(s.goedTekst) && isTekst(s.foutTekst), `${waar}: goedTekst en foutTekst`);
+        if (s.ons) assert.ok(['nieuwe-episode', 'zorgplan'].includes(s.ons.scherm) && isTekst(s.ons.naam), `${waar}: ons.scherm bestaat en ons.naam is gevuld`);
       } else if (s.type === 'volgorde') {
         assert.ok(s.items.length >= 3 && s.items.length <= 6, `${waar}: 3 tot 6 items`);
         assert.deepEqual([...s.start].sort((a, b) => a - b), s.items.map((_, j) => j), `${waar}: start is een herschikking van de items`);
