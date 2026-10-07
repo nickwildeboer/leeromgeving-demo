@@ -30,3 +30,10 @@ Afspraken voor de gedeelde stijl en componenten. Getoetst aan de checklist van d
 ## Dashboard
 
 - De tegel "lopen achter" is een knop. Hij filtert de tabel op wie achterloopt en zet de focus op de tabel. Nog een keer klikken laat iedereen weer zien.
+
+## Telefoon
+
+- De leeromgeving is gemaakt voor laptop en tablet. Op een scherm smaller dan 768 px krijg je bij het eerste bezoek één keer een melding dat het daar het best werkt. Wegklikken onthoudt de browser apart van de demo (`leeromgeving-schermtip-gezien`), dus "Demo opnieuw beginnen" laat hem niet terugkomen.
+- Alles moet op 390 px wel werken. De bovenbalk scrolt daar mee in plaats van vast te staan, zodat de vraag niet onder de balk verdwijnt.
+- De Profielen-tabel en de bibliotheek in het beheercentrum worden op een telefoon kaarten, net als het dashboard.
+- De nagebouwde schermen van Nedap ONS hoeven op een telefoon niet perfect. Ze mogen alleen niet buiten beeld lopen.

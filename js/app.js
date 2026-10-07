@@ -872,7 +872,7 @@ function viewProfielen() {
     <div class="wrap">
       <div class="werkpaneel werkpaneel--vol">
         <div class="tabelwrap">
-          <table class="tabel tabel--matrix">
+          <table class="tabel tabel--matrix tabel--kaarten">
             <thead><tr><th scope="col">Module</th>${kolommen.map((p) => `<th scope="col">${esc(p.naam)}<span class="klein">${t[p.id].length} modules</span></th>`).join('')}</tr></thead>
             ${DELEN.map((d, di) => `
               <tbody>
@@ -880,7 +880,7 @@ function viewProfielen() {
                 ${MODULES.filter((m) => m.deel === d.id).map((m) => `
                   <tr>
                     <th scope="row">${esc(m.titel)}<span class="klein">${metaRegel(m)}</span></th>
-                    ${kolommen.map((p) => `<td><label class="vinkvak"><input type="checkbox" data-toewijs="${p.id}" value="${m.id}" ${t[p.id].includes(m.id) ? 'checked' : ''}><span class="sr">${esc(m.titel)} voor ${esc(p.naam)}</span><span class="vinkvak__box" aria-hidden="true">${ICOON.vink}</span></label></td>`).join('')}
+                    ${kolommen.map((p) => `<td data-label="${esc(p.naam)}"><label class="vinkvak"><input type="checkbox" data-toewijs="${p.id}" value="${m.id}" ${t[p.id].includes(m.id) ? 'checked' : ''}><span class="sr">${esc(m.titel)} voor ${esc(p.naam)}</span><span class="vinkvak__box" aria-hidden="true">${ICOON.vink}</span></label></td>`).join('')}
                   </tr>`).join('')}
               </tbody>`).join('')}
           </table>
@@ -908,17 +908,17 @@ function viewBeheerModules() {
       <div class="werkpaneel werkpaneel--vol">
         <div class="tabelkop"><h2>${MODULES.length} modules voor Nedap ONS</h2></div>
         <div class="tabelwrap">
-          <table class="tabel">
+          <table class="tabel tabel--kaarten">
             <thead><tr><th scope="col">Module</th><th scope="col">Deel</th><th scope="col">Varianten</th><th scope="col">Toets</th><th scope="col">Lagen</th><th scope="col">Stand</th></tr></thead>
             <tbody>
               ${MODULES.map((m) => `
                 <tr>
                   <th scope="row">${esc(m.titel)}</th>
-                  <td>${esc(DELEN.find((d) => d.id === m.deel).titel)}</td>
-                  <td>${m.varianten || '<span class="klein">geen</span>'}</td>
-                  <td>${m.toets ? ICOON.vink + '<span class="sr">ja</span>' : '<span class="klein">nee</span>'}</td>
-                  <td><span class="laag">Generiek</span> <span class="laag laag--klant">De Wilgenhof</span></td>
-                  <td>${CASUSSEN[m.id] ? '<span class="status status--klaar">Uitgewerkt</span>' : '<span class="status">Opzet</span>'}</td>
+                  <td data-label="Deel">${esc(DELEN.find((d) => d.id === m.deel).titel)}</td>
+                  <td data-label="Varianten">${m.varianten || '<span class="klein">geen</span>'}</td>
+                  <td data-label="Toets">${m.toets ? ICOON.vink + '<span class="sr">ja</span>' : '<span class="klein">nee</span>'}</td>
+                  <td data-label="Lagen" class="tabel__breed"><span class="laag">Generiek</span> <span class="laag laag--klant">De Wilgenhof</span></td>
+                  <td data-label="Stand">${CASUSSEN[m.id] ? '<span class="status status--klaar">Uitgewerkt</span>' : '<span class="status">Opzet</span>'}</td>
                 </tr>`).join('')}
             </tbody>
           </table>
@@ -1467,5 +1467,43 @@ window.addEventListener('hashchange', () => {
   render();
 });
 
+// Op een telefoon zeggen we één keer dat de leeromgeving het best werkt op een laptop of tablet.
+const SCHERMTIP = 'leeromgeving-schermtip-gezien';
+
+function toonSchermtip() {
+  if (!window.matchMedia('(max-width: 767px)').matches) return;
+  try {
+    if (window.localStorage.getItem(SCHERMTIP)) return;
+  } catch {
+    // geen opslag, dan tonen we hem gewoon
+  }
+  const venster = document.createElement('dialog');
+  venster.className = 'schermtip';
+  venster.setAttribute('aria-labelledby', 'schermtip-kop');
+  venster.innerHTML = `
+    <div class="moment__kaart schermtip__kaart">
+      <svg class="schermtip__beeld" viewBox="0 0 96 64" aria-hidden="true"><rect x="16" y="8" width="64" height="40" rx="5"/><path d="M6 54h84"/><rect x="62" y="24" width="20" height="34" rx="4" class="schermtip__tel"/></svg>
+      <h2 id="schermtip-kop">Pak er een laptop of tablet bij</h2>
+      <p>Deze leeromgeving is gemaakt voor een groter scherm. Daar zie je Nedap ONS zoals op je werk, en klik je makkelijker mee.</p>
+      <p>Rondkijken op je telefoon kan ook.</p>
+      <button type="button" class="btn btn--actie btn--breed" data-schermtip-dicht>Begrepen</button>
+    </div>`;
+  const sluit = () => {
+    try {
+      window.localStorage.setItem(SCHERMTIP, '1');
+    } catch {
+      // niet te bewaren, dan zie je hem bij een volgend bezoek nog een keer
+    }
+    venster.close();
+  };
+  venster.querySelector('[data-schermtip-dicht]').addEventListener('click', sluit);
+  venster.addEventListener('cancel', sluit);
+  venster.addEventListener('close', () => venster.remove());
+  document.body.append(venster);
+  if (typeof venster.showModal === 'function') venster.showModal();
+  else venster.setAttribute('open', '');
+}
+
 laad();
 render();
+toonSchermtip();

@@ -362,7 +362,7 @@ input[type="email"]:focus,input[type="text"]:focus,select:focus{border-color:var
 .uitslag__lijst svg{width:22px;height:22px;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;margin-top:2px}
 .uitslag__lijst .is-goed svg{stroke:var(--merk-tekst)}
 .volgorde{list-style:none;padding:0;margin:20px 0;display:grid;gap:10px}
-.volgorde__item{display:grid;grid-template-columns:36px 1fr auto;gap:12px;align-items:center;padding:12px 14px;border-radius:14px;background:var(--wit);border:1.5px solid var(--lijn)}
+.volgorde__item{display:grid;grid-template-columns:36px minmax(0,1fr) auto;overflow-wrap:anywhere;hyphens:auto;gap:12px;align-items:center;padding:12px 14px;border-radius:14px;background:var(--wit);border:1.5px solid var(--lijn)}
 .volgorde__item.is-goed{border-color:var(--merk-tekst)}
 .volgorde__item.is-fout{border-color:var(--signaal-tekst)}
 .volgorde__nr{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--zacht);font-weight:700;color:var(--merk-tekst)}
@@ -698,13 +698,34 @@ body[data-rol="gast"] .voet{display:none}
   .tabel--kaarten thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
   .tabel--kaarten,.tabel--kaarten tbody{display:block}
   .tabel--kaarten tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 14px;margin-bottom:12px;padding:16px;border:1.5px solid var(--lijn);border-radius:var(--r)}
-  .tabel--kaarten th,.tabel--kaarten td{display:block;padding:0;border:0;white-space:normal}
+  .tabel--kaarten th,.tabel--kaarten td,.tabel--kaarten tbody th,.tabel.tabel--kaarten td:nth-child(n){display:block;padding:0;border:0;white-space:normal;overflow-wrap:anywhere;hyphens:auto}
   .tabel--kaarten tbody th{grid-column:1/-1;font-size:1.08rem}
   .tabel--kaarten td[data-label]::before{content:attr(data-label);display:block;font-size:.8rem;font-weight:600;color:var(--tekst-zacht)}
   .tabel--kaarten td.tabel__breed{grid-column:1/-1}
   .tabel--kaarten .minibalk{width:100%}
   .tabel--kaarten .status{white-space:normal;border-radius:12px}
+  .tabel--kaarten tr.tabel__deel{display:block;margin:18px 0 8px;padding:0;border:0}
+  .tabel--kaarten tr.tabel__deel th{background:none;padding:0}
+  .tabel--matrix.tabel--kaarten td{width:auto;text-align:left}
+  .tabel--matrix.tabel--kaarten td[data-label]::before{margin-bottom:6px}
 }
+
+/* ---------- telefoon: kop scrolt mee, zodat de vraag niet onder de balk verdwijnt ---------- */
+@media (max-width:600px){
+  .balk{position:relative}
+  .volgorde__item{gap:10px;padding:12px}
+  .volgorde__knop{width:44px}
+}
+
+/* ---------- melding op een telefoon: werkt het best op laptop of tablet ---------- */
+.schermtip{width:min(calc(100% - 32px),420px);max-width:none;padding:0;border:0;background:none;color:var(--tekst)}
+.schermtip::backdrop{background:rgba(8,22,18,.55)}
+.schermtip__kaart{padding:30px 24px 24px}
+.schermtip__kaart h2{font-size:1.4rem;margin:.3em 0 .5em}
+.schermtip__kaart p{margin:0 0 .7em;color:var(--tekst-zacht)}
+.schermtip__kaart .btn{margin-top:.8em}
+.schermtip__beeld{width:96px;height:64px;fill:var(--zacht);stroke:var(--merk-tekst);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.schermtip__tel{fill:var(--wit)}
 
 @media print{
   @page{size:A4 landscape;margin:0}
