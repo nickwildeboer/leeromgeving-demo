@@ -3,7 +3,11 @@ import { CASUSSEN, NORM } from './casussen/index.js';
 import { bereken, cssVariabelen, STANDAARD, VERPLICHT, OPTIONEEL, LABELS, isHex, contrast } from './theme.js';
 import { laad, zet, nu, opnieuw } from './state.js';
 import { startRondleiding, stopRondleiding } from './tour.js';
-import { viewLes, viewDoorklik, beginStap, fasen, richtDoel } from './doorklik.js';
+import { mountVraag, mountBronnen } from './vraag.js';
+import { HANDBOEK } from './handboek.js';
+import { mountOefenen, resetOefenen } from './oefenen.js';
+import { schermKaart, geraakt, ONS_GECONTROLEERD } from './schermkaart.js';
+import { viewLes, viewDoorklik, beginStap, fasen, richtDoel, tijdTekst } from './doorklik.js';
 import { beloonAfronding, toonWachtendMoment, badgeBlok, deelBadge, certificaatPagina, aantalBadges, badgeTeller, delenMetModules } from './beloning.js';
 
 const DEMO_VANDAAG = '2026-10-06';
@@ -107,9 +111,9 @@ function schil(inhoud, opties = {}) {
   const rol = nu().rol;
   const route = opties.route || '';
   const navs = {
-    medewerker: [['#/overzicht', 'Mijn overzicht'], ['#/module/rondleiding', 'Rondleiding']],
+    medewerker: [['#/overzicht', 'Mijn overzicht'], ['#/oefenen', 'Oefenen in ONS'], ['#/vraag', 'Vraag het'], ['#/module/rondleiding', 'Rondleiding']],
     opleider: [['#/opleider', 'Dashboard'], ['#/opleider/profielen', 'Profielen']],
-    beheer: [['#/beheer', 'Modules'], ['#/beheer/klanten', 'Klanten'], ['#/beheer/huisstijl', 'Huisstijl']],
+    beheer: [['#/beheer', 'Modules'], ['#/beheer/schermen', 'Schermkaart'], ['#/beheer/bronnen', 'Handboek'], ['#/beheer/klanten', 'Klanten'], ['#/beheer/huisstijl', 'Huisstijl']],
   };
   const wie = { medewerker: `${MEDEWERKER.naam} ${MEDEWERKER.achternaam}`, opleider: 'Opleider De Wilgenhof', beheer: 'Nick en Erwin' }[rol] || '';
   const merk = rol === 'beheer'
@@ -286,6 +290,11 @@ function viewOverzicht() {
             <p class="voortgang__tekst"><strong>${klaar} van ${lijst.length}</strong> klaar</p>
           </div>
           ${volgende ? `<a class="btn btn--actie btn--groot" data-tour="verder" href="#/module/${volgende.id}">${knopTekst} ${ICOON.pijl}</a>` : ''}
+          <form class="snelvraag" data-form="vraag" role="search">
+            <label class="sr" for="snelvraag">Stel je vraag of zoek in het handboek</label>
+            <input id="snelvraag" name="vraag" type="search" autocomplete="off" placeholder="Vraag het: bij wie meld ik een val?">
+            <button type="submit" class="btn btn--rand btn--op-paneel">Zoek</button>
+          </form>
         </div>
         <aside class="tip" data-tour="tip" aria-labelledby="tip-kop">
           <p class="tip__label">${ICOON.lamp} Tip van de dag</p>
@@ -298,6 +307,11 @@ function viewOverzicht() {
     <div class="wrap overzicht">
       ${badgeBlok({ toegewezen: lijst.map((m) => m.id), voortgang: nu().voortgang, dagen: nu().dagen })}
       ${delen}
+      <a class="oefenkaart" href="#/oefenen">
+        <span class="oefenkaart__icoon" aria-hidden="true">${ICOON.speel}</span>
+        <span><strong>Vrij oefenen in Nedap ONS</strong><span class="klein">Klik overal rond met testcliënten. Er kan niets kapot gaan.</span></span>
+        <span class="module__pijl" aria-hidden="true">${ICOON.pijl}</span>
+      </a>
       <aside class="hulp" data-tour="hulp">
         <span class="hulp__icoon" aria-hidden="true">${ICOON.vraag}</span>
         <div>
@@ -332,7 +346,7 @@ function startTour() {
 let casus = null;
 
 function nieuweCasus(id) {
-  return { id, stap: beginStap(CASUSSEN[id]), lesPagina: 0, klik: 0, keuze: null, koppel: {}, volgorde: null, gecontroleerd: false, antwoorden: {} };
+  return { id, stap: beginStap(CASUSSEN[id]), lesPagina: 0, klik: 0, stand: 'mee', zelf: null, speelt: false, keuze: null, koppel: {}, volgorde: null, gecontroleerd: false, antwoorden: {} };
 }
 
 function deelVan(m) {
@@ -382,6 +396,27 @@ function viewModule(id) {
     </div>`, { route: `#/module/${id}` });
 }
 
+// De werkafspraak-knop: wissel tussen hoe Nedap ONS werkt en hoe wij het hier doen. De tekst komt uit het handboek van de klant.
+function werkafspraak(id) {
+  const secties = HANDBOEK.filter((x) => x.module === id);
+  if (!secties.length) return '';
+  const aan = !!casus.afspraak;
+  return `
+    <div class="afspraak${aan ? ' is-aan' : ''}">
+      <div class="afspraak__wissel" role="group" aria-label="Wat wil je zien?">
+        <button type="button" class="afspraak__knop${aan ? '' : ' is-nu'}" data-actie="afspraak" data-aan="0" aria-pressed="${!aan}">Zo werkt ONS</button>
+        <button type="button" class="afspraak__knop${aan ? ' is-nu' : ''}" data-actie="afspraak" data-aan="1" aria-pressed="${aan}">Zo doen wij het bij ${esc(orgNaam())}</button>
+      </div>
+      ${aan ? `<div class="afspraak__inhoud">${secties.map((x) => `<div class="afspraak__sectie"><h3>${esc(x.kop)}</h3>${x.tekst.map((t) => `<p>${esc(t)}</p>`).join('')}</div>`).join('')}<p class="afspraak__bron">${ICOON.boek} Uit: ${esc(secties[0].bron || 'Handboek')} ${esc(orgNaam())}</p></div>` : ''}
+    </div>`;
+}
+
+const datumNL = (iso) => new Date(iso).toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' });
+
+function versieregel() {
+  return `<p class="versieregel">${ICOON.vink} Gecontroleerd in Nedap ONS op ${datumNL(ONS_GECONTROLEERD)}</p>`;
+}
+
 function stapper(c, actief) {
   const stappen = [...fasen(c), ...c.stapNamen, c.toets?.length ? 'Toets' : 'Afronden'];
   return `<ol class="stapper" aria-label="Stappen in deze casus">${stappen.map((s, i) => `<li class="${i < actief ? 'is-klaar' : i === actief ? 'is-nu' : ''}"${i === actief ? ' aria-current="step"' : ''}><span>${i < actief ? ICOON.vink : i + 1}</span>${esc(s)}</li>`).join('')}</ol>`;
@@ -398,10 +433,10 @@ function viewCasus(m) {
 
   if (casus.stap === 'les') {
     stapNr = 0;
-    inhoud = viewLes(c, casus, h);
+    inhoud = werkafspraak(m.id) + viewLes(c, casus, h);
   } else if (casus.stap === 'doorklik') {
     stapNr = voor - 1;
-    inhoud = viewDoorklik(c, casus, h);
+    inhoud = (casus.stand === 'zelf' ? '' : werkafspraak(m.id)) + viewDoorklik(c, casus, h);
   } else if (casus.stap === 'intro') {
     inhoud = `
       <article class="werkpaneel situatie">
@@ -427,6 +462,7 @@ function viewCasus(m) {
         <h1>${esc(m.titel)}</h1>
         <p class="lead">${esc(m.leer)}</p>
         ${stapper(c, stapNr)}
+        ${versieregel()}
       </div>
     </section>
     <div class="wrap smal casus" aria-live="polite">${inhoud}</div>`, { route: `#/module/${m.id}` });
@@ -728,6 +764,12 @@ function samenvatting(c) {
     </div>`;
 }
 
+function metingRegel(id) {
+  const m = nu().metingen?.[id]?.laatste;
+  if (!m) return '';
+  return `<p class="meetregel">${ICOON.vink} Zelf in Nedap ONS: ${tijdTekst(m.sec)}, ${m.fouten} keer mis geklikt, ${m.hints} ${m.hints === 1 ? 'hint' : 'hints'}.</p>`;
+}
+
 function viewUitslag(c) {
   const t = c.toets;
   const goed = t.filter((v, i) => casus.antwoorden[i] === v.goed).length;
@@ -740,6 +782,7 @@ function viewUitslag(c) {
       <ul class="uitslag__lijst">
         ${t.map((v, i) => `<li class="${casus.antwoorden[i] === v.goed ? 'is-goed' : 'is-fout'}">${casus.antwoorden[i] === v.goed ? ICOON.vink : ICOON.let}<span>${esc(v.vraag)}${casus.antwoorden[i] === v.goed ? '' : ` <em>Goed antwoord: ${esc(v.opties[v.goed])}</em>`}</span></li>`).join('')}
       </ul>
+      ${metingRegel(c.id)}
       ${gehaald ? samenvatting(c) : ''}
       <div class="knoppen">
         ${gehaald
@@ -755,6 +798,7 @@ function viewAfronden(c) {
     <article class="werkpaneel uitslag ${klaar ? 'is-gehaald' : ''}">
       <span class="uitslag__icoon" aria-hidden="true">${ICOON.vink}</span>
       <h2>${klaar ? 'Module klaar' : 'Je bent door de casus heen'}</h2>
+      ${metingRegel(c.id)}
       ${samenvatting(c)}
       <div class="knoppen">
         ${klaar
@@ -774,7 +818,7 @@ function rijenOpleider() {
   const sanneKlaar = mijnModules().filter((m) => isKlaar(m.id)).length;
   const eigen = Object.values(nu().scores);
   const sanneScore = eigen.length ? Math.round(eigen.reduce((a, b) => a + b, 0) / eigen.length) : null;
-  const sanne = { naam: `${MEDEWERKER.naam} ${MEDEWERKER.achternaam}`, profiel: 'vig', afdeling: MEDEWERKER.afdeling, start: DEMO_VANDAAG, klaar: sanneKlaar, toets: sanneScore, live: true };
+  const sanne = { naam: `${MEDEWERKER.naam} ${MEDEWERKER.achternaam}`, profiel: 'vig', afdeling: MEDEWERKER.afdeling, start: DEMO_VANDAAG, klaar: sanneKlaar, toets: sanneScore, ons: sanneOns(), live: true };
   return [sanne, ...COLLEGAS].map((r) => {
     const totaal = (nu().toewijzing[r.profiel] || []).length;
     const klaar = Math.min(r.klaar, totaal);
@@ -783,6 +827,37 @@ function rijenOpleider() {
     const status = klaar === totaal ? 'klaar' : dagen > 14 && pct < 0.6 ? 'achter' : 'schema';
     return { ...r, totaal, klaar, pct, status };
   });
+}
+
+// Doe zelf in ONS, samengevat: hoeveel opdrachten, en per opdracht gemiddeld hoe vaak mis geklikt.
+function sanneOns() {
+  const m = Object.values(nu().metingen || {}).map((x) => x.laatste);
+  if (!m.length) return null;
+  const gem = (k) => m.reduce((a, x) => a + x[k], 0) / m.length;
+  return { opdrachten: m.length, fouten: Math.round(gem('fouten') * 10) / 10, sec: Math.round(gem('sec')) };
+}
+
+const komma = (n) => String(n).replace('.', ',');
+
+function onsCel(o) {
+  if (!o) return '<span class="klein">nog niet</span>';
+  return `<span class="onscel">${komma(o.fouten)} mis</span><span class="klein onscel">${o.opdrachten}× · ${o.sec} sec</span>`;
+}
+
+function metingBlok() {
+  const lijst = Object.entries(nu().metingen || {});
+  const rijen = lijst.map(([id, m]) => {
+    const mod = MODULES.find((x) => x.id === id);
+    const beter = m.keer > 1 ? (m.laatste.sec < m.eerste.sec ? 'sneller' : m.laatste.sec > m.eerste.sec ? 'langzamer' : 'even snel') : '';
+    return `<tr><th scope="row">${esc(mod?.titel.split(':')[0] || id)}</th><td data-label="Eerste keer">${tijdTekst(m.eerste.sec)}<span class="klein">${m.eerste.fouten} keer mis · ${m.eerste.hints} ${m.eerste.hints === 1 ? 'hint' : 'hints'}</span></td><td data-label="Laatste keer">${m.keer > 1 ? `${tijdTekst(m.laatste.sec)}<span class="klein">${m.laatste.fouten} keer mis · ${m.laatste.hints} ${m.laatste.hints === 1 ? 'hint' : 'hints'}</span>` : '<span class="klein">nog één keer gedaan</span>'}</td><td data-label="Verschil">${beter ? esc(beter) : '<span class="klein">nog niet</span>'}</td></tr>`;
+  }).join('');
+  return `
+      <div class="werkpaneel werkpaneel--vol meetblok">
+        <div class="tabelkop"><h2>Zelf in Nedap ONS: Sanne Visser</h2></div>
+        <p>Bij Doe zelf klikt de medewerker zonder hulp door Nedap ONS. Wij meten de tijd, hoe vaak ze mis klikt en hoe vaak ze om een hint vraagt. De eerste keer is de nulmeting.</p>
+        ${rijen ? `<div class="tabelwrap"><table class="tabel tabel--kaarten"><thead><tr><th scope="col">Module</th><th scope="col">Eerste keer</th><th scope="col">Laatste keer</th><th scope="col">Verschil</th></tr></thead><tbody>${rijen}</tbody></table></div>`
+          : '<p class="leeg">Sanne heeft nog geen opdracht zelf gedaan. Log in als Sanne en kies in een module Doe zelf.</p>'}
+      </div>`;
 }
 
 function vinkjesPerDeel(r) {
@@ -822,6 +897,7 @@ function viewOpleider() {
             <span class="tegel__actie">${filter === 'achter' ? 'Laat iedereen zien' : 'Laat zien wie'} ${ICOON.pijl}</span>
           </button>
           ${tegel(gem + '%', 'gemiddelde toetsscore')}
+          ${(() => { const o = alle.filter((r) => r.ons); const f = o.length ? Math.round((o.reduce((a, r) => a + r.ons.fouten, 0) / o.length) * 10) / 10 : 0; return tegel(komma(f), 'keer mis geklikt per opdracht in ONS'); })()}
         </div>
       </div>
     </section>
@@ -835,7 +911,7 @@ function viewOpleider() {
         </div>
         <div class="tabelwrap">
           <table class="tabel tabel--kaarten">
-            <thead><tr><th scope="col">Naam</th><th scope="col">Profiel</th><th scope="col">Afdeling</th><th scope="col">Gestart</th><th scope="col">Voortgang</th><th scope="col">Per deel</th><th scope="col">Badges</th><th scope="col">Toets</th><th scope="col">Status</th></tr></thead>
+            <thead><tr><th scope="col">Naam</th><th scope="col">Profiel</th><th scope="col">Afdeling</th><th scope="col">Gestart</th><th scope="col">Voortgang</th><th scope="col">Per deel</th><th scope="col">Badges</th><th scope="col">Toets</th><th scope="col">Zelf in ONS</th><th scope="col">Status</th></tr></thead>
             <tbody>
               ${rijen.map((r) => `
                 <tr${r.live ? ' class="is-live"' : ''}>
@@ -847,6 +923,7 @@ function viewOpleider() {
                   <td data-label="Per deel"><span class="deelvinken">${vinkjesPerDeel(r)}</span></td>
                   <td data-label="Badges">${badgeTeller(aantalBadges(r, nu().toewijzing[r.profiel] || [], nu().voortgang), delenMetModules(nu().toewijzing[r.profiel] || []).length)}</td>
                   <td data-label="Toets">${r.toets === null ? '<span class="klein">nog niet</span>' : r.toets + '%'}</td>
+                  <td data-label="Zelf in ONS" title="Gemiddeld mis geklikt per opdracht in Nedap ONS, aantal opdrachten en gemiddelde tijd">${onsCel(r.ons)}</td>
                   <td data-label="Status"><span class="status status--${r.status}">${statusTekst[r.status]}</span></td>
                 </tr>`).join('')}
             </tbody>
@@ -854,7 +931,9 @@ function viewOpleider() {
         </div>
         ${rijen.length ? '' : '<p class="leeg">Niemand loopt achter. Mooi zo.</p>'}
         <p class="opmerking">Loopt achter betekent: langer dan twee weken gestart en minder dan 60 procent klaar.</p>
+        <p class="opmerking">Zelf in ONS: gemiddeld zo vaak mis geklikt per opdracht in Nedap ONS, het aantal opdrachten en de gemiddelde tijd.</p>
       </div>
+      ${metingBlok()}
     </div>`, { route: '#/opleider' });
 }
 
@@ -926,6 +1005,50 @@ function viewBeheerModules() {
         <p class="opmerking">De bibliotheek groeit met elke klant. Wat generiek is, maak je één keer. Zie de kennisbank, wat-we-leveren.</p>
       </div>
     </div>`, { route: '#/beheer' });
+}
+
+let veranderd = [];
+
+function viewSchermkaart() {
+  const kaart = schermKaart(CASUSSEN);
+  const titel = (id) => esc(MODULES.find((m) => m.id === id)?.titel.split(':')[0] || id);
+  const raak = geraakt(kaart, veranderd);
+  return schil(`
+    <section class="paneel">
+      <div class="paneel__in">
+        <p class="bovenregel">Beheercentrum · alleen voor Ons Op Maat</p>
+        <h1>Schermkaart</h1>
+        <p class="lead">Welk scherm van Nedap ONS zit in welke module. Komt er een release, vink dan aan welke schermen veranderd zijn. Je ziet meteen welke modules je moet nakijken, voor alle klanten tegelijk.</p>
+      </div>
+    </section>
+    <div class="wrap">
+      <div class="werkpaneel werkpaneel--vol releasecheck" aria-live="polite">
+        <h2>Release-check</h2>
+        ${veranderd.length
+          ? `<p><strong>${raak.length} ${raak.length === 1 ? 'module' : 'modules'} nakijken</strong> door ${veranderd.length} ${veranderd.length === 1 ? 'veranderd scherm' : 'veranderde schermen'}:</p>
+             <ul class="chips">${raak.map((id) => `<li><a class="chip" href="#/beheer">${titel(id)}</a></li>`).join('')}</ul>
+             <button type="button" class="btn btn--rand btn--klein" data-actie="release-leeg">Alles weer uitzetten</button>`
+          : '<p>Vink hieronder aan welke schermen in de nieuwe release van Nedap ONS veranderd zijn.</p>'}
+      </div>
+      <div class="werkpaneel werkpaneel--vol">
+        <div class="tabelkop"><h2>${kaart.length} schermen in ${MODULES.length - 1} modules</h2></div>
+        <div class="tabelwrap">
+          <table class="tabel tabel--kaarten">
+            <thead><tr><th scope="col">Scherm</th><th scope="col">Zit in</th><th scope="col">Gecontroleerd</th><th scope="col">Veranderd in release</th></tr></thead>
+            <tbody>
+              ${kaart.map((r, i) => `
+                <tr>
+                  <th scope="row">${esc(r.scherm)}</th>
+                  <td data-label="Zit in" class="tabel__breed">${r.modules.map(titel).join(', ')}</td>
+                  <td data-label="Gecontroleerd">${datumNL(ONS_GECONTROLEERD)}</td>
+                  <td data-label="Veranderd"><label class="vinkvak"><input type="checkbox" data-scherm="${esc(r.scherm)}" ${veranderd.includes(r.scherm) ? 'checked' : ''}><span class="sr">${esc(r.scherm)} is veranderd</span><span class="vinkvak__box" aria-hidden="true">${ICOON.vink}</span></label></td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+        <p class="opmerking">De kaart maakt zichzelf uit de modules. Bouw je een nieuwe module, dan staat hij er vanzelf in.</p>
+      </div>
+    </div>`, { route: '#/beheer/schermen' });
 }
 
 function viewBeheerKlanten() {
@@ -1079,6 +1202,46 @@ function viewHuisstijl() {
     </div>`, { route: '#/beheer/huisstijl' });
 }
 
+let wachtVraag = '';
+
+function viewVraag() {
+  return schil(`
+    <section class="paneel">
+      <div class="paneel__in">
+        <a class="terug" href="#/overzicht">${ICOON.terug} Mijn overzicht</a>
+        <p class="bovenregel">Vraag het</p>
+        <h1>Zoek in het handboek van ${esc(orgNaam())}</h1>
+        <p class="lead">Een vraag over een werkafspraak, of bij wie je moet zijn? Je krijgt het antwoord uit ons eigen handboek, met de bron erbij.</p>
+      </div>
+    </section>
+    <div class="wrap smal"><div class="werkpaneel" id="vraag-het"></div></div>`, { route: '#/vraag' });
+}
+
+function viewBronnen() {
+  return schil(`
+    <section class="paneel">
+      <div class="paneel__in">
+        <p class="bovenregel">Beheercentrum · De Wilgenhof</p>
+        <h1>Handboek en bronnen</h1>
+        <p class="lead">Hieruit beantwoordt Vraag het de vragen van medewerkers. Zet het handboek van de klant erin, en wie wat doet uit SharePoint. Vragen zonder antwoord laten zien wat er in het handboek ontbreekt.</p>
+      </div>
+    </section>
+    <div class="wrap"><div class="werkpaneel werkpaneel--vol" id="bronnen"></div></div>`, { route: '#/beheer/bronnen' });
+}
+
+function viewOefenen() {
+  return schil(`
+    <section class="paneel">
+      <div class="paneel__in">
+        <a class="terug" href="#/overzicht">${ICOON.terug} Mijn overzicht</a>
+        <p class="bovenregel">Vrij oefenen</p>
+        <h1>Klik rond in Nedap ONS</h1>
+        <p class="lead">Zoek een cliënt, open het dossier en kijk overal rond. Wil je een doel? Doe de vier opdrachten.</p>
+      </div>
+    </section>
+    <div class="wrap oefenwrap"><div id="oefenomgeving"></div></div>`, { route: '#/oefenen' });
+}
+
 function viewCertificaat() {
   return schil(certificaatPagina({ naam: `${MEDEWERKER.naam} ${MEDEWERKER.achternaam}`, profiel: PROFIELEN[MEDEWERKER.profiel].naam, afdeling: MEDEWERKER.afdeling, org: orgNaam(), logo: logo(), merk: OOM_MERK, toegewezen: mijnModules().map((m) => m.id), voortgang: nu().voortgang, dagen: nu().dagen }), { route: '#/certificaat' });
 }
@@ -1104,6 +1267,8 @@ function render(opties = {}) {
     if (pad === '/welkom') html = viewWelkom();
     else if (pad === '/overzicht') html = viewOverzicht();
     else if (pad === '/certificaat') html = viewCertificaat();
+    else if (pad === '/oefenen') html = viewOefenen();
+    else if (pad === '/vraag') html = viewVraag();
     else if (pad.startsWith('/module/')) html = viewModule(pad.split('/')[2]);
     else html = viewOverzicht();
   } else if (rol === 'opleider') {
@@ -1111,18 +1276,29 @@ function render(opties = {}) {
   } else if (rol === 'beheer') {
     beheer = true;
     if (pad === '/beheer/klanten') html = viewBeheerKlanten();
+    else if (pad === '/beheer/schermen') html = viewSchermkaart();
+    else if (pad === '/beheer/bronnen') html = viewBronnen();
     else if (pad === '/beheer/huisstijl') html = viewHuisstijl();
     else html = viewBeheerModules();
   }
   pasHuisstijlToe(beheer);
   document.body.dataset.rol = rol || 'gast';
   app.innerHTML = html;
-  const titels = { '/': 'Inloggen', '/welkom': 'Welkom', '/overzicht': 'Mijn overzicht', '/opleider': 'Dashboard', '/opleider/profielen': 'Profielen', '/beheer': 'Bibliotheek', '/beheer/klanten': 'Klanten', '/beheer/huisstijl': 'Huisstijl', '/certificaat': 'Certificaat' };
+  const titels = { '/': 'Inloggen', '/welkom': 'Welkom', '/overzicht': 'Mijn overzicht', '/opleider': 'Dashboard', '/opleider/profielen': 'Profielen', '/beheer': 'Bibliotheek', '/beheer/klanten': 'Klanten', '/beheer/huisstijl': 'Huisstijl', '/beheer/schermen': 'Schermkaart', '/certificaat': 'Certificaat', '/oefenen': 'Oefenen in ONS', '/vraag': 'Vraag het', '/beheer/bronnen': 'Handboek' };
   document.title = `${titels[pad] || 'Module'} · Leren bij ${orgNaam()}`;
   if (!opties.houdScroll) {
     window.scrollTo(0, 0);
     document.getElementById('inhoud')?.focus({ preventScroll: true });
   }
+  const oefen = document.getElementById('oefenomgeving');
+  if (oefen) mountOefenen(oefen, { esc, meld, onOpdracht: () => {} });
+  const vraag = document.getElementById('vraag-het');
+  if (vraag) {
+    mountVraag(vraag, { esc, beginVraag: wachtVraag || undefined, naarModule: (id) => ga(`/module/${id}`) });
+    wachtVraag = '';
+  }
+  const bronnen = document.getElementById('bronnen');
+  if (bronnen) mountBronnen(bronnen, { esc, meld });
   toonWachtendMoment();
 }
 
@@ -1158,6 +1334,37 @@ function schuif(i, richting) {
   app.querySelector(`[data-actie="${richting < 0 ? 'volgorde-op' : 'volgorde-neer'}"][data-i="${j}"]:not([disabled])`)?.focus();
 }
 
+// Kijken: de demo klikt zelf door, elke stap een paar seconden.
+let kijkTimer;
+function planKijk() {
+  clearTimeout(kijkTimer);
+  if (!casus?.speelt || casus.stand !== 'kijk') return;
+  kijkTimer = setTimeout(() => {
+    if (!casus?.speelt) return;
+    casus.klik += 1;
+    if (casus.klik >= CASUSSEN[casus.id].doorklik.stappen.length) casus.speelt = false;
+    render({ houdScroll: true });
+    planKijk();
+  }, 3600);
+}
+
+// De meting van Doe zelf. De eerste keer is de nulmeting, de laatste keer laat zien waar je nu staat.
+function bewaarMeting(id, z) {
+  const nieuw = { sec: Math.round((z.eind - z.start) / 1000), fouten: z.fouten, hints: z.hints, datum: new Date().toISOString().slice(0, 10) };
+  const oud = nu().metingen?.[id];
+  zet({ metingen: { ...(nu().metingen || {}), [id]: { eerste: oud?.eerste || nieuw, laatste: nieuw, keer: (oud?.keer || 0) + 1 } } });
+}
+
+function startStand(stand) {
+  casus.stand = stand;
+  casus.klik = 0;
+  casus.speelt = stand === 'kijk';
+  casus.zelf = stand === 'zelf' ? { start: Date.now(), fouten: 0, hints: 0 } : null;
+  render({ houdScroll: true });
+  naarStap();
+  planKijk();
+}
+
 const ACTIES = {
   rol(knop) {
     const rol = knop.dataset.rol;
@@ -1177,6 +1384,8 @@ const ACTIES = {
   },
   opnieuw() {
     opnieuw();
+    resetOefenen();
+    try { localStorage.removeItem('leeromgeving-vragen-v1'); } catch { /* geen opslag */ }
     casus = null;
     concept = null;
     ga('/');
@@ -1221,6 +1430,7 @@ const ACTIES = {
     markeer(casus.id, 'bezig');
     casus.stap = CASUSSEN[casus.id].doorklik ? 'doorklik' : 'intro';
     casus.klik = 0;
+    casus.stand = 'mee';
     render({ houdScroll: true });
     naarStap();
   },
@@ -1229,6 +1439,46 @@ const ACTIES = {
     casus.klik += 1;
     render({ houdScroll: true });
     naarStap();
+    planKijk();
+  },
+  afspraak(knop) {
+    casus.afspraak = knop.dataset.aan === '1';
+    render({ houdScroll: true });
+    app.querySelector(`[data-actie="afspraak"][data-aan="${knop.dataset.aan}"]`)?.focus();
+  },
+  stand(knop) {
+    startStand(knop.dataset.stand);
+  },
+  'kijk-speel'() {
+    casus.speelt = !casus.speelt;
+    render({ houdScroll: true });
+    planKijk();
+  },
+  'zelf-goed'() {
+    const z = casus.zelf;
+    z.foutNu = false;
+    z.hintNu = false;
+    casus.klik += 1;
+    if (casus.klik >= CASUSSEN[casus.id].doorklik.stappen.length) {
+      z.eind = Date.now();
+      bewaarMeting(casus.id, z);
+    }
+    render({ houdScroll: true });
+    naarStap();
+  },
+  'zelf-fout'(knop) {
+    casus.zelf.fouten += 1;
+    casus.zelf.foutNu = true;
+    render({ houdScroll: true });
+    app.querySelector('.doorklik__fout')?.scrollIntoView({ block: 'nearest' });
+  },
+  'zelf-hint'() {
+    casus.zelf.hints += 1;
+    casus.zelf.hintNu = true;
+    casus.zelf.foutNu = false;
+    render({ houdScroll: true });
+    richtDoel(app);
+    app.querySelector('.ons .dk-doel, .tel .dk-doel')?.focus();
   },
   'doorklik-terug'() {
     casus.klik = Math.max(0, casus.klik - 1);
@@ -1241,6 +1491,8 @@ const ACTIES = {
     naarStap();
   },
   'doorklik-klaar'() {
+    casus.speelt = false;
+    clearTimeout(kijkTimer);
     casus.stap = 'intro';
     render({ houdScroll: true });
     naarStap();
@@ -1311,6 +1563,10 @@ const ACTIES = {
       app.querySelector(`[data-actie="filter"][data-filter="${gekozen}"]:not(.tegel--knop)`)?.focus();
     }
   },
+  'release-leeg'() {
+    veranderd = [];
+    render({ houdScroll: true });
+  },
   'toewijzing-standaard'() {
     zet({ toewijzing: { vig: [...TOEWIJZING.vig], helpende: [...TOEWIJZING.helpende] } });
     render({ houdScroll: true });
@@ -1357,6 +1613,11 @@ app.addEventListener('submit', (e) => {
   const form = e.target.closest('[data-form]');
   if (!form) return;
   e.preventDefault();
+  if (form.dataset.form === 'vraag') {
+    wachtVraag = form.elements.vraag.value.trim();
+    ga('/vraag');
+    return;
+  }
   if (form.dataset.form === 'mail') {
     meld('In de echte versie krijg je nu een mail met een inloglink, zonder wachtwoord. Kies in de demo hieronder als wie je binnenkomt.');
   }
@@ -1389,6 +1650,11 @@ app.addEventListener('change', (e) => {
     if (knop) knop.disabled = open > 0;
     const teller = app.querySelector('#toets-open');
     if (teller) teller.textContent = nogOpen(open);
+  }
+  if (el.dataset.scherm) {
+    veranderd = el.checked ? [...veranderd, el.dataset.scherm] : veranderd.filter((x) => x !== el.dataset.scherm);
+    render({ houdScroll: true });
+    document.querySelector(`[data-scherm="${CSS.escape(el.dataset.scherm)}"]`)?.focus();
   }
   if (el.dataset.toewijs) {
     const p = el.dataset.toewijs;
@@ -1462,6 +1728,7 @@ window.addEventListener('message', (e) => {
 
 window.addEventListener('hashchange', () => {
   stopRondleiding();
+  clearTimeout(kijkTimer);
   if (casus && route() !== `/module/${casus.id}`) casus = null;
   if (route() !== '/beheer/huisstijl') concept = null;
   render();

@@ -1,0 +1,398 @@
+/* Vrije oefenomgeving in Nedap ONS (js/oefenen.js). Bouwt voort op de .ons-regels in styles.css.
+   Het opdrachtenpaneel is in de stijl van de leeromgeving, het scherm eronder in de stijl van Nedap ONS. */
+
+/* ---------- opdrachten ---------- */
+.oef{display:grid;gap:18px;min-width:0}
+.oef__opdrachten{padding:20px 22px;border-radius:var(--r-klein);background:var(--wit);border:1.5px solid var(--lijn)}
+.oef__opdr-kop{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:8px 18px;margin-bottom:12px}
+.oef__opdr-kop h2{margin:0 0 .2em;font-size:1.35rem}
+.oef__opdr-kop p{margin:0;color:var(--tekst-zacht);font-size:1rem}
+.oef__teller{white-space:nowrap}
+.oef__teller strong{color:var(--merk-tekst)}
+.oef__lijst{list-style:none;margin:0 0 14px;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.oef__opdracht{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:12px;background:var(--grond);font-size:1rem;line-height:1.45}
+.oef__opdracht p{margin:0}
+.oef__opdracht.is-klaar{background:var(--zacht)}
+.oef__vink{display:grid;place-items:center;flex:none;width:28px;height:28px;border-radius:50%;border:1.5px solid var(--lijn);background:var(--wit);font-weight:700;font-size:.85rem;color:var(--tekst-zacht)}
+.oef__opdracht.is-klaar .oef__vink{background:var(--merk);border-color:var(--merk);color:var(--op-merk)}
+.oef__vink svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.oef__tip{margin-top:4px!important;font-size:.92rem;color:var(--tekst-zacht)}
+.oef__vraag{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin-top:8px}
+.oef__vraag span{font-weight:600;font-size:.92rem}
+.oef__keuze{min-height:44px;padding:.35em .9em;border:1.5px solid var(--lijn);border-radius:999px;background:var(--wit);font-weight:600;font-size:.9rem;cursor:pointer}
+@media (hover:hover){.oef__keuze:hover{border-color:var(--merk)}}
+.oef__keuze:active{transform:scale(.97)}
+.oef__opnieuw{min-height:44px}
+
+/* ---------- het scherm ---------- */
+.ons--oefen{margin:0;min-height:600px;display:flex;flex-direction:column}
+.ons--oefen :focus-visible{outline:2px solid #2684FF;outline-offset:2px;border-radius:4px}
+.ons--oefen button{font-family:inherit;cursor:pointer}
+.ons--oefen h3,.ons--oefen h4{font-family:inherit;letter-spacing:0;text-wrap:initial;hyphens:none}
+.ons--oefen .ons__lijf{flex:1;grid-template-columns:168px minmax(0,1fr)}
+.ons--oefen.is-ingeklapt .ons__lijf{grid-template-columns:52px minmax(0,1fr)}
+.oef-ic{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;vertical-align:-3px}
+.oef-link{padding:0;border:0;background:none;color:var(--ons-paars);text-decoration:underline;font-size:inherit;text-align:left}
+.oef-link--plat{text-decoration:none}
+.oef-link--oranje{color:#E07B00;margin-top:8px}
+
+/* bovenbalk */
+.oef-balk{position:relative;z-index:3}
+.oef-pil{border:0;min-height:34px}
+.oef-pil--admin{background:#3E6F8E}
+.oef-balkzoek{display:flex;padding:0;background-color:var(--ons-zoek)}
+.oef-balkzoek input{width:100%;min-height:32px;padding:4px 12px 4px 32px;border:0;border-radius:6px;background:transparent;font-size:.82rem;color:#4A3B26}
+.oef-balkzoek input::placeholder{color:#4A3B26}
+.oef-balkknop{display:grid;place-items:center;width:34px;height:34px;padding:0;border:0;border-radius:50%;background:none}
+
+/* menu */
+.oef-menu{min-height:100%}
+.oef-menu ul li{display:block}
+.oef-menu .ons__menu-item,.oef-menu__terug,.oef-menu__inklappen{width:100%;min-height:36px;border:0;background:none;font:inherit;text-align:left;color:var(--ons-tekst)}
+.oef-menu .ons__menu-item.is-actief{background:var(--ons-paars-zacht);color:var(--ons-paars)}
+@media (hover:hover){.oef-menu .ons__menu-item:not(.is-actief):hover,.oef-menu__terug:hover,.oef-menu__inklappen:hover{background:#F4F4F4}}
+.oef-menu__terug{display:flex;align-items:center;padding:6px 8px;margin-bottom:6px;border-radius:6px}
+.oef-menu__inklappen{display:flex;align-items:center;border-radius:6px}
+.is-ingeklapt .oef-menu__tekst,.is-ingeklapt .oef-menu .ons__groep,.is-ingeklapt .oef-menu .ons__nedap{display:none}
+.is-ingeklapt .oef-menu .ons__icoon{margin-right:0}
+
+/* cliëntkop */
+.oef-inhoud{max-width:1040px;width:100%;margin:0 auto}
+.oef-kop{margin-bottom:12px;border-radius:12px;background:#fff}
+.oef-kop.is-open{box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.oef-kop__boven{margin:0;flex-wrap:wrap}
+.oef-kop__naam{margin:0;font-family:inherit;font-size:1.02rem;line-height:1.5;display:flex;flex-wrap:wrap;align-items:center;gap:4px}
+.ons__gegevens .oef-ic{width:13px;height:13px;vertical-align:-2px}
+.oef-label{display:inline-flex;align-items:center;gap:3px;padding:1px 5px;border:1px solid #F2B45A;border-radius:4px;background:#FFE1B5;color:#5C3A00;font-size:.7rem;font-weight:500;line-height:1.4;white-space:nowrap}
+.oef-label .oef-ic{width:11px;height:11px;vertical-align:0}
+.oef-label--blauw{border-color:#7CC4F2;background:#CFEAFB;color:#08466E}
+.oef-meer{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border:1px solid transparent;border-radius:6px;background:none;color:#555;font-size:.85rem;white-space:nowrap}
+.oef-kop.is-open .oef-meer{border-color:#8F8FD8}
+.oef-meerinfo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);border-top:1px solid var(--ons-lijn);font-size:.78rem}
+.oef-meerinfo__links,.oef-meerinfo__rechts{padding:12px 16px}
+.oef-meerinfo__links{border-right:1px solid var(--ons-lijn);display:grid;gap:4px;align-content:start;justify-items:start}
+.oef-meerinfo__kop{font-weight:700;font-size:.9rem;color:#333}
+.oef-meerinfo__lijst{display:grid;grid-template-columns:repeat(2,max-content);gap:8px 28px;margin:6px 0 0}
+.oef-meerinfo__lijst dt{font-weight:600;color:#333}
+.oef-meerinfo__lijst dd{margin:0;color:#666}
+.oef-meerinfo__onder{grid-column:1/-1;display:flex;justify-content:flex-end;gap:8px;padding:10px 16px;border-top:1px solid var(--ons-lijn);background:#F7F7F9;border-radius:0 0 12px 12px}
+
+/* knoppen */
+.oef-knop{display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 14px;border:1px solid transparent;border-radius:4px;font-size:.8rem;font-weight:600;line-height:1;white-space:nowrap}
+.oef-knop--paars{background:#4346B7;color:#fff}
+.oef-knop--donkerpaars{background:#3B3FA0;color:#fff}
+.oef-knop--groot{min-height:40px;font-size:.9rem}
+.oef-knop--wit{background:#fff;border-color:#D4D4D4;color:#3B3FA0}
+.oef-knop--rand{background:#fff;border-color:var(--ons-blauw);color:var(--ons-blauw);border-radius:999px}
+.oef-knop--blauw{background:var(--ons-blauw);color:#fff;border-radius:999px}
+.oef-knop--rood,.ons__knop.oef-knop--rood{background:#fff;border-color:#E0473C;color:#E0473C}
+.oef-knop--klein{min-height:28px;padding:0 10px;border-color:var(--ons-blauw);border-radius:999px;background:#fff;color:var(--ons-blauw);font-size:.72rem}
+.oef-knop .oef-ic{width:14px;height:14px}
+.oef-knoppen{display:flex;flex-wrap:wrap;gap:6px}
+.oef-icoonknop{display:inline-grid;place-items:center;width:34px;height:34px;padding:0;border:0;border-radius:6px;background:none;color:#1A8FD8}
+.oef-icoonknop--grijs{color:#A8A8A8}
+.oef-vierkantplus{display:grid;place-items:center;width:30px;height:30px;padding:0;border:1px solid #D4D4D4;border-radius:4px;background:#fff;color:#4346B7}
+.oef-rondplus{display:grid;place-items:center;width:30px;height:30px;padding:0;border:0;background:none;color:#17507A}
+.oef-rondplus .oef-ic{width:24px;height:24px;stroke-width:1.4}
+.ons--oefen .ons__knop{min-height:34px}
+.ons--oefen .ons__knop:disabled{background:#E4E6EB;color:#fff}
+
+/* kaarten */
+.oef-twee{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:start}
+.oef-kolom{display:grid;gap:12px;min-width:0}
+.oef-kaart{margin:0;border-radius:10px}
+.oef-kaart__kop{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px}
+.oef-kaart__kop+.oef-leeg+.oef-kaart__kop{margin-top:12px}
+.oef-kaart__titel{margin:0;font-size:1.02rem;font-weight:600;color:var(--ons-paars)}
+.oef-kaart__titel--grijs{color:#444}
+.oef-kaart--admin .oef-kaart__titel{color:#17507A;font-size:1.08rem}
+.oef-leeg{color:#666;font-size:.85rem}
+.oef-zin{font-size:.85rem}
+.oef-subkop{font-weight:600;font-size:.82rem;margin:6px 0!important}
+.oef-subtitel{margin:6px 0 2px!important;color:var(--ons-paars);font-weight:600;font-size:.85rem}
+.oef-waarsch{list-style:none;margin:0;padding:0 0 0 8px;display:grid;gap:6px;font-weight:600;font-size:.88rem}
+.oef-waarsch li{display:flex;align-items:center;gap:10px}
+.oef-waarsch .oef-ic{color:#F07A3B}
+.oef-tabelwrap{overflow-x:auto;max-width:100%}
+.oef-mini{width:100%;border-collapse:collapse;background:#F5F5F5;font-size:.85rem}
+.oef-mini th{padding:6px 12px;text-align:left;font-weight:500;color:#555;border-bottom:1px solid #DDD}
+.oef-mini td{padding:8px 12px}
+.oef-nepkeuze{padding:4px 8px;border:1px solid #BBB;border-radius:4px;font-size:.8rem;white-space:nowrap}
+.oef-dl{display:grid;gap:4px;margin:0;font-size:.85rem}
+.oef-dl div{display:grid;grid-template-columns:150px 1fr;gap:8px}
+.oef-dl dt{font-style:italic;color:#666}
+.oef-dl dd{margin:0;font-weight:600}
+.oef-dl dd.is-oranje{color:#F08A00}
+.oef-dl--onder div{grid-template-columns:1fr;gap:0;margin-bottom:8px}
+.oef-contacten{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.oef-contacten li{padding:8px 10px;border:1px solid var(--ons-lijn);border-radius:6px;font-size:.85rem}
+.oef-contact__naam{font-weight:600;color:var(--ons-paars)}
+.oef-contact__rel{color:#666;margin-bottom:4px!important}
+
+/* startscherm */
+.oef-startlijf{flex:1;display:flex}
+.oef-start{flex:1;display:grid;grid-template-columns:180px minmax(0,1fr) 220px;gap:24px;padding:28px 22px}
+.oef-start__filters{display:grid;gap:4px;align-content:start;font-size:.85rem}
+.oef-start__mijn{justify-self:start;padding:4px 0;border:0;background:none;color:var(--ons-paars);font-weight:700;font-size:.92rem}
+.oef-start__mijn.is-actief{text-decoration:underline}
+.oef-start__groep{margin:8px 0 0;padding:0;border:0;display:grid;gap:2px}
+.oef-start__groep legend,.oef-start__groep-kop{padding:0;margin-top:8px;font-weight:700;color:#444;font-size:.88rem}
+.oef-vink{display:flex;align-items:center;gap:8px;min-height:30px;color:#444;cursor:pointer}
+.oef-vink input{width:16px;height:16px;margin:0}
+.oef-vink--klein{font-size:.75rem;min-height:24px}
+.oef-start__boom{list-style:none;margin:0;padding:0;color:#1A8FD8;font-size:.8rem}
+.oef-start__boom li:not(:first-child){padding-left:18px}
+.oef-start__titel{margin:0 0 12px;font-size:1.15rem;font-weight:600;color:#555}
+.oef-start__zoek,.oef-zoekveld{display:flex;align-items:center;gap:6px;padding:0 10px;border:1px solid #CFCFCF;border-radius:999px;background:#fff}
+.oef-start__zoek .oef-ic,.oef-zoekveld .oef-ic{width:13px;height:13px;color:#888}
+.oef-start__zoek input,.oef-zoekveld input{flex:1;min-width:0;min-height:30px;padding:0;border:0;background:none;font-size:.82rem;outline:none}
+.oef-start__zoek input:focus-visible,.oef-zoekveld input:focus-visible,.oef-balkzoek input:focus-visible{outline:none}
+.oef-balkzoek:focus-within{box-shadow:0 0 0 2px #2684FF}
+.oef-start__zoek:focus-within,.oef-zoekveld:focus-within{border-color:#2684FF;box-shadow:0 0 0 1px #2684FF}
+.oef-zoekveld{border-radius:4px;max-width:470px}
+.oef-zoekveld input{min-height:32px}
+.oef-zoekveld--rond{border-radius:999px}
+.oef-zoekveld--paars{max-width:none;border-color:#8F8FD8}
+.oef-resultaten{margin-top:10px}
+.oef-resultaten__lijst{list-style:none;margin:0;padding:0;border-radius:6px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.06);overflow:hidden}
+.oef-resultaten__lijst li+li{border-top:1px solid var(--ons-lijn)}
+.oef-resultaat{display:flex;justify-content:space-between;gap:12px;width:100%;min-height:44px;padding:8px 14px;border:0;background:#fff;text-align:left;font-size:.88rem}
+@media (hover:hover){.oef-resultaat:hover{background:var(--ons-paars-zacht)}}
+.oef-resultaat__naam{color:var(--ons-paars);font-weight:600}
+.oef-resultaat__nr{color:#777}
+.oef-resultaten__leeg{padding:8px 2px}
+.oef-start__kaarten{display:grid;gap:12px;align-content:start}
+.oef-bkaart{border-radius:6px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.08);overflow:hidden}
+.oef-bkaart h4{margin:0;padding:12px 16px;background:var(--ons-blauw);color:#fff;font-size:.82rem;font-weight:700}
+.oef-bkaart>div{display:grid;justify-items:start;padding:12px 16px}
+.oef-bkaart__sub{margin:6px 0 2px!important;color:#1A8FD8;font-weight:700;font-size:.75rem}
+.oef-bkaart>.oef-bkaart__rijen{padding:0}
+.oef-bkaart__rijen .oef-blink{width:100%;padding:10px 16px}
+.oef-bkaart__rijen .oef-blink+.oef-blink{border-top:1px solid #999}
+.oef-blink{display:inline-flex;align-items:center;gap:6px;min-height:24px;padding:2px 0;border:0;background:none;color:#1A8FD8;font-size:.72rem;text-align:left}
+.oef-blink .oef-ic{width:16px;height:16px}
+.oef-overleg{padding:14px 16px;border-radius:6px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.oef-overleg__kop{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.oef-overleg h4{margin:0;font-size:1rem;font-weight:600;color:#444}
+.oef-overleg p{font-size:.85rem;color:#444}
+.oef-rechtslink{display:flex;justify-content:flex-end;margin:6px 0 14px!important}
+
+/* tabs, tabellen */
+.oef-tabs{gap:0}
+.oef-tab{min-height:38px;padding:6px 14px;border:0;background:none;color:#666;font-size:.9rem}
+.oef-tab.is-actief{color:var(--ons-paars);box-shadow:inset 0 -2px 0 var(--ons-paars)}
+.oef-veldlabel{display:block;margin:4px 0 2px;font-size:.72rem;color:#333}
+.oef-tabel{width:100%;min-width:620px;margin-top:14px;border-collapse:separate;border-spacing:0;border:1px solid #DDD;border-radius:6px;background:#fff;font-size:.85rem}
+.oef-tabel th{padding:12px;text-align:left;font-weight:500;color:#444;background:#F7F7F7;border-bottom:1px solid #DDD}
+.oef-tabel td{padding:14px 12px;border-bottom:1px solid #E6E6E6}
+.oef-tabel tr:last-child td{border-bottom:0}
+.oef-status{display:inline-block;padding:1px 6px;border-radius:999px;background:#FFE0B0;color:#7A4A00;font-size:.62rem}
+
+/* vragenlijst openen */
+.oef-kruimel{display:inline-flex;align-items:center;gap:6px;min-height:32px;margin-bottom:6px;padding:0 6px;border:0;background:none;color:#555;font-size:.78rem}
+.oef-vl__titel{margin:4px 0 0;font-size:1.05rem;font-weight:700}
+.oef-vl__meta{font-size:.72rem;color:#555;padding-bottom:8px!important;border-bottom:1px solid #CFCFCF;margin-bottom:8px!important}
+.oef-vl__status{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.oef-vl__rechts{display:flex;gap:4px;margin-left:auto}
+.oef-stappen{display:flex;align-items:center;gap:6px;font-size:.72rem;color:#555}
+.oef-stappen .is-nu{color:#E8A400;font-weight:600}
+.oef-stappen i{width:18px;height:1px;background:#BBB}
+.oef-vl__score{margin:12px 0!important;text-align:right;font-size:.75rem}
+.oef-domein{margin:10px 0 8px;font-size:.92rem;font-weight:700;color:#222}
+.oef-vl__sectie summary{display:flex;justify-content:space-between;align-items:center;padding:6px 8px;background:#F5F5F7;color:#1A8FD8;font-size:.85rem;cursor:pointer}
+.oef-score{padding:2px 6px;border:1px solid #CCC;border-radius:3px;background:#fff;color:#333;font-size:.6rem}
+.oef-vraag{font-weight:700;font-size:.75rem;margin:8px 16px 4px!important}
+.oef-antwoord{font-size:.75rem;margin:0 24px 8px!important}
+.oef-vl__blok{margin-top:8px;padding:4px 0;border-top:1px solid #DDD;border-bottom:1px solid #DDD;background:#FAFAFA}
+
+/* zorgplan */
+.oef-concept{margin:6px 14px 0;border-radius:6px}
+.oef-concept .ons__concept-knoppen{flex-wrap:wrap;align-items:center}
+.oef-plan{display:grid;grid-template-columns:200px minmax(0,1fr);gap:0;padding:12px 20px}
+.oef-plan__onderwerp{font-size:.75rem;padding-top:8px}
+.oef-plan__rechts{border-left:1px solid #CCC;display:grid;gap:8px;padding:0 0 4px}
+.oef-plan__doel{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:8px 10px;border-bottom:1px solid #DDD;font-size:.82rem}
+.oef-plan__doel--leeg{display:flex}
+.oef-plan__lbl{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#777}
+.oef-plan__kader{margin:0 8px;padding:8px 4px;border:1px solid #AAA;border-radius:3px;background:#EFEFEF;font-size:.75rem}
+.oef-plan__kader>p:nth-child(2){margin:0 16px 6px!important}
+.oef-plan__in{margin-left:32px!important}
+.oef-plan__kader .oef-vl__blok{margin:8px 16px;background:#F7F7F7}
+.oef-plan__rechts>.oef-knop--klein{justify-self:start;margin-left:8px}
+.oef-pad{margin:10px 0 0!important;font-size:.78rem;font-weight:600}
+.oef-pad__blauw{color:#1A8FD8;font-weight:500}
+.oef-keuzerij{display:flex;justify-content:space-between;align-items:center;width:100%;min-height:36px;margin-top:6px;padding:0 24px 0 28px;border:0;border-top:1px solid #DDD;border-bottom:1px solid #DDD;background:#F3F3F3;color:#1A8FD8;font-size:.75rem;text-align:left}
+.oef-keuzerij--actief{background:#BDE0F7}
+.oef-keuzerij .oef-ic{color:#555}
+.oef-ovz{margin:8px 0 0;padding:0 14px 14px;background:#EFF1F4}
+.oef-ovz__kop{padding-top:10px}
+.oef-ovz__juridisch{color:#1A8FD8;font-weight:600;padding:10px 12px}
+.oef-ovz__leeg{padding:8px 12px}
+
+/* rapportages */
+.oef-rapkaart{display:grid;gap:12px}
+.oef-rtabs{display:flex;align-items:center;gap:6px}
+.oef-rtab{display:grid;place-items:center;width:36px;height:36px;padding:0;border:0;background:none;color:#1A8FD8}
+.oef-rtab .oef-ic{width:19px;height:19px}
+.oef-rtab.is-actief{box-shadow:inset 0 -2px 0 #1A8FD8}
+.oef-rtab.is-soep{color:#E8B400}
+.oef-rtab.is-soep.is-actief{box-shadow:inset 0 -2px 0 #E8B400}
+.oef-rplus{display:grid;place-items:center;width:30px;height:30px;margin-left:auto;padding:0;border:0;border-radius:50%;background:var(--ons-blauw);color:#fff}
+.oef-ster{display:inline-flex;align-items:center;gap:4px;padding:0;border:0;background:none;color:#555;font-size:.75rem}
+.oef-ster .oef-ic{color:#BFBFBF;fill:#BFBFBF}
+.oef-tekstvak{width:100%;min-height:78px;padding:8px 10px;border:1px solid #C9C9C9;border-radius:4px;background:#fff;font:inherit;font-size:.85rem;resize:vertical}
+.oef-tekstvak--groot{min-height:130px}
+.oef-tekstvak:focus{outline:none;border-color:#2684FF;box-shadow:0 0 0 1px #2684FF}
+.oef-schakel{padding:0;border:0;background:none;display:flex}
+.oef-schakel.is-uit .ons__toggle{background:#BBB}
+.oef-schakel.is-uit .ons__toggle::after{right:auto;left:2px}
+.oef-soep{display:grid;gap:10px}
+.oef-soep__rij{display:grid;grid-template-columns:90px minmax(0,1fr);gap:8px;align-items:center}
+.oef-soep__rij label,.oef-soep__rij .ons__lbl{font-style:italic;font-size:.72rem;color:#333}
+.oef-soep__rij .ons__nep-select{max-width:790px}
+.oef-soep__tijd{font-size:.75rem}
+.oef-klein-invoer{width:96px;min-height:30px;padding:2px 6px;border:1px solid #CCC;border-radius:3px;font-size:.75rem}
+.oef-rapfilter{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) auto;gap:10px;align-items:center}
+.oef-rapfilter .oef-zoekveld{max-width:none}
+.oef-rapfilter .ons__select,.oef-rapfilter .ons__nep-select{min-height:32px;line-height:30px}
+.oef-rapdatum{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;font-size:.75rem}
+.oef-raplijst{list-style:none;margin:0;padding:0}
+.oef-rap{display:grid;grid-template-columns:26px 100px minmax(0,1fr) auto;gap:10px;align-items:start;padding:14px 4px;border-top:1px solid #E2E2E2;font-size:.85rem}
+.oef-rap:first-child{border-top:0}
+.oef-rap__ic{width:20px;height:20px;color:#1A8FD8;margin-top:6px}
+.oef-rap__ic.is-soep{color:#E8B400}
+.oef-rap__wie{font-size:.8rem;line-height:1.35}
+.oef-rap__tekst p+p{margin-top:4px}
+.oef-rap__iconen{display:flex;gap:8px;color:#CFCFCF}
+.oef-rap__iconen .oef-ic{width:15px;height:15px}
+
+/* agenda */
+.oef-agbalk{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:10px}
+.oef-week{display:flex;align-items:center;gap:6px;min-width:230px;justify-content:space-between}
+.oef-week .oef-icoonknop{color:#555}
+.oef-week__tekst{font-weight:600;color:#555}
+.oef-agfilter{flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:4px;padding:6px 10px;border:1px solid #CCC;border-radius:4px;background:#fff}
+.oef-agfilter>.oef-ic{margin-left:auto;color:#888}
+.oef-chip{padding:2px 8px;border-radius:999px;background:#CDE8F8;font-size:.72rem;color:#244}
+.oef-menuwrap{position:relative}
+.oef-dropdown{position:absolute;right:0;top:calc(100% + 6px);z-index:4;list-style:none;margin:0;padding:6px;border-radius:6px;background:#fff;box-shadow:0 6px 18px rgba(0,0,0,.15);min-width:130px}
+.oef-dropdown button{display:block;width:100%;min-height:36px;padding:4px 8px;border:0;border-radius:4px;background:none;text-align:left;font-size:.9rem}
+@media (hover:hover){.oef-dropdown button:hover{background:#F2F2F8}}
+.oef-dag{margin-bottom:12px;border-radius:6px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+.oef-dag h4{margin:0;padding:8px 6px 4px;font-size:.9rem;font-weight:700;color:#444;background:#F5F5F5}
+.oef-dag ul{list-style:none;margin:0;padding:0}
+.oef-agitem{display:grid;grid-template-columns:28px 100px minmax(0,1fr) auto;gap:8px;align-items:center;padding:6px 8px;border-top:1px solid #E6E6E6;font-size:.75rem}
+.oef-agitem__vink input{width:15px;height:15px;margin:0}
+.oef-agitem__wat{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;font-weight:700;font-size:.82rem}
+.oef-agitem__wat small{flex-basis:100%;padding-left:24px;font-weight:400;font-size:.72rem;color:#555}
+.oef-agitem__ic{width:16px;height:16px;border-radius:3px;background:#A9A9A9}
+.oef-agitem__ic--groen{background:#1EB58F}
+.oef-agitem__acties{display:flex}
+
+/* documenten */
+.oef-docfilter{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:12px;align-items:end;margin-top:10px}
+.oef-docfilter .oef-zoekveld{max-width:none}
+.oef-docfilter .ons__nep-select{min-height:34px;line-height:32px}
+.oef-leegstaat{display:grid;justify-items:center;gap:4px;padding:30px 10px;text-align:center;color:#555;font-size:.9rem}
+.oef-plant{width:200px;height:auto}
+.oef-leegstaat__kop{font-size:1.1rem;font-weight:700;color:#333}
+
+/* vensters */
+.oef-dimmer{position:absolute;inset:0;z-index:5;display:flex;justify-content:center;align-items:flex-start;padding:70px 16px 16px;background:rgba(40,40,40,.35)}
+.oef-venster{width:min(100%,650px);max-height:calc(100% - 20px);overflow:auto;border-radius:6px;background:#fff;box-shadow:0 20px 40px -10px rgba(0,0,0,.35)}
+.oef-venster--wit{width:min(100%,900px);min-height:300px}
+.oef-venster__kop{display:flex;justify-content:space-between;align-items:center;padding:12px 16px}
+.oef-venster__kop h3{margin:0;font-size:1rem;font-weight:700;color:#444}
+.oef-venster__kop--blauw{background:var(--ons-blauw)}
+.oef-venster__kop--blauw h3,.oef-venster__kop--blauw .oef-sluit{color:#fff}
+.oef-sluit{display:grid;place-items:center;width:36px;height:36px;padding:0;border:0;background:none;color:#444}
+.oef-sluit .oef-ic{width:20px;height:20px}
+.oef-venster__lijf{padding:0 16px 20px}
+.oef-vlkeuzes{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px 26px;margin-top:12px}
+.oef-vlkeuze{display:grid;gap:6px;padding:4px 0 14px;border:0;border-bottom:1px solid #BBB;background:none;text-align:left}
+.oef-vlkeuze__titel{color:var(--ons-paars);font-weight:700;font-size:1rem}
+.oef-vlkeuze__tekst{font-size:.72rem;color:#444}
+.oef-typen{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding:14px 16px 24px}
+.oef-type{display:grid;justify-items:center;gap:8px;min-height:70px;padding:8px 4px;border:0;border-radius:6px;background:none;font-size:.72rem;text-align:center}
+@media (hover:hover){.oef-type:hover,.oef-vlkeuze:hover{background:#F4F7FB}}
+.oef-type__ic{display:grid;place-items:center;width:24px;height:24px;color:var(--k)}
+.oef-type__ic .oef-ic{width:22px;height:22px}
+.oef-type__ic b{display:grid;place-items:center;width:20px;height:20px;border:1.5px solid var(--k);border-radius:3px;font-size:.42rem;line-height:1}
+
+/* modulekiezer */
+.oef-modules{position:absolute;left:0;right:0;top:48px;z-index:6;background:#fff;box-shadow:0 12px 24px rgba(0,0,0,.18);border-radius:0 0 8px 8px;max-height:calc(100% - 48px);overflow:auto}
+.oef-modules__test{display:flex;justify-content:center;align-items:center;gap:6px;padding:6px;background:#FFF3E3;color:#7A4A00;font-size:.75rem}
+.oef-modules__test .oef-ic{width:13px;height:13px}
+.oef-modules__lijf{display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
+.oef-modules__kolom{padding:18px 14px}
+.oef-modules__kolom.is-eerste{background:#F4F4FB}
+.oef-modules__kolom h3{margin:0 0 10px;font-size:.85rem;font-weight:700;color:#333}
+.oef-modules__kolom ul{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.oef-module{display:flex;align-items:center;gap:10px;width:100%;min-height:44px;padding:4px;border:0;border-radius:6px;background:none;text-align:left;font-size:.82rem;color:#222}
+@media (hover:hover){.oef-module:hover{background:#F2F2F8}}
+.oef-module__ic{display:grid;place-items:center;flex:none;width:32px;height:32px;border-radius:8px;background:var(--k);color:#fff}
+.oef-module__ic .oef-ic{width:17px;height:17px}
+
+/* ---------- smal ---------- */
+@media (max-width:1100px){
+  .oef-start{grid-template-columns:160px minmax(0,1fr)}
+  .oef-start__kaarten{grid-column:1/-1;grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+  .oef-modules__lijf{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (max-width:820px){
+  .oef__lijst{grid-template-columns:1fr}
+  .oef-twee{grid-template-columns:1fr}
+  .oef-rapfilter{grid-template-columns:1fr 1fr}
+  .oef-docfilter{grid-template-columns:1fr}
+  .oef-docfilter>.oef-knop{justify-self:start}
+  .oef-plan{grid-template-columns:1fr;padding:12px}
+  .oef-plan__rechts{border-left:0}
+  .oef-typen{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .oef-modules__lijf{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:600px){
+  .oef__opdrachten{padding:16px 14px}
+  .ons--oefen{min-height:540px}
+  .ons--oefen .ons__balk{gap:8px}
+  .ons--oefen .ons__rechts{gap:0;margin-left:auto}
+  /* Het menu van ONS blijft zichtbaar, als een rij om opzij te schuiven. */
+  .ons--oefen .ons__lijf,.ons--oefen.is-ingeklapt .ons__lijf{grid-template-columns:minmax(0,1fr)}
+  .ons--oefen .ons__menu{display:flex;flex-direction:row;align-items:center;gap:2px;padding:4px 6px;overflow-x:auto;border-bottom:1px solid var(--ons-lijn);min-height:0}
+  .ons--oefen .ons__menu ul{display:flex;margin:0;gap:2px}
+  .ons--oefen .ons__menu li{flex:none}
+  .ons--oefen .ons__groep,.ons--oefen .ons__nedap,.ons--oefen .oef-menu__inklappen{display:none}
+  .ons--oefen .oef-menu__tekst{display:inline!important}
+  .ons--oefen .ons__menu .ons__menu-item,.ons--oefen .oef-menu__terug{width:auto;white-space:nowrap;min-height:44px;margin:0}
+  .ons--oefen .oef-menu__terug{flex:none}
+  .ons--oefen .ons__inhoud{padding:10px 8px 60px}
+  .ons--oefen .ons__meer{display:inline}
+  .oef-start{grid-template-columns:1fr;padding:16px 12px;gap:16px}
+  .oef-start__kaarten{grid-template-columns:1fr}
+  .oef-kop__boven{padding:10px}
+  .oef-kop__boven .ons__client-tekst{flex-basis:calc(100% - 60px)}
+  .ons--oefen .oef-balkzoek{display:none}
+  .oef-meer{margin-left:auto}
+  .oef-meerinfo{grid-template-columns:1fr}
+  .oef-meerinfo__links{border-right:0;border-bottom:1px solid var(--ons-lijn)}
+  .oef-meerinfo__lijst{grid-template-columns:1fr}
+  .oef-meerinfo__onder{flex-wrap:wrap}
+  .oef-rapfilter{grid-template-columns:1fr}
+  .oef-rap{grid-template-columns:22px minmax(0,1fr)}
+  .oef-rap__wie{grid-column:2}
+  .oef-rap__tekst{grid-column:2}
+  .oef-rap__iconen{grid-column:2}
+  .oef-soep__rij{grid-template-columns:1fr;gap:2px}
+  .oef-agbalk{gap:8px}
+  .oef-week{min-width:0;width:100%}
+  .oef-agitem{grid-template-columns:24px 70px minmax(0,1fr)}
+  .oef-agitem__acties{grid-column:3}
+  .oef-concept{margin:6px 0 0}
+  .oef-ovz{padding:0 8px 10px}
+  .oef-ovz__kop .oef-knoppen{width:100%}
+  .oef-dl div{grid-template-columns:120px 1fr}
+  .oef-typen{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .oef-modules__lijf{grid-template-columns:1fr}
+  .oef-dimmer{padding:56px 8px 8px}
+  .oef-vl__rechts{margin-left:0}
+  .oef-tabel{min-width:560px}
+}

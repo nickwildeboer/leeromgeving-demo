@@ -47,14 +47,15 @@ export const TOEWIJZING = {
 export const MEDEWERKER = { naam: 'Sanne', achternaam: 'Visser', profiel: 'vig', afdeling: 'De Linde' };
 
 // Verzonnen collega's voor het dashboard. "klaar" is het aantal afgeronde modules.
+// "ons" is de meting van Doe zelf: aantal opdrachten, gemiddeld mis geklikt per opdracht, gemiddelde tijd in seconden.
 export const COLLEGAS = [
-  { naam: 'Fatima el Amrani', profiel: 'vig', afdeling: 'De Linde', start: '2026-09-01', klaar: 15, toets: 92 },
-  { naam: 'Joost de Graaf', profiel: 'vig', afdeling: 'De Linde', start: '2026-09-08', klaar: 12, toets: 84 },
-  { naam: 'Lieke Hoekstra', profiel: 'helpende', afdeling: 'De Eik', start: '2026-09-08', klaar: 9, toets: 88 },
-  { naam: 'Mehmet Yilmaz', profiel: 'vig', afdeling: 'De Eik', start: '2026-09-15', klaar: 6, toets: 76 },
-  { naam: 'Anouk Brink', profiel: 'helpende', afdeling: 'De Linde', start: '2026-09-22', klaar: 4, toets: 90 },
-  { naam: 'Daan Kuipers', profiel: 'vig', afdeling: 'De Beuk', start: '2026-09-22', klaar: 2, toets: null },
-  { naam: 'Ilse Mulder', profiel: 'helpende', afdeling: 'De Beuk', start: '2026-09-29', klaar: 1, toets: null },
+  { naam: 'Fatima el Amrani', profiel: 'vig', afdeling: 'De Linde', start: '2026-09-01', klaar: 15, toets: 92, ons: { opdrachten: 14, fouten: 0.3, sec: 38 } },
+  { naam: 'Joost de Graaf', profiel: 'vig', afdeling: 'De Linde', start: '2026-09-08', klaar: 12, toets: 84, ons: { opdrachten: 11, fouten: 0.6, sec: 52 } },
+  { naam: 'Lieke Hoekstra', profiel: 'helpende', afdeling: 'De Eik', start: '2026-09-08', klaar: 9, toets: 88, ons: { opdrachten: 8, fouten: 0.5, sec: 47 } },
+  { naam: 'Mehmet Yilmaz', profiel: 'vig', afdeling: 'De Eik', start: '2026-09-15', klaar: 6, toets: 76, ons: { opdrachten: 5, fouten: 1.4, sec: 81 } },
+  { naam: 'Anouk Brink', profiel: 'helpende', afdeling: 'De Linde', start: '2026-09-22', klaar: 4, toets: 90, ons: { opdrachten: 4, fouten: 0.8, sec: 55 } },
+  { naam: 'Daan Kuipers', profiel: 'vig', afdeling: 'De Beuk', start: '2026-09-22', klaar: 2, toets: null, ons: { opdrachten: 1, fouten: 2.0, sec: 96 } },
+  { naam: 'Ilse Mulder', profiel: 'helpende', afdeling: 'De Beuk', start: '2026-09-29', klaar: 1, toets: null, ons: null },
 ];
 
 export const TIPS = [

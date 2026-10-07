@@ -1,0 +1,125 @@
+/* "Vraag het": zoeken in het handboek (js/vraag.js).
+   Gebruikt de variabelen en klassen uit styles.css, zodat de huisstijl van de klant meekomt. */
+
+/* ---------- zoekveld ---------- */
+.vraag-het{display:grid;gap:14px;min-width:0}
+.vraag-het__form{display:grid;gap:8px;min-width:0}
+.vraag-het__label{font:650 1.15rem/1.3 var(--kop);letter-spacing:-.01em}
+.vraag-het__rij{display:flex;gap:10px;min-width:0}
+.vraag-het__veld{flex:1;min-width:0;min-height:52px;padding:.6em 1em;border:1.5px solid var(--lijn);border-radius:999px;background:var(--wit);color:var(--tekst);font:inherit;font-size:1.05rem;-webkit-appearance:none;appearance:none}
+.vraag-het__veld::placeholder{color:var(--tekst-zacht);opacity:1}
+.vraag-het__veld:focus{border-color:var(--merk);outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--merk) 25%,transparent)}
+.vraag-het__veld:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.vraag-het__veld::-webkit-search-cancel-button{cursor:pointer}
+.vraag-het__knop{flex:none;min-height:52px}
+.vraag-het__voorbeelden{display:flex;flex-wrap:wrap;gap:8px}
+.vraag-het__voorbeelden .chip{max-width:100%;text-align:left;line-height:1.3;color:var(--tekst);transition:border-color var(--t-snel) var(--ease),background-color var(--t-snel) var(--ease),transform var(--t-snel) var(--ease)}
+@media (hover:hover){.vraag-het__voorbeelden .chip:hover{border-color:var(--merk);background:var(--zacht)}}
+.vraag-het__voorbeelden .chip:active{transform:scale(.98)}
+.vraag-het__uitkomst{display:grid;gap:18px;min-width:0}
+.vraag-het__uitkomst:empty{display:none}
+.vraag-het__leeg{margin:0;color:var(--tekst-zacht)}
+
+/* ---------- antwoord ---------- */
+.vraag-antwoord{min-width:0;padding:clamp(18px,3vw,28px);border:1.5px solid color-mix(in srgb,var(--merk) 35%,var(--lijn));border-radius:var(--r);background:var(--zacht);animation:vraag-in var(--t-normaal) var(--ease)}
+.vraag-antwoord:focus{outline:none}
+.vraag-antwoord:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+.vraag-antwoord--open{border-color:var(--lijn);background:var(--vlak2)}
+.vraag-antwoord__label{display:inline-flex;align-items:center;gap:.45em;margin:0 0 .6em;color:var(--merk-tekst);font-weight:700;font-size:.9rem}
+.vraag-antwoord--open .vraag-antwoord__label{color:var(--tekst)}
+.vraag-antwoord__label svg,.vraag-bron svg,.bron__status svg,.bronnen__antwoord svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.vraag-antwoord__vraag{font-size:1.25rem;margin:0 0 .5em}
+.vraag-antwoord__tekst{margin:0 0 .8em;font-size:1.12rem;line-height:1.55}
+blockquote.vraag-antwoord__tekst{padding:2px 0 2px 16px;border-left:4px solid var(--merk)}
+blockquote.vraag-antwoord__tekst p{margin:0}
+.vraag-bron{display:flex;align-items:flex-start;gap:.45em;margin:0;color:var(--tekst-zacht);font-size:.92rem;line-height:1.4}
+.vraag-bron svg{margin-top:.05em}
+
+.vraag-heel{margin-top:12px}
+.vraag-heel summary,.vraag-meer__item summary{display:flex;align-items:center;gap:.5em;min-height:44px;cursor:pointer;font-weight:600;color:var(--merk-tekst);list-style:none}
+.vraag-heel summary::-webkit-details-marker,.vraag-meer__item summary::-webkit-details-marker{display:none}
+.vraag-heel summary::before,.vraag-meer__item summary::before{content:"";flex:none;width:8px;height:8px;margin:0 4px 2px 2px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg);transition:transform var(--t-snel) var(--ease)}
+.vraag-heel[open] summary::before,.vraag-meer__item[open] summary::before{transform:rotate(45deg)}
+.vraag-heel__tekst{padding:4px 0 2px 18px}
+.vraag-heel__tekst p:last-child{margin-bottom:0}
+
+.vraag-blok{margin-top:20px;padding-top:18px;border-top:1px solid color-mix(in srgb,var(--merk) 22%,var(--lijn))}
+.vraag-antwoord--open .vraag-blok{border-top-color:var(--lijn)}
+.vraag-blok__kop{margin:0 0 10px;font:650 1rem/1.3 var(--body)}
+
+/* ---------- personen ---------- */
+.vraag-personen{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:10px;margin:0 0 10px;padding:0;list-style:none}
+.vraag-persoon{display:flex;gap:12px;align-items:flex-start;min-width:0;padding:14px 16px;border:1px solid var(--lijn);border-radius:var(--r-klein);background:var(--wit)}
+.vraag-persoon__avatar{display:grid;place-items:center;flex:none;width:40px;height:40px;border-radius:50%;background:var(--merk);color:var(--op-merk);font-weight:700}
+.vraag-persoon__avatar svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.vraag-persoon__info{min-width:0}
+.vraag-persoon__naam{margin:0;font-weight:700;line-height:1.3;overflow-wrap:break-word}
+.vraag-persoon__rol{margin:0 0 6px;color:var(--tekst-zacht);font-size:.92rem;line-height:1.35}
+.vraag-persoon__gegevens{display:grid;gap:4px;margin:0;font-size:.92rem;line-height:1.4}
+.vraag-persoon__gegevens div{display:grid;grid-template-columns:5.2em minmax(0,1fr);gap:6px}
+.vraag-persoon__gegevens dt{color:var(--tekst-zacht)}
+.vraag-persoon__gegevens dd{margin:0;overflow-wrap:break-word}
+
+/* ---------- oefenen ---------- */
+.vraag-modules{display:flex;flex-wrap:wrap;gap:10px}
+.vraag-module{max-width:100%;justify-content:space-between;text-align:left}
+.vraag-module span{min-width:0;overflow-wrap:anywhere}
+
+/* ---------- meer treffers ---------- */
+.vraag-meer{min-width:0}
+.vraag-meer__lijst{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.vraag-meer__item{padding:2px 16px;border:1px solid var(--lijn);border-radius:var(--r-klein);background:var(--wit)}
+.vraag-meer__item summary{flex-wrap:wrap;color:var(--tekst);padding:6px 0}
+.vraag-meer__kop{flex:1 1 12em;min-width:0}
+.vraag-meer__waar{color:var(--tekst-zacht);font-weight:400;font-size:.88rem}
+.vraag-meer__tekst{padding:0 0 12px 18px}
+.vraag-meer__tekst .vraag-bron{margin-bottom:4px}
+
+/* ---------- beheercentrum: bronnen ---------- */
+.bronnen{min-width:0}
+.bronnen__uitleg{max-width:44em;color:var(--tekst-zacht)}
+.bronnen__upload{position:relative;flex:none}
+.bronnen__upload:focus-within{outline:3px solid var(--focus);outline-offset:3px}
+.bronnen__upload svg{width:20px;height:20px}
+.bronnen__lijst{display:grid;gap:10px;margin:0 0 8px;padding:0;list-style:none}
+.bron{display:flex;align-items:center;gap:14px;min-width:0;padding:14px 18px;border:1.5px solid var(--lijn);border-radius:var(--r);background:var(--wit)}
+.bron__icoon{display:grid;place-items:center;flex:none;width:44px;height:44px;border-radius:12px;background:var(--zacht);color:var(--merk-tekst)}
+.bron__icoon svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.bron__info{flex:1;min-width:0}
+.bron__naam{margin:0;font-weight:700;overflow-wrap:anywhere}
+.bron__meta{margin:0;color:var(--tekst-zacht);font-size:.9rem;line-height:1.4}
+.bron__labels{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:8px}
+.bron__label{display:inline-block;padding:.25em .75em;border-radius:999px;background:var(--grond);border:1px solid var(--lijn);font-size:.85rem;font-weight:600;white-space:nowrap}
+.bron__label--eigen{background:var(--vlak2);border-color:transparent}
+.bron__status{display:inline-flex;align-items:center;gap:.3em;color:var(--merk-tekst);font-size:.88rem;font-weight:600;white-space:nowrap}
+.bron__weg{min-height:44px}
+.bronnen__registerkop{margin-top:32px;margin-bottom:6px;align-items:baseline}
+.bronnen__telling{margin:0;color:var(--tekst-zacht);font-weight:600}
+.bronnen__tabel th[scope="row"]{white-space:normal;min-width:14em}
+.bronnen__tabel tr.is-open{background:color-mix(in srgb,var(--vlak2) 55%,var(--wit))}
+.bronnen__antwoord{display:inline-flex;align-items:center;gap:.35em;font-weight:600}
+.bronnen__antwoord.is-ja{color:var(--merk-tekst)}
+.bronnen__antwoord.is-nee{color:var(--signaal-tekst)}
+.bronnen__leeg{padding:18px;border:1.5px dashed var(--lijn);border-radius:var(--r);color:var(--tekst-zacht)}
+
+@keyframes vraag-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+@media (max-width:600px){
+  .vraag-het__rij{flex-wrap:wrap}
+  .vraag-het__veld{flex-basis:100%}
+  .vraag-het__knop{width:100%}
+  .vraag-het__voorbeelden .chip{font-size:.9rem}
+  .vraag-heel__tekst,.vraag-meer__tekst{padding-left:0}
+  .vraag-antwoord{padding:16px}
+  .vraag-persoon{padding:12px}
+  .vraag-persoon__avatar{width:34px;height:34px}
+  .vraag-persoon__gegevens div{grid-template-columns:1fr;gap:0}
+  .vraag-persoon__gegevens dt{font-size:.8rem;font-weight:600}
+  .bron{flex-wrap:wrap;padding:14px}
+  .bron__labels{width:100%;justify-content:flex-start;padding-left:58px}
+  .bronnen__tabel th[scope="row"]{min-width:0}
+}
+@media (prefers-reduced-motion:reduce){
+  .vraag-antwoord{animation:none}
+  .vraag-heel summary::before,.vraag-meer__item summary::before,.vraag-het__voorbeelden .chip{transition:none}
+}

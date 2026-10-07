@@ -10,6 +10,7 @@ function leeg() {
     rondleidingKlaar: false,
     voortgang: {},
     scores: {},
+    metingen: {},
     laatst: null,
     dagen: [],
     gevierd: [],
