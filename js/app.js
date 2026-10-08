@@ -101,7 +101,7 @@ function volgendeModule() {
 function metaRegel(m) {
   const delen = [`${m.min} min`];
   if (m.varianten) delen.push(`casus met ${m.varianten} ${m.varianten === 1 ? 'variant' : 'varianten'}`);
-  if (m.toets) delen.push('toets');
+  if (m.toets) delen.push('meetmoment');
   return delen.join(' · ');
 }
 
@@ -384,7 +384,7 @@ function viewModule(id) {
           <ol class="stappenuitleg">
             <li><strong>Een situatie uit je dienst.</strong> Een cliënt, een collega, een moment waarop je iets moet doen.</li>
             <li><strong>Jij kiest.</strong> Bij elke keuze zie je wat er daarna gebeurt.${m.varianten ? ` Er zijn ${m.varianten} ${m.varianten === 1 ? 'variant' : 'varianten'}.` : ''}</li>
-            ${m.toets ? '<li><strong>Een korte toets.</strong> Heb je 80 procent goed, dan is de module klaar.</li>' : '<li><strong>Kort samengevat.</strong> Wat je meeneemt naar je volgende dienst.</li>'}
+            ${m.toets ? '<li><strong>Een kort meetmoment.</strong> Heb je 80 procent goed, dan is de module klaar.</li>' : '<li><strong>Kort samengevat.</strong> Wat je meeneemt naar je volgende dienst.</li>'}
           </ol>
           <p class="opmerking">Deze module is in de demo nog niet uitgewerkt. Rapporteren wel.</p>
           <div class="knoppen">
@@ -418,7 +418,7 @@ function versieregel() {
 }
 
 function stapper(c, actief) {
-  const stappen = [...fasen(c), ...c.stapNamen, c.toets?.length ? 'Toets' : 'Afronden'];
+  const stappen = [...fasen(c), ...c.stapNamen, c.toets?.length ? 'Meetmoment' : 'Afronden'];
   return `<ol class="stapper" aria-label="Stappen in deze casus">${stappen.map((s, i) => `<li class="${i < actief ? 'is-klaar' : i === actief ? 'is-nu' : ''}"${i === actief ? ' aria-current="step"' : ''}><span>${i < actief ? ICOON.vink : i + 1}</span>${esc(s)}</li>`).join('')}</ol>`;
 }
 
@@ -734,7 +734,7 @@ function viewToets(c) {
   const nodig = Math.ceil(t.length * NORM);
   return `
     <article class="werkpaneel">
-      <p class="bovenregel bovenregel--merk">Toets</p>
+      <p class="bovenregel bovenregel--merk">Meetmoment</p>
       <h2>${TELWOORD[t.length] ? TELWOORD[t.length][0].toUpperCase() + TELWOORD[t.length].slice(1) : t.length} korte vragen</h2>
       <p>Heb je er ${TELWOORD[nodig] || nodig} of meer goed, dan is de module klaar.</p>
       <form class="toets" data-form="toets">
@@ -787,7 +787,7 @@ function viewUitslag(c) {
       <div class="knoppen">
         ${gehaald
           ? `<a class="btn btn--actie" href="#/overzicht">Terug naar mijn overzicht ${ICOON.pijl}</a>`
-          : `<button type="button" class="btn btn--actie" data-actie="toets-opnieuw">Doe de toets opnieuw</button>`}
+          : `<button type="button" class="btn btn--actie" data-actie="toets-opnieuw">Doe het meetmoment opnieuw</button>`}
       </div>
     </article>`;
 }
@@ -896,7 +896,7 @@ function viewOpleider() {
             <span class="tegel__tekst">${achter === 1 ? 'loopt achter' : 'lopen achter'}</span>
             <span class="tegel__actie">${filter === 'achter' ? 'Laat iedereen zien' : 'Laat zien wie'} ${ICOON.pijl}</span>
           </button>
-          ${tegel(gem + '%', 'gemiddelde toetsscore')}
+          ${tegel(gem + '%', 'gemiddelde score meetmoment')}
           ${(() => { const o = alle.filter((r) => r.ons); const f = o.length ? Math.round((o.reduce((a, r) => a + r.ons.fouten, 0) / o.length) * 10) / 10 : 0; return tegel(komma(f), 'keer mis geklikt per opdracht in ONS'); })()}
         </div>
       </div>
@@ -911,7 +911,7 @@ function viewOpleider() {
         </div>
         <div class="tabelwrap">
           <table class="tabel tabel--kaarten">
-            <thead><tr><th scope="col">Naam</th><th scope="col">Profiel</th><th scope="col">Afdeling</th><th scope="col">Gestart</th><th scope="col">Voortgang</th><th scope="col">Per deel</th><th scope="col">Badges</th><th scope="col">Toets</th><th scope="col">Zelf in ONS</th><th scope="col">Status</th></tr></thead>
+            <thead><tr><th scope="col">Naam</th><th scope="col">Profiel</th><th scope="col">Afdeling</th><th scope="col">Gestart</th><th scope="col">Voortgang</th><th scope="col">Per deel</th><th scope="col">Badges</th><th scope="col">Meetmoment</th><th scope="col">Zelf in ONS</th><th scope="col">Status</th></tr></thead>
             <tbody>
               ${rijen.map((r) => `
                 <tr${r.live ? ' class="is-live"' : ''}>
@@ -922,7 +922,7 @@ function viewOpleider() {
                   <td data-label="Voortgang" class="tabel__breed"><div class="minibalk" role="img" aria-label="${r.klaar} van ${r.totaal} klaar"><span style="width:${Math.round(r.pct * 100)}%"></span></div><span class="klein">${r.klaar} van ${r.totaal}</span></td>
                   <td data-label="Per deel"><span class="deelvinken">${vinkjesPerDeel(r)}</span></td>
                   <td data-label="Badges">${badgeTeller(aantalBadges(r, nu().toewijzing[r.profiel] || [], nu().voortgang), delenMetModules(nu().toewijzing[r.profiel] || []).length)}</td>
-                  <td data-label="Toets">${r.toets === null ? '<span class="klein">nog niet</span>' : r.toets + '%'}</td>
+                  <td data-label="Meetmoment">${r.toets === null ? '<span class="klein">nog niet</span>' : r.toets + '%'}</td>
                   <td data-label="Zelf in ONS" title="Gemiddeld mis geklikt per opdracht in Nedap ONS, aantal opdrachten en gemiddelde tijd">${onsCel(r.ons)}</td>
                   <td data-label="Status"><span class="status status--${r.status}">${statusTekst[r.status]}</span></td>
                 </tr>`).join('')}
@@ -988,14 +988,14 @@ function viewBeheerModules() {
         <div class="tabelkop"><h2>${MODULES.length} modules voor Nedap ONS</h2></div>
         <div class="tabelwrap">
           <table class="tabel tabel--kaarten">
-            <thead><tr><th scope="col">Module</th><th scope="col">Deel</th><th scope="col">Varianten</th><th scope="col">Toets</th><th scope="col">Lagen</th><th scope="col">Stand</th></tr></thead>
+            <thead><tr><th scope="col">Module</th><th scope="col">Deel</th><th scope="col">Varianten</th><th scope="col">Meetmoment</th><th scope="col">Lagen</th><th scope="col">Stand</th></tr></thead>
             <tbody>
               ${MODULES.map((m) => `
                 <tr>
                   <th scope="row">${esc(m.titel)}</th>
                   <td data-label="Deel">${esc(DELEN.find((d) => d.id === m.deel).titel)}</td>
                   <td data-label="Varianten">${m.varianten || '<span class="klein">geen</span>'}</td>
-                  <td data-label="Toets">${m.toets ? ICOON.vink + '<span class="sr">ja</span>' : '<span class="klein">nee</span>'}</td>
+                  <td data-label="Meetmoment">${m.toets ? ICOON.vink + '<span class="sr">ja</span>' : '<span class="klein">nee</span>'}</td>
                   <td data-label="Lagen" class="tabel__breed"><span class="laag">Generiek</span> <span class="laag laag--klant">De Wilgenhof</span></td>
                   <td data-label="Stand">${CASUSSEN[m.id] ? '<span class="status status--klaar">Uitgewerkt</span>' : '<span class="status">Opzet</span>'}</td>
                 </tr>`).join('')}
@@ -1175,7 +1175,7 @@ function viewHuisstijl() {
             <div class="preview__grond">
               <div class="preview__vlak">
                 <span class="preview__nr">${ICOON.vink}</span>
-                <span><strong>Rapporteren</strong><br><span class="preview__meta">7 min · casus · toets</span></span>
+                <span><strong>Rapporteren</strong><br><span class="preview__meta">7 min · casus · meetmoment</span></span>
               </div>
               <div class="preview__tip"><strong>Tip van de dag</strong> Schrijf voor de volgende dienst.</div>
               <p class="preview__fout">${ICOON.let} Zo loopt het af: de plek is nu open.</p>
