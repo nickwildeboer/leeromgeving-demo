@@ -127,7 +127,7 @@ export default {
           uitleg: 'Bij De Wilgenhof wonen meer cliënten met dezelfde achternaam. De eerste naam in de lijst is niet altijd de goede.',
         },
         {
-          tekst: 'Je zoekt op achternaam en kiest de meneer Jansen die bij De Eik en kamer 4 hoort. Je checkt ook zijn geboortedatum.',
+          tekst: 'Je zoekt op achternaam en kiest de meneer Jansen die bij De Eik en kamer 4 hoort. Je controleert ook zijn geboortedatum.',
           goed: true,
           variant: {
             kop: 'Om 21.00 uur kijkt Lieke mee',

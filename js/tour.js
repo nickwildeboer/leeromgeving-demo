@@ -4,14 +4,22 @@ let actief = null;
 
 function sluit(klaar) {
   if (!actief) return;
-  const { laag, opKlaar, toetsen, vorigeFocus } = actief;
+  const context = actief;
+  const { laag, opKlaar, toetsen, vorigeFocus } = context;
+  context.gesloten = true;
+  if (context.hertekenTimer !== null) window.clearTimeout(context.hertekenTimer);
   laag.remove();
   document.removeEventListener('keydown', toetsen);
-  window.removeEventListener('resize', actief.herteken);
-  window.removeEventListener('scroll', actief.herteken);
+  window.removeEventListener('resize', context.herteken);
+  window.removeEventListener('scroll', context.herteken);
+  for (const { element, inert } of context.achtergrond) {
+    if (!element.isConnected) continue;
+    if (inert) element.setAttribute('inert', '');
+    else element.removeAttribute('inert');
+  }
   actief = null;
-  if (vorigeFocus && vorigeFocus.focus) vorigeFocus.focus();
   if (opKlaar) opKlaar(klaar);
+  if (!actief && vorigeFocus?.isConnected && typeof vorigeFocus.focus === 'function') vorigeFocus.focus();
 }
 
 export function startRondleiding(stappen, opKlaar) {
@@ -29,12 +37,19 @@ export function startRondleiding(stappen, opKlaar) {
         <button type="button" class="btn btn--actie btn--klein" data-tour-actie="volgende">Volgende</button>
       </div>
     </div>`;
+  const vorigeFocus = document.activeElement;
+  const achtergrond = [...document.body.children].map((element) => ({
+    element,
+    inert: element.hasAttribute('inert'),
+  }));
   document.body.appendChild(laag);
+  for (const { element } of achtergrond) element.setAttribute('inert', '');
   let i = 0;
   const licht = laag.querySelector('.tour__licht');
   const kaart = laag.querySelector('.tour__kaart');
 
   const herteken = () => {
+    if (actief !== context || context.gesloten) return;
     const stap = stappen[i];
     const doel = document.querySelector(stap.doel);
     kaart.querySelector('.tour__teller').textContent = `Stap ${i + 1} van ${stappen.length}`;
@@ -58,6 +73,11 @@ export function startRondleiding(stappen, opKlaar) {
   };
 
   const ga = (n) => {
+    if (actief !== context || context.gesloten) return;
+    if (context.hertekenTimer !== null) {
+      window.clearTimeout(context.hertekenTimer);
+      context.hertekenTimer = null;
+    }
     i = n;
     const doel = document.querySelector(stappen[i].doel);
     if (doel) {
@@ -65,7 +85,10 @@ export function startRondleiding(stappen, opKlaar) {
       if (r.top < 90 || r.bottom > window.innerHeight - 220) {
         const zacht = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         window.scrollTo({ top: window.scrollY + r.top - 120, behavior: zacht ? 'smooth' : 'auto' });
-        setTimeout(herteken, zacht ? 380 : 0);
+        context.hertekenTimer = window.setTimeout(() => {
+          context.hertekenTimer = null;
+          herteken();
+        }, zacht ? 380 : 0);
       }
     }
     herteken();
@@ -74,6 +97,24 @@ export function startRondleiding(stappen, opKlaar) {
 
   const toetsen = (e) => {
     if (e.key === 'Escape') sluit(false);
+    if (e.key !== 'Tab' || actief !== context || context.gesloten) return;
+    const focusbaar = [...kaart.querySelectorAll(
+      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+    )].filter((element) => !element.hidden && element.getAttribute('aria-hidden') !== 'true');
+    if (!focusbaar.length) {
+      e.preventDefault();
+      kaart.focus();
+      return;
+    }
+    const eerste = focusbaar[0];
+    const laatste = focusbaar[focusbaar.length - 1];
+    if (e.shiftKey && (document.activeElement === eerste || !kaart.contains(document.activeElement))) {
+      e.preventDefault();
+      laatste.focus();
+    } else if (!e.shiftKey && (document.activeElement === laatste || !kaart.contains(document.activeElement))) {
+      e.preventDefault();
+      eerste.focus();
+    }
   };
 
   laag.addEventListener('click', (e) => {
@@ -86,7 +127,11 @@ export function startRondleiding(stappen, opKlaar) {
   document.addEventListener('keydown', toetsen);
   window.addEventListener('resize', herteken);
   window.addEventListener('scroll', herteken, { passive: true });
-  actief = { laag, opKlaar, toetsen, herteken, vorigeFocus: document.activeElement };
+  const context = {
+    laag, opKlaar, toetsen, herteken, vorigeFocus,
+    achtergrond, hertekenTimer: null, gesloten: false,
+  };
+  actief = context;
   ga(0);
 }
 

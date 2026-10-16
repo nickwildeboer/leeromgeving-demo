@@ -16,6 +16,9 @@ const B = 0.75;
 const GEWICHT_KOP = 3;
 const GEWICHT_SYNONIEM = 0.5;
 const MIN_DEKKING = 0.5;
+// Een match moet ook genoeg absolute relevantie hebben. Een hoge relatieve rang
+// tussen zwakke treffers is op zichzelf geen reden om een antwoord te tonen.
+const MIN_ANTWOORD_SCORE = 3.8;
 const GEWICHT_ZACHT = 0.3;
 
 // Woorden die bij een vraag horen, maar zelden in het antwoord staan. Ze tellen licht mee.
@@ -306,7 +309,7 @@ export function antwoord(index, vraag, opties = {}) {
   const treffers = zoek(index, vraag, 6, { soort: 'sectie' });
   // De beste passage is de hoogste die genoeg van de vraag dekt, en niet ver achter de top zit.
   const top = treffers[0]?.score || 0;
-  const goed = treffers.find((t) => t.dekking >= MIN_DEKKING && t.score >= top * 0.6);
+  const goed = treffers.find((t) => t.dekking >= MIN_DEKKING && t.score >= MIN_ANTWOORD_SCORE && t.score >= top * 0.6);
   const beste = goed || treffers[0];
   const zeker = Boolean(goed);
   const extra = tokens(MIJN_WOORDEN.test(n) || wieVraag ? (afdelingUitVraag(vraag) || afdeling || '') : (afdelingUitVraag(vraag) || ''));
@@ -316,7 +319,7 @@ export function antwoord(index, vraag, opties = {}) {
   // Vraagt iemand naar een persoon of een rol, en past Wie doet wat beter dan het handboek?
   // Dan komt het antwoord uit Wie doet wat.
   const p = personen[0];
-  if (p && p.dekking >= MIN_DEKKING && (!zeker || (p.inKop && p.score >= beste.score * 0.8))) {
+  if (p && p.dekking >= MIN_DEKKING && p.score >= MIN_ANTWOORD_SCORE && (!zeker || (p.inKop && p.score >= beste.score * 0.8))) {
     return {
       tekst: persoonTekst(p),
       bron: p.bron, kop: p.rol, hoofdstuk: null, sectieId: null,
@@ -327,7 +330,7 @@ export function antwoord(index, vraag, opties = {}) {
 
   if (!zeker) {
     return {
-      tekst: 'Dit staat niet in het handboek. Vraag het de key-user van je afdeling.',
+      tekst: 'We hebben geen passend antwoord gevonden. Vraag het de key-user van je afdeling.',
       bron: null, kop: null, hoofdstuk: null, sectieId: null,
       personen: keyUsers(index, afdeling),
       modules: [],

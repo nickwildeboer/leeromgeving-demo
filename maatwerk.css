@@ -1,0 +1,117 @@
+/* Binnen de bestaande Ons Op Maat-huisstijl, met ruimte voor het productbewijs. */
+.maat { background:var(--grond); min-height:100vh; }
+.maat-balk { min-height:88px; padding:20px 4vw; display:flex; align-items:center; justify-content:space-between; gap:24px; border-bottom:1px solid var(--lijn); }
+.maat-balk>a:first-child { width:148px; color:var(--paneel); }
+.maat-balk>a:first-child svg {width:100%;height:auto;}
+.maat-balk>span {font-size:14px;color:var(--tekst-zacht);}
+.maat-intro {padding-top:48px;padding-bottom:32px;}
+.maat-overline {font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--merk);margin:0 0 14px;}
+.maat-intro h1 {font-size:clamp(34px,4.3vw,62px);line-height:1.04;letter-spacing:-.04em;max-width:900px;margin:0 0 20px;}
+.maat-intro h1 em {font-style:normal;color:var(--merk);}
+.maat-intro>p:last-child {max-width:650px;color:var(--tekst-zacht);font-size:18px;line-height:1.6;margin:0;}
+.maat-stappen ol {list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid var(--lijn);}
+.maat-stappen button {font:inherit;border:0;background:transparent;color:var(--tekst-zacht);padding:16px 8px 18px;width:100%;display:flex;gap:10px;align-items:center;text-align:left;border-bottom:3px solid transparent;}
+.maat-stappen button span {border:1px solid var(--lijn);border-radius:50%;width:28px;height:28px;display:grid;place-items:center;flex-shrink:0;font-size:13px;}
+.maat-stappen button[aria-current] {color:var(--paneel);font-weight:700;border-bottom-color:var(--merk);}
+.maat-stappen button[aria-current] span {background:var(--paneel);color:white;border-color:var(--paneel);}
+.maat-stappen button:disabled {opacity:.6;cursor:default;}
+.maat-podium {padding-top:38px;padding-bottom:32px;}
+.maat-twee {display:grid;grid-template-columns:1fr 1.07fr;gap:64px;align-items:start;}
+.maat-uitleg {padding:22px 0;}
+.maat h2 {font-size:clamp(28px,3.2vw,42px);line-height:1.12;letter-spacing:-.035em;margin:0 0 22px;}
+.maat h3 {font-size:25px;line-height:1.2;margin:0 0 20px;}
+.maat h4 {font-size:18px;line-height:1.4;margin:0 0 10px;}
+.maat-uitleg>p:not(.maat-overline):not(.maat-status) {font-size:18px;color:var(--tekst-zacht);line-height:1.7;max-width:470px;}
+.maat-bronkeuze {display:flex;align-items:center;gap:14px;margin:26px 0; padding:18px 0;border-block:1px solid var(--lijn);}
+.maat-bronkeuze svg {width:38px;color:var(--merk);flex-shrink:0;}
+.maat-bronkeuze div {flex:1;}
+.maat-bronkeuze span:not(.maat-pil),.maat-document__kop span {display:block;font-size:13px;color:var(--tekst-zacht);margin-top:3px;}
+.maat-pil {font-size:12px;padding:5px 10px;border:1px solid var(--lijn);border-radius:30px;white-space:nowrap;}
+.maat-document {background:white;border:1px solid var(--lijn);border-radius:5px 28px 5px 5px;padding:36px 32px;box-shadow:0 14px 36px #14352b0c;border-top:5px solid var(--merk);position:relative;}
+.maat-document__kop {display:flex;gap:12px;align-items:center;border-bottom:1px solid var(--lijn);padding-bottom:24px;margin-bottom:32px;}
+.maat-document__kop svg {width:34px;color:var(--merk);flex-shrink:0;}
+.maat-regel {display:flex;gap:16px;line-height:1.7;font-size:17px;margin:20px 0;}
+.maat-regel>span {font-size:12px;color:var(--tekst-zacht);padding-top:3px;}
+.maat mark {background:var(--zacht);color:var(--paneel);padding:1px 3px;box-decoration-break:clone;-webkit-box-decoration-break:clone;}
+.maat-papierlijnen {display:grid;gap:10px;margin-top:30px;}
+.maat-papierlijnen i {display:block;background:#eeeae2;height:5px;border-radius:5px;}
+.maat-papierlijnen i:nth-child(2){width:90%;}.maat-papierlijnen i:last-child{width:64%;}
+.maat-document__voet {font-size:12px;color:var(--tekst-zacht);margin:30px 0 0;}
+.maat-import {font-size:14px;margin-top:24px;}
+.maat-import summary {cursor:pointer;text-decoration:underline;text-underline-offset:3px;}
+.maat-import input {max-width:100%;font:inherit;padding:10px 0;}
+.maat-status {font-size:13px;color:var(--tekst-zacht);margin-top:24px;line-height:1.5;}
+.maat-verwerking {margin:28px 0;display:grid;gap:22px;}
+.maat-verwerking>div {display:flex;gap:16px;align-items:center;}
+.maat-verwerking svg {width:42px;color:var(--merk);flex-shrink:0;}
+.maat-verwerking small {display:block;color:var(--tekst-zacht);font-size:14px;margin-top:3px;}
+.maat-resultaat {padding:30px;background:white;border:1px solid var(--lijn);border-radius:var(--r);}
+.maat-voorstel {display:flex;gap:14px;padding:20px 0;border-top:1px solid var(--lijn);}
+.maat-nr {font-size:13px;color:var(--merk);padding-top:4px;}
+.maat-voorstel p {margin:0 0 10px;line-height:1.55;}
+.maat-plek {display:block;font-size:13px;color:var(--merk);font-weight:600;}
+.maat-voorstel small {display:block;font-size:12px;color:var(--tekst-zacht);margin-top:8px;}
+.maat-openvraag {font-size:14px;padding:18px;background:var(--grond);border-radius:12px;margin:14px 0 0;line-height:1.6;}
+.maat-openvraag p {margin:5px 0 0;}
+.maat-controlekop {display:flex;justify-content:space-between;gap:20px;margin-bottom:30px;}
+.maat-controlekop p {max-width:650px;}
+.maat-twee--controle {gap:32px;}
+.maat-check {display:flex;gap:14px;padding:22px 0;border-top:1px solid var(--lijn);cursor:pointer;}
+.maat-check input {width:20px;height:20px;flex-shrink:0;accent-color:var(--merk);margin-top:3px;}
+.maat-check>span {display:grid;gap:8px;line-height:1.5;}
+.maat-check small {font-size:12px;color:var(--tekst-zacht);}
+.maat-fout {color:#8b3315;font-size:14px;}
+.maat-context {display:flex;align-items:start;gap:14px;background:var(--zacht);padding:24px;border-radius:var(--r);margin:28px 0;}
+.maat-context svg {width:34px;flex-shrink:0;color:var(--merk);}
+.maat-context p {font-size:17px;line-height:1.6;margin:10px 0;}
+.maat-context small {font-size:12px;color:var(--tekst-zacht);}
+.maat-oefening {border:1px solid var(--lijn);border-radius:var(--r);background:white;overflow:hidden;box-shadow:0 16px 36px #14352b0c;}
+.maat-oefening header {display:flex;align-items:center;gap:12px;background:var(--paneel);color:white;padding:20px 26px;}
+.maat-oefening header div>span {display:block;font-size:13px;color:#d8e7df;margin-top:4px;}
+.maat-avatar {border-radius:50%;width:40px;height:40px;background:#ffffff20;display:grid;place-items:center;font-size:13px;}
+.maat-oefening__in {padding:28px;}
+.maat-oefening__in>p {line-height:1.6;}
+.maat-dossier {border:1px solid #ccd8e2;background:#f5f8fa;border-radius:8px;overflow:hidden;margin:24px 0;padding:0 16px 12px;}
+.maat-dossier span {display:block;background:#dce9f2;margin:0 -16px 14px;padding:10px 16px;font-size:12px;color:#345064;}
+.maat-dossier p {font-size:14px;margin:8px 0;}
+.maat-antwoorden {display:grid;gap:8px;}
+.maat-antwoorden button {font:inherit;background:white;border:1px solid var(--lijn);padding:14px 16px;border-radius:10px;text-align:left;color:var(--tekst);line-height:1.4;min-height:48px;}
+.maat-antwoorden button:hover,.maat-antwoorden .is-gekozen {background:var(--zacht);}
+.maat-feedback {margin-top:18px;padding:12px 16px;background:var(--grond);font-size:14px;line-height:1.5;}
+.maat-feedback p {margin:6px 0 0;}.maat-feedback.is-goed{background:var(--zacht);}
+.maat-wijziging {margin:28px 0;padding-left:20px;border-left:2px solid var(--lijn);}
+.maat-wijziging span {font-size:12px;color:var(--tekst-zacht);}.maat-wijziging p{margin:6px 0 20px;font-size:18px;line-height:1.6;}
+.maat-impact {display:flex;gap:14px;padding:24px 0;border-top:1px solid var(--lijn);align-items:start;}
+.maat-impact svg {width:36px;flex-shrink:0;color:var(--merk);}.maat-impact div{flex:1;}.maat-impact p{margin:0;font-size:14px;line-height:1.6;color:var(--tekst-zacht);}
+.maat-voet {display:flex;align-items:center;justify-content:space-between;gap:24px;border-top:1px solid var(--lijn);padding-top:20px;padding-bottom:24px;}
+.maat-voet p {max-width:690px;font-size:12px;line-height:1.6;color:var(--tekst-zacht);}
+.maat :focus-visible {outline:3px solid var(--actie);outline-offset:4px;}
+.maat-podium {animation:maat-binnen .32s ease-out both;}
+@keyframes maat-binnen {from{opacity:.5;transform:translateY(7px);}to{opacity:1;transform:none;}}
+.maat-start {background:var(--zacht);border:1px solid #bdd4c5;border-radius:18px;padding:22px;margin:0 0 28px;}
+.maat-start h2 {font-size:25px;margin:0 0 8px;}.maat-start p{font-size:15px;line-height:1.6;margin:0 0 18px;}
+.maat-terug {font-size:13px;background:var(--zacht);padding:10px 28px;display:flex;justify-content:space-between;gap:16px;align-items:center;}
+@media(max-width:800px){.maat-twee{grid-template-columns:1fr;gap:26px;}.maat-intro{padding-top:30px;}.maat-podium{padding-top:22px;}.maat-stappen button{font-size:12px;flex-direction:column;gap:8px;text-align:center;padding:12px 3px;}.maat-uitleg{padding:0;}.maat-balk>span{display:none;}.maat-controlekop{display:block;}.maat-voet{display:block;}.maat-intro h1{font-size:38px;}.maat-document{padding:28px 22px;}.maat-resultaat,.maat-oefening__in{padding:22px;}.maat-balk{padding:18px 20px;}.maat-balk>a:first-child{width:120px;}.maat-balk .linkknop{font-size:13px;}.maat-stappen{padding-inline:16px;}.maat-twee>*{min-width:0;}.maat-regel{overflow-wrap:anywhere;}.maat-terug{padding:10px 20px;flex-wrap:wrap;}.maat .btn{white-space:normal;}.maat-impact{gap:10px;}}
+@media(prefers-reduced-motion:reduce){.maat-podium{animation:none;}}
+
+.maat-balk .oom__a { color:var(--paneel); }
+.maat-balk .oom__b { color:var(--actie); }
+.maat main:focus-visible, .maat h2:focus-visible { outline:none; }
+.maat--verder .maat-intro {padding-top:28px;padding-bottom:22px;}
+.maat--verder .maat-intro h1 {font-size:32px;margin-bottom:0;}
+.maat--verder .maat-intro h1 br {display:none;}
+.maat--verder .maat-intro h1 em::before {content:' ';}
+.maat--verder .maat-intro>p:last-child {display:none;}
+.demo-inloggen summary {cursor:pointer;font-weight:600;}
+.demo-inloggen[open] summary {margin-bottom:20px;}
+@media(max-width:800px){.maat--verder .maat-intro h1{font-size:26px;}.maat--verder .maat-intro h1 br{display:block;}.maat--verder .maat-intro h1 em::before{content:'';}}
+
+.maat-intro,.maat--verder .maat-intro{padding-top:28px;padding-bottom:18px}.maat-intro h1,.maat--verder .maat-intro h1{font-size:30px;margin:0}
+.maat-document{border-top:1px solid var(--lijn);box-shadow:none;border-radius:12px}.maat h2{font-size:32px}.maat-resultaat{border-radius:12px}.maat-podium{animation:none}
+
+.maat-terug__acties{display:flex;flex-wrap:wrap;align-items:center;gap:8px 24px}
+.maat-terug__acties :is(a,button){min-height:44px;display:inline-flex;align-items:center;white-space:normal}
+.maat-voet>div{display:flex;flex-wrap:wrap;gap:8px}
+
+.maat-intro>p{font-size:15px;line-height:1.5;color:var(--tekst-zacht);margin:10px 0 0}
+.maat--verder .maat-intro>p:last-child{display:block}

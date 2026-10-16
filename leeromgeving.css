@@ -1,0 +1,44 @@
+/* Progressive disclosure keeps the next learning action easy to find. */
+.leer-details { margin: 24px 0; border: 1px solid var(--lijn); border-radius: var(--r); background: var(--wit); }
+.leer-details > summary { min-height: 76px; padding: 22px 26px; cursor: pointer; font-family: var(--kop); font-size: 21px; font-weight: 650; color: var(--paneel); }
+.leer-details > summary::marker, .afspraak--compact > summary::marker { color: var(--merk); }
+.leer-details__meta { margin-left: 16px; font-family: var(--font); font-size: 15px; font-weight: 450; color: var(--tekst-zacht); }
+.leer-details__inhoud { padding: 0 26px 22px; }
+.leer-details__inhoud > .deel:first-child { margin-top: 12px; }
+.leer-details--badges > .badges { margin: 0; border: 0; }
+.leer-details--metingen { margin-bottom: 48px; }
+.leer-details--metingen > .werkpaneel { margin: 0; border: 0; }
+.snelvraag button.btn { color: var(--paneel-diep); background: var(--wit); border-color: var(--wit); }
+.snelvraag button.btn:hover { color: var(--paneel-diep); background: var(--zacht); border-color: var(--zacht); }
+.afspraak--compact { margin: 20px 0; border: 1px solid var(--lijn); border-radius: var(--r-klein); overflow: hidden; background: var(--zacht); }
+.afspraak--compact > summary { padding: 18px 22px; cursor: pointer; font-weight: 600; }
+.afspraak--compact > summary > span:not(.afspraak__label) { display: block; margin: 5px 0 0 17px; }
+.afspraak__label { font-size: 13px; font-weight: 550; color: var(--paneel); }
+.afspraak--compact .afspraak__inhoud { background: var(--wit); border-top: 1px solid var(--lijn); }
+.tegels.tegels--rustig { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.leer-demo-label { display: inline-block; vertical-align: middle; margin-left: 8px; font-family: var(--font); font-size: 12px; font-weight: 450; color: var(--tekst-zacht); }
+.leer-medewerker { min-width: 150px; max-width: 320px; }
+.leer-medewerker > summary { cursor: pointer; color: var(--merk); font-weight: 600; padding-block: 12px; }
+.leer-medewerker dl { margin: 8px 0; font-size: 14px; }
+.leer-medewerker dl > div { padding: 8px 0; border-top: 1px solid var(--lijn); }
+.leer-medewerker dt { color: var(--tekst-zacht); font-size: 12px; }
+.leer-medewerker dd { margin: 4px 0 0; }
+@media (max-width: 700px) {
+  .leer-details > summary { padding: 19px; font-size: 19px; }
+  .leer-details__meta { display: block; margin: 5px 0 0 17px; font-size: 14px; }
+  .leer-details__inhoud { padding: 0 16px 16px; }
+  .tegels.tegels--rustig { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .leer-medewerker { max-width: 100%; }
+}
+
+
+/* De zichtbare tip en badges sluiten aan op het gekozen medewerkersoverzicht. */
+.overzicht .oefenkaart .klein{opacity:1}
+
+@media(max-width:600px){
+  .overzicht .badges__lijst{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .overzicht .badges__item{padding:16px 10px}
+  .overzicht .badges__naam{font-size:1rem;hyphens:none;overflow-wrap:anywhere}
+  .overzicht .badges__deel{display:block}
+  .overzicht .badges__item .badge{width:56px;height:56px}
+}

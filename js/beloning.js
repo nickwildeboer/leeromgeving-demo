@@ -8,11 +8,11 @@ const esc = (t) => String(t ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '
 
 // Eén badge per deel. De naam staat op de badge, de tekst komt in het moment.
 export const BADGES = {
-  welkom: { naam: 'Wegwijs', tekst: 'Je weet de weg. Je weet waar je alles vindt, en bij wie je terechtkunt met een vraag.' },
-  start: { naam: 'Goed begonnen', tekst: 'Je weet wat je doet in de eerste tien minuten van je dienst. Zo begin je rustig.' },
-  tijdens: { naam: 'Aan het bed', tekst: 'Dit was het grootste deel. Je weet hoe je het werk aan het bed vastlegt, zoals wij dat hier doen.' },
-  afspraken: { naam: 'Samen afgesproken', tekst: 'Je kent de afspraken die voor iedereen gelden. Daar kunnen je collega\'s op bouwen.' },
-  apps: { naam: 'Bij de hand', tekst: 'Je kunt aan de slag met de apps op je telefoon. Ook aan het bed.' },
+  welkom: { naam: 'Wegwijs', tekst: 'Je hebt de rondleiding afgerond.' },
+  start: { naam: 'Goed begonnen', tekst: 'Je hebt de modules over het starten van je dienst afgerond.' },
+  tijdens: { naam: 'Aan het bed', tekst: 'Je hebt geoefend met het vastleggen van werk aan het bed.' },
+  afspraken: { naam: 'Samen afgesproken', tekst: 'Je hebt de modules over de werkafspraken afgerond.' },
+  apps: { naam: 'Bij de hand', tekst: 'Je hebt de modules over de apps afgerond.' },
 };
 
 // ---------- pure functies ----------
@@ -139,7 +139,7 @@ export function badgeBlok({ toegewezen, voortgang, dagen, vandaag = dagStempel()
         <h2 id="cert-kop">Alles is klaar. Je certificaat staat voor je klaar.</h2>
         <p>Je hebt alle modules afgerond. Bewaar je certificaat, of druk het af voor je map.</p>
       </div>
-      <a class="btn btn--actie" href="#/certificaat" aria-describedby="cert-kop">Bekijk je certificaat <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg></a>
+      <a class="btn btn--rand" href="#/certificaat" aria-describedby="cert-kop">Bekijk je certificaat <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg></a>
     </div>` : '';
   return `
     <section class="badges" aria-labelledby="badges-kop">
@@ -202,7 +202,7 @@ export function certificaatPagina({ naam, profiel, afdeling, org, logo, merk, to
           <p class="certificaat__titel">Leren bij ${esc(org)}</p>
         </header>
         <div class="certificaat__body">
-          <p class="certificaat__soort">Certificaat</p>
+          <p class="certificaat__soort">Certificaat</p><p class="certificaat__demo">Demo met testgegevens. Dit is oefenvoortgang, geen bewijs van bekwaamheid.</p>
           <h1 class="certificaat__naam" id="cert-naam">${esc(naam)}</h1>
           <p class="certificaat__wat">heeft alle modules van Leren bij ${esc(org)} afgerond.</p>
           <ul class="certificaat__badges">

@@ -89,7 +89,7 @@
 .oef-knop--klein{min-height:28px;padding:0 10px;border-color:var(--ons-blauw);border-radius:999px;background:#fff;color:var(--ons-blauw);font-size:.72rem}
 .oef-knop .oef-ic{width:14px;height:14px}
 .oef-knoppen{display:flex;flex-wrap:wrap;gap:6px}
-.oef-icoonknop{display:inline-grid;place-items:center;width:34px;height:34px;padding:0;border:0;border-radius:6px;background:none;color:#1A8FD8}
+.oef-icoonknop{display:inline-grid;place-items:center;width:34px;height:34px;padding:0;border:0;border-radius:6px;background:none;color:#066AA6}
 .oef-icoonknop--grijs{color:#A8A8A8}
 .oef-vierkantplus{display:grid;place-items:center;width:30px;height:30px;padding:0;border:1px solid #D4D4D4;border-radius:4px;background:#fff;color:#4346B7}
 .oef-rondplus{display:grid;place-items:center;width:30px;height:30px;padding:0;border:0;background:none;color:#17507A}
@@ -113,7 +113,7 @@
 .oef-waarsch{list-style:none;margin:0;padding:0 0 0 8px;display:grid;gap:6px;font-weight:600;font-size:.88rem}
 .oef-waarsch li{display:flex;align-items:center;gap:10px}
 .oef-waarsch .oef-ic{color:#F07A3B}
-.oef-tabelwrap{overflow-x:auto;max-width:100%}
+.oef-tabelwrap{container-type:inline-size;max-width:100%}
 .oef-mini{width:100%;border-collapse:collapse;background:#F5F5F5;font-size:.85rem}
 .oef-mini th{padding:6px 12px;text-align:left;font-weight:500;color:#555;border-bottom:1px solid #DDD}
 .oef-mini td{padding:8px 12px}
@@ -122,7 +122,7 @@
 .oef-dl div{display:grid;grid-template-columns:150px 1fr;gap:8px}
 .oef-dl dt{font-style:italic;color:#666}
 .oef-dl dd{margin:0;font-weight:600}
-.oef-dl dd.is-oranje{color:#F08A00}
+.oef-dl dd.is-oranje{color:#9B5700}
 .oef-dl--onder div{grid-template-columns:1fr;gap:0;margin-bottom:8px}
 .oef-contacten{list-style:none;margin:0;padding:0;display:grid;gap:8px}
 .oef-contacten li{padding:8px 10px;border:1px solid var(--ons-lijn);border-radius:6px;font-size:.85rem}
@@ -140,7 +140,7 @@
 .oef-vink{display:flex;align-items:center;gap:8px;min-height:30px;color:#444;cursor:pointer}
 .oef-vink input{width:16px;height:16px;margin:0}
 .oef-vink--klein{font-size:.75rem;min-height:24px}
-.oef-start__boom{list-style:none;margin:0;padding:0;color:#1A8FD8;font-size:.8rem}
+.oef-start__boom{list-style:none;margin:0;padding:0;color:#066AA6;font-size:.8rem}
 .oef-start__boom li:not(:first-child){padding-left:18px}
 .oef-start__titel{margin:0 0 12px;font-size:1.15rem;font-weight:600;color:#555}
 .oef-start__zoek,.oef-zoekveld{display:flex;align-items:center;gap:6px;padding:0 10px;border:1px solid #CFCFCF;border-radius:999px;background:#fff}
@@ -159,17 +159,17 @@
 .oef-resultaat{display:flex;justify-content:space-between;gap:12px;width:100%;min-height:44px;padding:8px 14px;border:0;background:#fff;text-align:left;font-size:.88rem}
 @media (hover:hover){.oef-resultaat:hover{background:var(--ons-paars-zacht)}}
 .oef-resultaat__naam{color:var(--ons-paars);font-weight:600}
-.oef-resultaat__nr{color:#777}
+.oef-resultaat__nr{color:#707070}
 .oef-resultaten__leeg{padding:8px 2px}
 .oef-start__kaarten{display:grid;gap:12px;align-content:start}
 .oef-bkaart{border-radius:6px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.08);overflow:hidden}
 .oef-bkaart h4{margin:0;padding:12px 16px;background:var(--ons-blauw);color:#fff;font-size:.82rem;font-weight:700}
 .oef-bkaart>div{display:grid;justify-items:start;padding:12px 16px}
-.oef-bkaart__sub{margin:6px 0 2px!important;color:#1A8FD8;font-weight:700;font-size:.75rem}
+.oef-bkaart__sub{margin:6px 0 2px!important;color:#066AA6;font-weight:700;font-size:.75rem}
 .oef-bkaart>.oef-bkaart__rijen{padding:0}
 .oef-bkaart__rijen .oef-blink{width:100%;padding:10px 16px}
 .oef-bkaart__rijen .oef-blink+.oef-blink{border-top:1px solid #999}
-.oef-blink{display:inline-flex;align-items:center;gap:6px;min-height:24px;padding:2px 0;border:0;background:none;color:#1A8FD8;font-size:.72rem;text-align:left}
+.oef-blink{display:inline-flex;align-items:center;gap:6px;min-height:24px;padding:2px 0;border:0;background:none;color:#066AA6;font-size:.72rem;text-align:left}
 .oef-blink .oef-ic{width:16px;height:16px}
 .oef-overleg{padding:14px 16px;border-radius:6px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.08)}
 .oef-overleg__kop{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
@@ -199,7 +199,7 @@
 .oef-stappen i{width:18px;height:1px;background:#BBB}
 .oef-vl__score{margin:12px 0!important;text-align:right;font-size:.75rem}
 .oef-domein{margin:10px 0 8px;font-size:.92rem;font-weight:700;color:#222}
-.oef-vl__sectie summary{display:flex;justify-content:space-between;align-items:center;padding:6px 8px;background:#F5F5F7;color:#1A8FD8;font-size:.85rem;cursor:pointer}
+.oef-vl__sectie summary{display:flex;justify-content:space-between;align-items:center;padding:6px 8px;background:#F5F5F7;color:#066AA6;font-size:.85rem;cursor:pointer}
 .oef-score{padding:2px 6px;border:1px solid #CCC;border-radius:3px;background:#fff;color:#333;font-size:.6rem}
 .oef-vraag{font-weight:700;font-size:.75rem;margin:8px 16px 4px!important}
 .oef-antwoord{font-size:.75rem;margin:0 24px 8px!important}
@@ -213,28 +213,28 @@
 .oef-plan__rechts{border-left:1px solid #CCC;display:grid;gap:8px;padding:0 0 4px}
 .oef-plan__doel{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:8px 10px;border-bottom:1px solid #DDD;font-size:.82rem}
 .oef-plan__doel--leeg{display:flex}
-.oef-plan__lbl{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#777}
+.oef-plan__lbl{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#707070}
 .oef-plan__kader{margin:0 8px;padding:8px 4px;border:1px solid #AAA;border-radius:3px;background:#EFEFEF;font-size:.75rem}
 .oef-plan__kader>p:nth-child(2){margin:0 16px 6px!important}
 .oef-plan__in{margin-left:32px!important}
 .oef-plan__kader .oef-vl__blok{margin:8px 16px;background:#F7F7F7}
 .oef-plan__rechts>.oef-knop--klein{justify-self:start;margin-left:8px}
 .oef-pad{margin:10px 0 0!important;font-size:.78rem;font-weight:600}
-.oef-pad__blauw{color:#1A8FD8;font-weight:500}
-.oef-keuzerij{display:flex;justify-content:space-between;align-items:center;width:100%;min-height:36px;margin-top:6px;padding:0 24px 0 28px;border:0;border-top:1px solid #DDD;border-bottom:1px solid #DDD;background:#F3F3F3;color:#1A8FD8;font-size:.75rem;text-align:left}
+.oef-pad__blauw{color:#066AA6;font-weight:500}
+.oef-keuzerij{display:flex;justify-content:space-between;align-items:center;width:100%;min-height:36px;margin-top:6px;padding:0 24px 0 28px;border:0;border-top:1px solid #DDD;border-bottom:1px solid #DDD;background:#F3F3F3;color:#066AA6;font-size:.75rem;text-align:left}
 .oef-keuzerij--actief{background:#BDE0F7}
 .oef-keuzerij .oef-ic{color:#555}
 .oef-ovz{margin:8px 0 0;padding:0 14px 14px;background:#EFF1F4}
 .oef-ovz__kop{padding-top:10px}
-.oef-ovz__juridisch{color:#1A8FD8;font-weight:600;padding:10px 12px}
+.oef-ovz__juridisch{color:#066AA6;font-weight:600;padding:10px 12px}
 .oef-ovz__leeg{padding:8px 12px}
 
 /* rapportages */
 .oef-rapkaart{display:grid;gap:12px}
 .oef-rtabs{display:flex;align-items:center;gap:6px}
-.oef-rtab{display:grid;place-items:center;width:36px;height:36px;padding:0;border:0;background:none;color:#1A8FD8}
+.oef-rtab{display:grid;place-items:center;width:36px;height:36px;padding:0;border:0;background:none;color:#066AA6}
 .oef-rtab .oef-ic{width:19px;height:19px}
-.oef-rtab.is-actief{box-shadow:inset 0 -2px 0 #1A8FD8}
+.oef-rtab.is-actief{box-shadow:inset 0 -2px 0 #066AA6}
 .oef-rtab.is-soep{color:#E8B400}
 .oef-rtab.is-soep.is-actief{box-shadow:inset 0 -2px 0 #E8B400}
 .oef-rplus{display:grid;place-items:center;width:30px;height:30px;margin-left:auto;padding:0;border:0;border-radius:50%;background:var(--ons-blauw);color:#fff}
@@ -259,7 +259,7 @@
 .oef-raplijst{list-style:none;margin:0;padding:0}
 .oef-rap{display:grid;grid-template-columns:26px 100px minmax(0,1fr) auto;gap:10px;align-items:start;padding:14px 4px;border-top:1px solid #E2E2E2;font-size:.85rem}
 .oef-rap:first-child{border-top:0}
-.oef-rap__ic{width:20px;height:20px;color:#1A8FD8;margin-top:6px}
+.oef-rap__ic{width:20px;height:20px;color:#066AA6;margin-top:6px}
 .oef-rap__ic.is-soep{color:#E8B400}
 .oef-rap__wie{font-size:.8rem;line-height:1.35}
 .oef-rap__tekst p+p{margin-top:4px}
@@ -327,8 +327,8 @@
 .oef-modules__kolom{padding:18px 14px}
 .oef-modules__kolom.is-eerste{background:#F4F4FB}
 .oef-modules__kolom h3{margin:0 0 10px;font-size:.85rem;font-weight:700;color:#333}
-.oef-modules__kolom ul{list-style:none;margin:0;padding:0;display:grid;gap:4px}
-.oef-module{display:flex;align-items:center;gap:10px;width:100%;min-height:44px;padding:4px;border:0;border-radius:6px;background:none;text-align:left;font-size:.82rem;color:#222}
+.oef-modules__kolom ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:4px}
+.oef-module{display:flex;align-items:center;gap:10px;width:100%;min-width:0;min-height:44px;padding:4px;border:0;border-radius:6px;background:none;text-align:left;font-size:.82rem;color:#222;overflow-wrap:anywhere}
 @media (hover:hover){.oef-module:hover{background:#F2F2F8}}
 .oef-module__ic{display:grid;place-items:center;flex:none;width:32px;height:32px;border-radius:8px;background:var(--k);color:#fff}
 .oef-module__ic .oef-ic{width:17px;height:17px}
@@ -355,14 +355,17 @@
   .ons--oefen{min-height:540px}
   .ons--oefen .ons__balk{gap:8px}
   .ons--oefen .ons__rechts{gap:0;margin-left:auto}
-  /* Het menu van ONS blijft zichtbaar, als een rij om opzij te schuiven. */
+  /* Op smalle schermen blijven alle menu-items zichtbaar in passende rijen. */
   .ons--oefen .ons__lijf,.ons--oefen.is-ingeklapt .ons__lijf{grid-template-columns:minmax(0,1fr)}
-  .ons--oefen .ons__menu{display:flex;flex-direction:row;align-items:center;gap:2px;padding:4px 6px;overflow-x:auto;border-bottom:1px solid var(--ons-lijn);min-height:0}
-  .ons--oefen .ons__menu ul{display:flex;margin:0;gap:2px}
-  .ons--oefen .ons__menu li{flex:none}
-  .ons--oefen .ons__groep,.ons--oefen .ons__nedap,.ons--oefen .oef-menu__inklappen{display:none}
+  .ons--oefen .ons__menu{display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;gap:2px;padding:4px 6px;border-bottom:1px solid var(--ons-lijn);min-height:0}
+  .ons--oefen .ons__menu ul{display:flex;flex-wrap:wrap;flex:1 1 100%;margin:0;gap:2px}
+  .ons--oefen .ons__menu li{flex:1 1 140px;min-width:0}
+  .ons--oefen .ons__groep,.ons--oefen .ons__nedap{display:none}
+  .ons--oefen.is-ingeklapt .ons__menu ul,.ons--oefen.is-ingeklapt .oef-menu__terug{display:none}
+  .ons--oefen.is-ingeklapt .ons__menu{justify-content:flex-start}
+  .ons--oefen .oef-menu__inklappen{display:inline-flex;min-height:44px}
   .ons--oefen .oef-menu__tekst{display:inline!important}
-  .ons--oefen .ons__menu .ons__menu-item,.ons--oefen .oef-menu__terug{width:auto;white-space:nowrap;min-height:44px;margin:0}
+  .ons--oefen .ons__menu .ons__menu-item,.ons--oefen .oef-menu__terug{width:100%;white-space:normal;min-height:44px;margin:0}
   .ons--oefen .oef-menu__terug{flex:none}
   .ons--oefen .ons__inhoud{padding:10px 8px 60px}
   .ons--oefen .ons__meer{display:inline}
@@ -394,5 +397,109 @@
   .oef-modules__lijf{grid-template-columns:1fr}
   .oef-dimmer{padding:56px 8px 8px}
   .oef-vl__rechts{margin-left:0}
-  .oef-tabel{min-width:560px}
 }
+
+/* De beschikbare tabelruimte bepaalt de weergave, ook naast een tabletmenu. */
+@container (max-width:640px){
+  .oef-tabel{display:block;width:100%;min-width:0}
+  .oef-tabel thead{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+  .oef-tabel tbody{display:block;width:100%}
+  .oef-tabel tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-bottom:1px solid #DDD;padding:8px}
+  .oef-tabel tr:last-child{border-bottom:0}
+  .oef-tabel td{display:block;min-width:0;padding:8px;border:0;overflow-wrap:anywhere}
+  .oef-tabel td:nth-child(2),.oef-tabel td[colspan]{grid-column:1/-1}
+  .oef-tabel td[data-label]::before{content:attr(data-label);display:block;font-size:.75rem;color:#555;margin-bottom:4px}
+  .oef-tabel .oef-link{max-width:100%;white-space:normal;text-align:left;overflow-wrap:anywhere}
+}
+@container (max-width:360px){
+  .oef-mini{display:block;width:100%;min-width:0}
+  .oef-mini thead{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+  .oef-mini tbody{display:block;width:100%}
+  .oef-mini tr{display:grid;grid-template-columns:minmax(0,1fr);border-bottom:1px solid #DDD}
+  .oef-mini tr:last-child{border-bottom:0}
+  .oef-mini td{display:block;min-width:0;padding:8px;border:0;overflow-wrap:anywhere}
+  .oef-mini td[data-label]::before{content:attr(data-label);display:block;font-size:.75rem;color:#555;margin-bottom:4px}
+  .oef-mini .oef-link{max-width:100%;white-space:normal;text-align:left;overflow-wrap:anywhere}
+}
+
+.oef-modules__kop{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.oef-modules__kop .oef-modules__test{flex:1}
+
+.oef-modules__melding:not(:empty){padding:10px 16px;color:var(--ons-tekst);background:var(--ons-paars-zacht)}
+
+/* Schermen van 16 oktober. De bestaande ONS-schil, kaart en vensters blijven gedeeld. */
+.oef-ons-episode{padding:22px;margin-bottom:20px}
+.oef-ons-grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px 20px;margin:0}
+.oef-ons-grid3 dt{font-style:italic;color:#656565;font-size:12px;margin:0 0 6px}
+.oef-ons-grid3 dd{margin:0;font-size:13px}.oef-ons-grid3 dd+dd{margin-top:12px}
+.oef-ons-span2{grid-column:span 2}.oef-ons-breed{grid-column:1/-1}
+.oef-ons-grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.oef-ons-wizard{display:flex;align-items:stretch;flex-wrap:wrap;background:#fff;border:1px solid #ddd;margin:14px 0 10px}
+.oef-ons-wizardtab{border:0;border-bottom:2px solid transparent;background:transparent;padding:14px 12px;color:#737373;min-height:48px;font:inherit;font-size:12px}
+.oef-ons-wizardtab.is-actief{color:#1782ad;border-bottom-color:#18a9df}.oef-ons-wizardtab:disabled{color:#777;cursor:not-allowed}
+.oef-ons-vraag{margin-left:auto;border:0;border-left:1px solid #8aa8b7;background:#fff;color:#47798d;font-size:25px;min-width:50px}
+.oef-ons-omaha{padding:22px;box-shadow:0 7px 14px #00000009}
+.oef-ons-omaha h4{font-size:14px;margin:0 0 16px;color:#555}.oef-ons-omaha h4:not(:first-child){margin-top:24px}
+.oef-ons-omaha fieldset{border:0;padding:0;margin:0 0 24px;min-width:0}
+.oef-ons-omaha legend{font-weight:600;font-size:14px;margin-bottom:6px;color:#555}
+.oef-ons-radio{display:flex;align-items:center;gap:7px;font-size:13px;line-height:1.5;min-height:25px}
+.oef-ons-radio input{flex:0 0 auto;accent-color:#5046aa;margin:0}
+.oef-ons-veld{display:flex;flex-direction:column;gap:6px;min-width:0;font-size:13px;margin-bottom:22px}
+.oef-ons-veld>span,.oef-ons-veld>label{color:#555}
+.oef-ons-veld input,.oef-ons-veld select{box-sizing:border-box;width:100%;min-width:0;max-width:100%;min-height:40px;border:1px solid #d0d0d0;border-radius:6px;padding:8px 11px;background:#fff;color:#454545;font:inherit}
+.oef-ons-veld .oef-tekstvak{min-height:70px;box-shadow:inset 0 1px 2px #00000008}
+.oef-ons-gebieden{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;max-width:90%;margin:20px 10px 40px}
+.oef-ons-gebied{padding:16px 20px;text-align:left;background:#fff;border:1px solid #d1d1d1;border-radius:9px;box-shadow:0 4px 9px #00000009;font:inherit;font-size:13px;min-height:52px;overflow-wrap:anywhere}
+.oef-ons-gebied.is-gekozen{border-color:#338fc3;background:#edf8ff}
+.oef-ons-lijst{padding-left:27px;font-size:13px;line-height:1.8}.oef-ons-lijst li::marker{color:#29a6d5}
+.oef-ons-scores{font-size:13px}.oef-ons-scores>div{display:grid;grid-template-columns:80px 1fr;margin-bottom:4px}.oef-ons-scores dd{margin:0;color:#24a6dd}.oef-ons-scores dd.is-groen{color:#58a84a}.oef-ons-scores .oef-ic{width:13px;height:13px;fill:currentColor}
+.oef-ons-acties{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:10px;margin-top:18px}
+.oef-ons-acties .oef-knop{border-radius:24px;min-width:100px}.oef-knop--groen{background:#469e60;color:white;border:1px solid #469e60}
+.oef-ons-acties button:disabled{background:#dbdbe1;color:#595964;border:0;cursor:not-allowed}
+.oef-ons-datums{display:flex;gap:14px;align-items:center;flex-wrap:wrap}.oef-ons-datums .oef-ons-veld{flex:0 1 290px}
+.oef-ons-ovzkaart{padding:20px;margin-top:18px}.oef-ons-rood{display:inline-block;color:#9b2521;background:#ffdedb;padding:3px 6px;border:1px solid #ffb1a8;border-radius:3px;font-size:12px}.oef-ons-wzd{color:#fff;background:#195671;padding:4px;border-radius:3px;font-size:12px}
+.oef-ons-meta{font-size:11px;color:#666}.oef-ons-ovzleeg{border-block:1px solid #ddd;padding:24px 10px;margin:24px 0 0;font-size:13px;color:#666}
+.oef-ons-ovzkop{flex-wrap:wrap;gap:8px}.oef-ons-ovzkop h3{margin-right:0}.oef-ons-ovzkop .oef-knoppen{margin-left:auto}
+.oef-ons-waarschuwing{display:flex;align-items:flex-start;gap:8px;border:1px solid #f5d078;border-radius:8px;background:#ffe5b5;padding:16px;margin:30px 0 14px;font-size:15px;color:#5a4219}
+.oef-ons-situatie{margin:26px 30px;font-size:14px}.oef-ons-situatie>div{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:22px}.oef-ons-situatie dt{font-size:13px;color:#666}.oef-ons-situatie dd{margin:0}
+.oef-ons-kliniekop{margin:50px 0 28px}.oef-ons-kliniekop .ons__titel{font-size:28px}.oef-ons-kliniekop .ons__titel span{font-weight:400}
+.oef-ons-geenmetingen{border:1px solid #9a9ba5;border-radius:3px;text-align:center;padding:26px 12px;margin:45px 0;color:#555}
+.oef-ons-venster{max-width:520px}.oef-ons-venster .oef-venster__lijf{padding:0 20px 18px;overflow:auto;min-height:0}
+.oef-ons-venster .oef-venster__kop{background:#fff;color:#555;padding:16px 20px}.oef-ons-venster h4{margin:12px 0 0;font-size:16px;color:#555}
+.oef-ons-venster .oef-ons-instrument{display:block;padding:4px 18px;min-height:30px;text-decoration:underline;text-align:left}
+.oef-ons-voeter{display:flex;justify-content:flex-end;gap:16px;background:#f5f5f5;padding:16px 20px;flex:0 0 auto}
+.oef-ons-duur{display:flex;min-width:0}.oef-ons-duur input{min-width:0;flex:1;text-align:right}.oef-ons-duur button{flex:0 0 40px;min-width:0;border-radius:0;border:1px solid #ccc}
+.oef-ons-periode>.oef-ons-radio{margin:16px 0}.oef-ons-periode>.oef-ons-veld,.oef-ons-periode>.oef-ons-grid2{margin-left:100px}
+.oef-ons-bloeddruk{margin-top:20px;font-size:13px}.oef-ons-bloeddruk>.oef-ons-veld{display:grid;grid-template-columns:110px minmax(0,1fr);gap:10px;align-items:center}.oef-ons-bloeddruk .oef-tekstvak{min-height:166px}
+.oef-ons-bloeddruk>.oef-ons-veld>span{font-style:italic}.oef-ons-metingrij{display:flex;align-items:center;gap:10px;margin-bottom:10px}.oef-ons-metingrij>.oef-ons-veld{display:grid;grid-template-columns:110px 145px;gap:10px;margin:0;align-items:center}.oef-ons-metingrij em{font-size:12px}
+.oef-ons-metingrij input{min-height:30px;border-radius:3px;padding:4px 8px}.oef-ons-bloeddruk>em{display:block;margin-bottom:3px}
+.oef-rtab.is-bloeddruk,.oef-rap__ic.is-bloeddruk{color:#d53b79}.oef-rtab.is-bloeddruk.is-actief{border-color:#d53b79}
+.oef-rap__iconen .oef-icoonknop{min-width:28px;min-height:28px;padding:4px;color:#6e6e78}.oef-rap__tekst{min-width:0}.oef-rap__tekst textarea{width:100%;box-sizing:border-box;min-height:95px}
+@media(max-width:700px){
+ .oef-ons-grid3,.oef-ons-grid2{grid-template-columns:minmax(0,1fr)}.oef-ons-span2{grid-column:auto}
+ .oef-ons-gebieden{grid-template-columns:repeat(2,minmax(0,1fr));max-width:100%;margin-inline:0;gap:10px}.oef-ons-gebied{padding:12px}
+ .oef-ons-omaha,.oef-ons-episode,.oef-ons-ovzkaart{padding:14px}.oef-ons-wizardtab{padding:12px 8px;font-size:12px;flex:1 1 100px}.oef-ons-vraag{min-height:44px}
+ .oef-ons-venster{max-width:calc(100vw - 24px);width:520px}.oef-ons-venster .oef-venster__lijf{padding-inline:14px}
+ .oef-ons-periode>.oef-ons-veld,.oef-ons-periode>.oef-ons-grid2{margin-left:0}
+ .oef-ons-bloeddruk>.oef-ons-veld,.oef-ons-metingrij>.oef-ons-veld{grid-template-columns:80px minmax(0,1fr)}.oef-ons-metingrij>.oef-ons-veld{flex:1}.oef-ons-metingrij em{flex:0 1 64px;overflow-wrap:anywhere}
+ .oef-ons-situatie{margin:14px 0}.oef-ons-situatie>div{grid-template-columns:minmax(0,1fr);gap:4px}
+ .oef-ons-kliniekop{margin:26px 0 16px}.oef-ons-kliniekop .ons__titel{font-size:22px}.oef-ons-geenmetingen{margin-top:24px}
+ .oef-ons-ovzkop .oef-knoppen{margin:0}.oef-ons-ovzkaart .oef-ons-acties{justify-content:flex-start}
+ .oef-ons-veld input,.oef-ons-veld select,.oef-ons-metingrij input{min-height:44px}.oef-ons-radio{min-height:32px}
+}
+/* Gezamenlijke bron- en bedieningsreview. Alleen de nieuwe schermen. */
+.oef-dimmer:has(.oef-ons-venster){position:fixed;padding:16px;align-items:center;z-index:var(--z-melding,100)}
+.oef-ons-venster{display:flex;flex-direction:column;max-height:calc(100dvh - 32px);min-height:0;overflow:hidden;width:min(100%,520px)}
+.oef-ons-venster--meting{width:min(100%,480px)}
+.oef-ons-venster .oef-venster__kop{flex:0 0 auto}.oef-ons-venster .oef-venster__kop h3{font-size:24px}
+.oef-ons-venster--meting .oef-venster__kop h3{font-size:20px}
+.oef-ons-venster .oef-venster__lijf{flex:1 1 auto;overflow:auto}
+.oef-ons-venster--meting .oef-venster__lijf{padding-bottom:6px}.oef-ons-venster--meting h4{margin:8px 0 0}
+.oef-ons-dagrij{display:grid;grid-template-columns:110px minmax(0,1fr);align-items:start;gap:12px;margin:16px 0}
+.oef-ons-dagrij .oef-ons-veld{margin-bottom:0}.oef-ons-dagrij .oef-ons-radio{padding-top:4px}
+.oef-ons-acties--tussen{justify-content:space-between}
+.oef-ons-symptoom{list-style:none;display:flex;align-items:center;gap:10px}.oef-ons-symptoom .oef-ic{color:#2ca9db}
+.oef-ons-waarschuwing>.oef-sluit{margin-left:auto;flex:0 0 24px}
+.oef-inhoud:has(.oef-ons-kliniekop)>.oef-tabs .oef-tab.is-actief{color:#258ab6;border-bottom-color:#20ade3}
+.oef-ons-omaha .oef-ons-grid2 .oef-ons-veld:has(#oef-ons-kenmerk)>span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+@media(max-width:700px){.oef-ons-dagrij{grid-template-columns:85px minmax(0,1fr)}.oef-ons-dagrij .oef-ons-grid2{gap:10px}.oef-ons-venster .oef-venster__kop h3{font-size:21px}}

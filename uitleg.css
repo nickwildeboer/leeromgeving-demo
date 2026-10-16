@@ -1,0 +1,62 @@
+/* Eén visueel verhaal. De inhoud blijft bruikbaar zonder beweging. */
+.uitleg{min-height:100vh;background:var(--grond);color:var(--tekst)}
+.uitleg-balk{max-width:1280px;margin:auto;padding:26px 40px;display:flex;justify-content:space-between;align-items:center;gap:24px}
+.uitleg-balk .oom{font-size:25px}.uitleg-balk .oom__a{color:var(--paneel)}.uitleg-balk .oom__b{color:var(--actie)}
+.uitleg-balk>a:last-child{font-size:14px;color:var(--tekst-zacht);text-underline-offset:4px}
+.uitleg-main{max-width:1120px;margin:auto;padding:24px 40px 28px}
+.uitleg-main:focus{outline:none}
+.uitleg-kop{text-align:center;margin:10px auto 38px}
+.uitleg-kop h1{font-size:clamp(34px,4vw,51px);line-height:1.09;letter-spacing:-.035em;margin:0 0 18px}
+.uitleg-kop p{font-size:18px;color:var(--tekst-zacht);margin:0;line-height:1.6}
+.uitleg-toneel{display:grid;grid-template-columns:minmax(0,1fr) 150px minmax(0,1.25fr);align-items:center;min-height:350px;padding:0 24px}
+.uitleg-document{background:white;padding:28px 25px;border-radius:4px 16px 4px 4px;box-shadow:0 12px 36px #14352b12;transform:rotate(-3deg);transition:transform .7s cubic-bezier(.16,1,.3,1)}
+.uitleg-documentkop{display:flex;gap:13px;align-items:center;line-height:1.5;font-size:13px;color:var(--tekst-zacht);margin-bottom:26px}
+.uitleg-documentkop strong{font-size:18px;color:var(--paneel)}.uitleg-documentkop svg{width:28px;color:var(--merk)}
+.uitleg-regels{display:grid;gap:9px}.uitleg-regels i{height:5px;background:#eeeae2;border-radius:4px}.uitleg-regels i:last-child{width:72%}
+.uitleg-bronzin{color:var(--paneel);background:var(--zacht);font-size:16px;font-weight:600;line-height:1.55;margin:18px -8px;padding:12px 8px;transition:background .5s}
+.uitleg-bronvoet{display:block;font-size:11px;color:var(--tekst-zacht);margin-top:27px}
+.uitleg-verbinding{height:90px;position:relative;display:grid;place-items:center;align-self:center}
+.uitleg-lijn{position:absolute;width:100%;height:48px;top:0;stroke:#bdcec3;stroke-width:1.5;fill:none}
+.uitleg-stroom{stroke:var(--merk);stroke-dasharray:18 180;opacity:0}
+.uitleg-goedkeuring{position:relative;z-index:1;width:46px;height:46px;background:var(--grond);border:1px solid #a8c3b2;color:var(--merk);border-radius:50%;display:grid;place-items:center;align-self:start;transition:background .4s,color .4s}
+.uitleg-goedkeuring svg{width:25px}.uitleg-verwerking{position:absolute;top:62px;font-size:12px;color:var(--tekst-zacht);text-align:center}
+.uitleg-scherm{background:white;border-radius:14px;overflow:hidden;box-shadow:0 16px 40px #14352b12}
+.uitleg-schermkop{padding:15px 22px;background:var(--paneel);color:white;font-size:13px;display:flex;align-items:center;justify-content:space-between}
+.uitleg-profiel{width:27px;height:27px;display:grid;place-items:center;background:#ffffff20;border-radius:50%;font-size:10px}
+.uitleg-les{padding:22px 26px}.uitleg-lesmeta{font-size:12px;color:var(--tekst-zacht)}
+.uitleg-les h2{font-size:25px;margin:10px 0 12px;letter-spacing:-.02em}.uitleg-les>p:not(.uitleg-uitkomst){font-size:15px;line-height:1.6;margin:0 0 18px}
+.uitleg-afspraak{background:var(--zacht);padding:13px 16px;border-radius:8px;color:var(--paneel);transition:background .5s}
+.uitleg-afspraak>span{display:block;font-size:11px;margin-bottom:5px}.uitleg-afspraak strong{font-size:14px;font-weight:600;line-height:1.5;display:block}
+.uitleg-doel{position:relative;margin:17px 0 0;padding:0 32px 0 0;transition:color .4s}.uitleg-doel span{font-size:11px;color:var(--tekst-zacht);display:block;margin-bottom:5px}.uitleg-doel strong{font-size:14px}.uitleg-doel svg{position:absolute;right:0;top:10px;width:24px;color:var(--merk);opacity:.3;transition:opacity .5s,transform .5s}
+.uitleg-uitkomst{font-size:12px;line-height:1.5;margin:14px 0 0;display:flex;align-items:center;gap:5px;color:var(--merk);opacity:1;transition:color .5s}.uitleg-uitkomst svg{width:18px;flex-shrink:0}
+.uitleg-toneel[data-fase="0"] .uitleg-document{transform:rotate(-1deg) translateY(-4px)}
+.uitleg-toneel[data-fase="1"] .uitleg-goedkeuring,.uitleg-toneel[data-fase="2"] .uitleg-goedkeuring{background:var(--merk);color:white;border-color:var(--merk)}
+.uitleg-toneel[data-fase="1"] .uitleg-afspraak{background:#d1e6d7}
+.uitleg-toneel[data-fase="2"] .uitleg-doel svg,.uitleg-toneel[data-fase="2"] .uitleg-uitkomst{opacity:1}
+.uitleg-toneel.is-spelend[data-fase="1"] .uitleg-stroom{opacity:1;animation:afspraak-naar-oefening 1.8s ease-in-out 2}
+@keyframes afspraak-naar-oefening{from{stroke-dashoffset:198}to{stroke-dashoffset:0}}
+.uitleg-bediening{display:flex;align-items:center;justify-content:space-between;gap:22px;margin:36px 0 0;padding:16px 0;border-block:1px solid var(--lijn)}
+.uitleg-stappen{display:flex;gap:24px}.uitleg-stappen button,.uitleg-speel{font:inherit;background:transparent;border:0;min-height:44px;padding:6px 0;cursor:pointer;color:var(--tekst-zacht);font-size:13px}
+.uitleg-stappen button{display:flex;align-items:center;gap:8px;text-align:left}.uitleg-stappen button>span{border-radius:50%;border:1px solid var(--lijn);width:25px;height:25px;display:grid;place-items:center;flex-shrink:0;font-size:11px}
+.uitleg-stappen button[aria-pressed="true"]{color:var(--paneel);font-weight:650}.uitleg-stappen button[aria-pressed="true"]>span{background:var(--paneel);border-color:var(--paneel);color:white}
+.uitleg-speel{text-decoration:underline;text-underline-offset:4px;color:var(--paneel);white-space:nowrap}
+.uitleg-caption{text-align:center;color:var(--tekst-zacht);font-size:14px;line-height:1.6;min-height:24px;margin:17px 0 22px}
+.uitleg-acties{display:flex;justify-content:center;align-items:center;gap:24px}.uitleg-acties .linkknop{font-size:14px}
+.uitleg-demo{text-align:center;color:var(--tekst-zacht);font-size:11px;line-height:1.6;margin:24px 0 0}
+.uitleg :is(a,button):focus-visible{outline:3px solid var(--actie);outline-offset:4px}
+@media(max-width:800px){.uitleg-main{padding:20px 24px}.uitleg-balk{padding:20px 24px}.uitleg-toneel{padding:0;grid-template-columns:minmax(0,1fr) 65px minmax(0,1.25fr)}.uitleg-document{padding:22px 18px}.uitleg-les{padding:20px}.uitleg-verwerking{font-size:10px}.uitleg-bediening{flex-direction:column;gap:4px;margin-top:28px}.uitleg-stappen{gap:16px;justify-content:space-between;width:100%}.uitleg-acties{gap:18px}}
+@media(max-width:540px){.uitleg-kop{margin-top:0;margin-bottom:28px}.uitleg-kop h1{font-size:32px}.uitleg-kop p{font-size:16px}.uitleg-toneel{grid-template-columns:1fr;gap:0;max-width:360px;margin:auto}.uitleg-document{transform:none!important;padding:19px 22px}.uitleg-documentkop{margin-bottom:12px}.uitleg-documentkop strong{font-size:16px}.uitleg-documentkop>span{display:flex;gap:7px;align-items:baseline}.uitleg-documentkop br{display:none}.uitleg-regels{display:none}.uitleg-bronzin{font-size:15px;margin:0 -4px;padding:10px}.uitleg-bronzin br{display:none}.uitleg-bronvoet{margin-top:12px}.uitleg-verbinding{height:72px}.uitleg-lijn{width:72px;left:calc(50% - 36px);top:12px;transform:rotate(90deg)}.uitleg-goedkeuring{width:34px;height:34px;align-self:center}.uitleg-goedkeuring svg{width:21px}.uitleg-verwerking{left:calc(50% + 28px);right:0;top:22px;font-size:11px;text-align:left;max-width:100px}.uitleg-les{padding:20px 22px}.uitleg-les h2{font-size:23px}.uitleg-stappen{gap:8px}.uitleg-stappen button{flex-direction:column;text-align:center;gap:7px;flex:1;font-size:12px;line-height:1.4}.uitleg-acties{flex-direction:column;gap:18px}.uitleg-caption{min-height:46px}.uitleg-balk .oom{font-size:22px}.uitleg-balk>a:last-child{font-size:12px}}
+@media(prefers-reduced-motion:reduce){.uitleg *,.uitleg *::before,.uitleg *::after{animation:none!important;transition:none!important}.uitleg-document{transform:none!important}}
+
+.uitleg-toneel.is-spelend[data-fase="1"] .uitleg-afspraak strong{animation:afspraak-overgenomen .8s cubic-bezier(.16,1,.3,1) both}
+@keyframes afspraak-overgenomen{from{clip-path:inset(0 100% 0 0);transform:translateX(-8px)}to{clip-path:inset(0 0 0 0);transform:translateX(0)}}
+@media(prefers-reduced-motion:reduce){.uitleg-toneel.is-spelend[data-fase="1"] .uitleg-afspraak strong{animation:none}}
+
+/* De twee bestaande routes zijn vanaf de start herkenbaar. */
+.uitleg-acties{margin:0 0 32px;align-items:stretch;gap:28px}
+.uitleg-route{flex:1;min-width:0;text-align:center}
+.uitleg-route>strong{font-size:17px;color:var(--paneel)}
+.uitleg-route>p{font-size:14px;line-height:1.5;color:var(--tekst-zacht);margin:8px 0 16px}
+.uitleg-route .btn{white-space:normal}
+.uitleg-reset{text-align:center;margin:6px 0 0}
+@media(max-width:540px){.uitleg-acties{gap:22px}.uitleg-route>p{margin:6px 0 12px}.uitleg-route .btn{font-size:14px}}

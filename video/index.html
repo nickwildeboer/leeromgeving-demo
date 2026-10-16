@@ -24,11 +24,12 @@
 @font-face{font-family:"Figtree";font-weight:300 900;font-style:normal;font-display:swap;src:url(/assets/figtree-latin.woff2) format("woff2")}
 :root{
   /* vier kleuren van de klant, standaard die van Ons Op Maat */
-  --org-primair:#14493B; --org-accent:#F7C948; --org-grond:#F5F2EB; --org-tekst:#12211C;
+  --org-primair:#14493B; --org-op-primair:#fff; --org-accent:#F7C948; --org-op-accent:#12211C; --org-focus:#C8622A; --org-grond:#F5F2EB; --org-tekst:#12211C;
   /* afgeleid, zoals de leeromgeving de vier optionele kleuren berekent */
   --org-zacht:color-mix(in srgb,var(--org-primair) 10%,var(--org-grond));
   --org-zacht2:color-mix(in srgb,var(--org-primair) 22%,var(--org-grond));
   --org-donker:color-mix(in srgb,var(--org-primair) 72%,#000);
+  --org-slot-eind:var(--org-donker);
   --org-zachttekst:color-mix(in srgb,var(--org-tekst) 72%,var(--org-grond));
   --lijn:color-mix(in srgb,var(--org-tekst) 14%,var(--org-grond));
   --e-bar:#2F3E4E; --e-line:#D5DCE4; --e-soft:#66727F; --e-fill:#E9EDF1;
@@ -74,8 +75,8 @@ body{background:var(--page);color:var(--org-tekst);font-family:var(--body);-webk
 
 /* scene 4: een onderdeel */
 .kaart{position:absolute;left:210px;top:96px;width:1500px;height:690px;background:#fff;border-radius:32px;overflow:hidden;box-shadow:0 24px 48px -24px rgba(10,43,35,.28)}
-.kaart .kop{background:var(--org-primair);color:#fff;padding:34px 48px;height:170px}
-.kaart .kop small{display:block;font:600 28px/1 var(--body);opacity:.82}
+.kaart .kop{background:var(--org-primair);color:var(--org-op-primair);padding:34px 48px;height:170px}
+.kaart .kop small{display:block;font:600 28px/1 var(--body)}
 .kaart .kop b{display:block;margin-top:16px;font:700 62px/1 var(--display);letter-spacing:-.025em}
 .vak{position:absolute;top:212px;width:440px;height:440px;border-radius:24px;background:var(--org-zacht);padding:32px}
 .vak .l{font:700 26px/1 var(--body);color:var(--org-primair);text-transform:none}
@@ -113,20 +114,22 @@ body{background:var(--page);color:var(--org-tekst);font-family:var(--body);-webk
 .antwoord .datum{margin-top:22px;font:600 28px/1 var(--body);color:var(--org-primair)}
 
 /* scene 7: slot */
-.slot{background:linear-gradient(160deg,var(--org-primair) 0%,var(--org-donker) 100%);color:#fff}
+.slot{background:linear-gradient(160deg,var(--org-primair) 0%,var(--org-slot-eind) 100%);color:var(--org-op-primair)}
 .knop{display:inline-flex;align-items:center;gap:18px;height:104px;padding:0 54px;border-radius:999px;background:var(--org-accent);color:var(--org-op-accent,#12211C);font:700 40px/1 var(--body);box-shadow:0 16px 34px -20px rgba(0,0,0,.5)}
 .knop svg{width:38px;height:38px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
-.afzender{font:600 28px/1 var(--body);color:rgba(255,255,255,.78)}
+.afzender{font:600 28px/1 var(--body);color:var(--org-op-primair)}
 
 /* ondertitel */
 .cc{position:absolute;left:50%;bottom:52px;transform:translateX(-50%);max-width:1560px;padding:22px 40px;border-radius:22px;background:rgba(18,33,28,.86);color:#fff;font:600 44px/1.3 var(--body);text-align:center;opacity:0;white-space:normal;width:max-content}
+body:not(.speelt) .cc{opacity:0!important}
 .cc-uit .cc{display:none}
 
 /* bediening */
 .bar{display:flex;align-items:center;gap:14px;margin-top:12px}
 .bar button{min-width:48px;height:44px;border:1px solid #C2BFB2;border-radius:999px;background:#fff;color:#12211C;font:600 15px/1 var(--body);padding:0 16px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px}
 .bar button:hover{border-color:var(--org-primair)}
-.bar button:focus-visible,.startknop:focus-visible,.bar input:focus-visible{outline:3px solid #C8622A;outline-offset:2px}
+.bar button:focus-visible,.bar input:focus-visible{outline:3px solid var(--org-focus,#C8622A);outline-offset:2px}
+.startknop:focus-visible{outline:3px solid var(--org-tekst,#C8622A);outline-offset:2px}
 .bar svg{width:18px;height:18px;fill:currentColor}
 .bar input{flex:1;accent-color:var(--org-primair);min-width:80px}
 .bar .tijd{font:600 15px/1 var(--body);color:#43584F;font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -135,11 +138,36 @@ body{background:var(--page);color:var(--org-tekst);font-family:var(--body);-webk
 .ingebed body{background:transparent}
 .ingebed .player{padding:0;width:100%}
 .ingebed .bar .tijd{color:#fff;opacity:.85}
-@media (max-width:520px){.ingebed .bar{gap:8px}.ingebed .bar .tijd{display:none}.ingebed .bar button{padding:0 12px;font-size:14px}}
+@media (max-width:520px){
+  .bar{display:grid;grid-template-columns:48px minmax(160px,1fr) auto;grid-template-areas:"play scrub tijd" ". ondertitels geluid";align-items:center;gap:8px;margin-top:10px}
+  .bar #play{grid-area:play;width:48px;padding:0}
+  .bar input{grid-area:scrub;width:100%;min-width:0}
+  .bar .tijd{grid-area:tijd;font-size:14px}
+  .bar #ccknop{grid-area:ondertitels;justify-self:stretch}
+  .bar #geluid{grid-area:geluid}
+  .bar button{min-width:44px;padding:0 10px;font-size:14px}
+  #stage .scene:first-of-type h1{font-size:96px!important}
+}
+@media (max-width:360px){
+  .bar{grid-template-areas:"play scrub ." ". tijd tijd" ". ondertitels geluid";gap:6px}
+  .bar .tijd{justify-self:end}
+}
+/* Lange klantnamen blijven binnen het openingsbeeld en lopen naar een volgende regel. */
+#stage .scene:first-of-type h1{width:90%;margin-inline:auto}
+#stage .scene:first-of-type h1 .orgnaam{display:block!important;width:100%;white-space:normal;overflow-wrap:anywhere}
 .ingebed .bar button[aria-pressed=false]{color:#43584F}
-.startknop{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:inline-flex;align-items:center;gap:12px;height:64px;padding:0 30px;border:0;border-radius:999px;background:var(--org-accent);color:var(--org-op-accent,#12211C);font:700 18px/1 var(--body);cursor:pointer;box-shadow:0 16px 34px -18px rgba(0,0,0,.55);z-index:3}
+.startknop{position:absolute;left:50%;bottom:12px;top:auto;transform:translateX(-50%);display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:64px;height:auto;max-width:calc(100% - 24px);padding:14px 30px;border:0;border-radius:999px;background:var(--org-accent);color:var(--org-op-accent,#12211C);font:700 18px/1.2 var(--body);text-align:center;white-space:normal;cursor:pointer;box-shadow:0 16px 34px -18px rgba(0,0,0,.55);z-index:3}
+@media (max-width:520px){.startknop{gap:8px;min-height:48px;height:48px;padding:8px 14px;font-size:15px;white-space:nowrap}}
 .startknop svg{width:22px;height:22px;fill:currentColor}
 .speelt .startknop{display:none}
+.demomelding,.transcript{margin:12px 0 0;color:var(--org-tekst);font-size:14px;line-height:1.55}
+.demomelding{padding:12px 16px;border-left:4px solid var(--org-tekst);background:var(--org-grond);border-radius:8px}
+.transcript{padding:12px 16px;background:var(--org-grond);border:1px solid var(--lijn);border-radius:12px}
+.transcript summary{cursor:pointer;min-height:44px;display:flex;align-items:center;color:var(--org-tekst);font-weight:700}
+.transcript h2{margin:18px 0 8px;font-size:1.05rem;color:var(--org-tekst)}
+.transcript p,.transcript li{margin:0 0 8px}
+.transcript ol{padding-left:24px}
+.render .demomelding,.render .transcript{display:none!important}
 </style>
 </head>
 <body>
@@ -262,8 +290,8 @@ body{background:var(--page);color:var(--org-tekst);font-family:var(--body);-webk
       <section class="scene slot" data-in="79" data-fade="1.2">
         <div class="abs" style="left:0;right:0;top:300px;text-align:center">
           <div data-in="79.6" data-rise="12">
-            <div class="eyebrow" style="color:rgba(255,255,255,.8)">Leren bij <span class="orgnaam">De Wilgenhof</span></div>
-            <h2 class="h" style="font-size:120px;margin-top:30px;color:#fff">Welkom in het team</h2>
+            <div class="eyebrow" style="color:var(--org-op-primair)">Leren bij <span class="orgnaam">De Wilgenhof</span></div>
+            <h2 class="h" style="font-size:120px;margin-top:30px;color:var(--org-op-primair)">Welkom in het team</h2>
           </div>
           <div style="margin-top:70px" data-in="81.5">
             <span class="knop">Begin met de rondleiding<svg viewBox="0 0 24 24"><path d="M4 12h15M13 6l6 6-6 6"/></svg></span>
@@ -277,14 +305,49 @@ body{background:var(--page);color:var(--org-tekst);font-family:var(--body);-webk
     <button class="startknop" id="start" type="button"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l13-7.5z"/></svg>Bekijk de welkomstvideo</button>
   </div>
 
-  <div class="bar">
+  <div class="bar" role="group" aria-label="Videobediening">
     <button type="button" id="play" aria-label="Afspelen"><svg viewBox="0 0 24 24" id="ico"><path d="M7 4.5v15l13-7.5z"/></svg></button>
     <input type="range" id="scrub" min="0" max="88" step="0.1" value="0" aria-label="Positie in de video">
     <span class="tijd" id="tijd">0:00 / 1:28</span>
     <button type="button" id="ccknop" aria-pressed="true">Ondertitels</button>
     <button type="button" id="geluid" aria-pressed="true">Geluid</button>
   </div>
-  <audio id="snd" src="/video/welkomstvideo.mp3" preload="auto"></audio>
+  <audio id="snd" data-src="/video/welkomstvideo.mp3" preload="none"></audio>
+  <p class="demomelding">Dit is een voorbeeld met fictieve gegevens. De getoonde schermen zijn nagebouwd, er is geen echte bron gekoppeld en de video toont geen bewijs van bekwaamheid.</p>
+  <details class="transcript">
+    <summary>Lees de tekst en beeldbeschrijving van de video</summary>
+    <h2>Beeld in de video</h2>
+    <ol>
+      <li>De titel toont “Leren bij <span class="orgnaam">De Wilgenhof</span>”.</li>
+      <li>Een abstracte medewerker staat naast een nagebouwd cliëntenoverzicht. De regels bevatten geen leesbare cliëntgegevens.</li>
+      <li>Vijf onderdelen verschijnen: Rondleiding, Dienst starten, Tijdens je dienst, Werkafspraken en Apps.</li>
+      <li>Een nagebouwd scherm toont het menu-item Overdracht en de vraag waar je leest wat de vroege dienst heeft overgedragen. “In de overdracht” is als antwoord aangevinkt.</li>
+      <li>Een voortgangsoverzicht toont vinkjes bij Rondleiding en Dienst starten en de tekst “2 van 5 delen af”. Er staat dat de opleider de voortgang ziet.</li>
+      <li>Een zoekveld toont “Hoe meld ik een val?” met het resultaat “Een val melden in de MIC”, onder Algemene werkafspraken. De regel vermeldt dat dit op 6 oktober 2026 is gecontroleerd.</li>
+      <li>Het slotbeeld toont “Welkom in het team” en “Begin met de rondleiding”.</li>
+    </ol>
+    <h2>Gesproken tekst</h2>
+    <ol>
+      <li>0:00. Hoi, welkom bij <span class="orgnaam">De Wilgenhof</span>. Fijn dat je er bent.</li>
+      <li>0:08. Je bent nieuw in het team.</li>
+      <li>0:12. Vandaag leer je hoe je werkt in het ECD, Nedap ONS.</li>
+      <li>0:20. Je leert hier hoe wij het bij <span class="orgnaam">De Wilgenhof</span> doen.</li>
+      <li>0:25. Hoe je je dienst start, hoe je rapporteert en wat we met elkaar hebben afgesproken.</li>
+      <li>0:35. Elk onderdeel begint met een situatie uit je dienst.</li>
+      <li>0:40. Daarna probeer je het zelf, in een nagebouwd scherm.</li>
+      <li>0:45. Aan het eind beantwoord je een korte vraag.</li>
+      <li>0:49. Zo weet je of je het goed doet.</li>
+      <li>0:53. Je werkt in je eigen tempo.</li>
+      <li>0:56. Wat je af hebt, krijgt een vinkje.</li>
+      <li>1:00. Je opleider ziet hoe ver je bent.</li>
+      <li>1:05. Twijfel je later hoe iets ook alweer moet?</li>
+      <li>1:08. Kom dan hier terug.</li>
+      <li>1:11. Alles blijft voor je klaarstaan.</li>
+      <li>1:14. En verandert er iets, dan wordt het hier bijgewerkt.</li>
+      <li>1:20. Begin met de rondleiding.</li>
+      <li>1:23. Veel plezier, en welkom in het team.</li>
+    </ol>
+  </details>
 </div>
 
 <script>
@@ -324,9 +387,14 @@ body{background:var(--page);color:var(--org-tekst);font-family:var(--body);-webk
   }
   const hex = v => /^#?[0-9a-f]{6}$/i.test(v || '') ? (v[0] === '#' ? v : '#' + v) : null;
   const root = document.documentElement.style;
-  [['primair', '--org-primair'], ['accent', '--org-accent'], ['opaccent', '--org-op-accent'], ['grond', '--org-grond'], ['tekst', '--org-tekst']].forEach(([k, css]) => {
+  [['primair', '--org-primair'], ['opprimair', '--org-op-primair'], ['accent', '--org-accent'], ['opaccent', '--org-op-accent'], ['focus', '--org-focus'], ['grond', '--org-grond'], ['tekst', '--org-tekst']].forEach(([k, css]) => {
     const v = hex(q.get(k)); if (v) root.setProperty(css, v);
   });
+  const opPrimair = hex(q.get('opprimair')) || '#FFFFFF';
+  const opPrimairRgb = [1, 3, 5].map(i => parseInt(opPrimair.slice(i, i + 2), 16) / 255);
+  const opPrimairLuminantie = opPrimairRgb.map(c => c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4)
+    .reduce((sum, c, i) => sum + c * [0.2126, 0.7152, 0.0722][i], 0);
+  root.setProperty('--org-slot-eind', `color-mix(in srgb,var(--org-primair) 72%,${opPrimairLuminantie > 0.5 ? '#000' : '#fff'})`);
   const ORG = (q.get('org') || 'De Wilgenhof').slice(0, 40);
   document.querySelectorAll('.orgnaam').forEach(el => { el.firstChild.nodeValue = ORG; });
   document.title = 'Welkomstvideo Leren bij ' + ORG;
@@ -349,7 +417,7 @@ body{background:var(--page);color:var(--org-tekst);font-family:var(--body);-webk
   const items = [...stage.querySelectorAll('[data-in]')].map(el => ({
     el, tin: +el.dataset.in, tout: el.dataset.out ? +el.dataset.out : null,
     fade: el.dataset.fade ? +el.dataset.fade : (el.classList.contains('scene') ? 0.8 : 0.9),
-    rise: reduce ? 0 : +(el.dataset.rise || 0), grow: !!el.dataset.grow,
+    rise: reduce ? 0 : +(el.dataset.rise || 0), grow: !reduce && !!el.dataset.grow,
   }));
   const bars = [...stage.querySelectorAll('[data-width]')].map(el => ({ el, v: el.dataset.width.split(',').map(Number) }));
   const pct = document.getElementById('pct');
@@ -358,14 +426,14 @@ body{background:var(--page);color:var(--org-tekst);font-family:var(--body);-webk
 
   function render(t) {
     for (const it of items) {
-      let a = it.fade <= 0.01 ? (t >= it.tin ? 1 : 0) : ramp(t, it.tin, it.fade);
-      if (it.tout !== null) a *= 1 - ramp(t, it.tout, 0.6);
+      let a = reduce ? (t >= it.tin ? 1 : 0) : it.fade <= 0.01 ? (t >= it.tin ? 1 : 0) : ramp(t, it.tin, it.fade);
+      if (it.tout !== null) a *= 1 - (reduce ? (t >= it.tout ? 1 : 0) : ramp(t, it.tout, 0.6));
       it.el.style.opacity = a.toFixed(3);
       if (it.grow) it.el.style.transform = `scaleX(${a.toFixed(3)})`;
       else if (it.rise) it.el.style.transform = `translateY(${((1 - a) * it.rise).toFixed(2)}px)`;
     }
     for (const b of bars) {
-      const [s, e, w] = b.v, a = ramp(t, s, e - s);
+      const [s, e, w] = b.v, a = reduce ? (t >= s ? 1 : 0) : ramp(t, s, e - s);
       b.el.style.width = (a * w).toFixed(2) + '%';
       pct.textContent = Math.round(a * w);
     }
@@ -375,7 +443,7 @@ body{background:var(--page);color:var(--org-tekst);font-family:var(--body);-webk
       if (t >= s - 0.3 && t <= e + 0.3) { idx = i; a = Math.min(1, (t - s + 0.3) / 0.3, (e + 0.3 - t) / 0.3); break; }
     }
     if (idx !== lastCC) { cc.textContent = idx >= 0 ? CC[idx][2].replaceAll('{org}', ORG) : ''; lastCC = idx; }
-    cc.style.opacity = idx >= 0 ? Math.max(0, a).toFixed(3) : 0;
+    cc.style.opacity = idx >= 0 ? (reduce ? 1 : Math.max(0, a).toFixed(3)) : 0;
   }
 
   // schaal het beeld naar de speler
@@ -389,22 +457,63 @@ body{background:var(--page);color:var(--org-tekst);font-family:var(--body);-webk
   let t = 0, playing = false, last = 0;
   const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
   const PLAY = 'M7 4.5v15l13-7.5z', PAUSE = 'M7 5h3.5v14H7zM13.5 5H17v14h-3.5z';
-  function ui() { scrub.value = t.toFixed(1); tijd.textContent = `${fmt(t)} / ${fmt(DUR)}`;
+  function ui() { scrub.value = t.toFixed(1); scrub.setAttribute('aria-valuetext', `${fmt(t)} van ${fmt(DUR)}`); tijd.textContent = `${fmt(t)} / ${fmt(DUR)}`;
     ico.firstElementChild.setAttribute('d', playing ? PAUSE : PLAY); playBtn.setAttribute('aria-label', playing ? 'Pauzeren' : 'Afspelen'); }
   const snd = document.getElementById('snd'), geluidBtn = document.getElementById('geluid');
-  const sndOk = () => !RENDER && snd.readyState >= 2 && !snd.paused;
+  let audioRequested = false, audioFailed = false, audioWanted = false, audioPlayPending = false, audioGeneration = 0;
+  const sndOk = () => !RENDER && audioRequested && !audioFailed && snd.readyState >= 2 && !snd.paused && !snd.muted;
+  function laadAudio() {
+    if (RENDER || audioRequested || audioFailed) return;
+    audioRequested = true;
+    snd.src = snd.dataset.src;
+    snd.load();
+  }
+  function startAudioAlsKlaar() {
+    if (RENDER || !audioRequested || audioFailed || !playing || !audioWanted || snd.muted || snd.readyState < 2 || !snd.paused || audioPlayPending) return;
+    try { if (Math.abs(snd.currentTime - t) > 0.45) snd.currentTime = t; } catch (e) { /* Volgende media-event probeert opnieuw. */ }
+    audioPlayPending = true;
+    const generatie = audioGeneration;
+    Promise.resolve(snd.play()).then(() => {
+      if (generatie !== audioGeneration || !playing || !audioWanted || snd.muted) snd.pause();
+    }).catch(() => {
+      // Een browser kan autoplay weigeren; een volgende bewuste klik mag opnieuw proberen.
+      if (generatie === audioGeneration) audioWanted = false;
+    }).finally(() => {
+      audioPlayPending = false;
+      if (generatie !== audioGeneration && playing && audioWanted && !snd.muted) startAudioAlsKlaar();
+    });
+  }
+  function synchroniseerAudio() {
+    if (!audioRequested || audioFailed) return;
+    if (snd.readyState >= 2 && Math.abs(snd.currentTime - t) > 0.45) {
+      try { snd.currentTime = t; } catch (e) { /* Media kan nog aan het seeken zijn. */ }
+    }
+    startAudioAlsKlaar();
+  }
+  for (const event of ['loadedmetadata', 'loadeddata', 'canplay', 'seeked']) snd.addEventListener(event, synchroniseerAudio);
+  snd.addEventListener('error', () => { audioFailed = true; audioWanted = false; audioPlayPending = false; snd.pause(); });
   function loop(now) { if (!playing) return;
     if (sndOk() && Math.abs(snd.currentTime - t) < 1) t = snd.currentTime; else t = Math.min(DUR, t + (now - last) / 1000);
     last = now; render(t); ui();
     if (t >= DUR) { playing = false; snd.pause(); ui(); return; } requestAnimationFrame(loop); }
-  function play() { if (t >= DUR) t = 0; playing = true; frame.classList.add('speelt'); document.body.classList.add('speelt'); last = performance.now();
-    if (!RENDER) { try { snd.currentTime = t; } catch (e) {} snd.play().catch(() => {}); } ui(); requestAnimationFrame(loop); }
-  function pause() { playing = false; snd.pause(); ui(); }
-  geluidBtn.onclick = () => { snd.muted = !snd.muted; geluidBtn.setAttribute('aria-pressed', !snd.muted); };
+  function play() { if (t >= DUR) t = 0; playing = true; audioGeneration += 1; audioWanted = !snd.muted; frame.classList.add('speelt'); document.body.classList.add('speelt'); last = performance.now();
+    if (!RENDER && !snd.muted) { laadAudio(); synchroniseerAudio(); } ui(); requestAnimationFrame(loop); }
+  function pause() { playing = false; audioWanted = false; audioGeneration += 1; snd.pause(); ui(); }
+  geluidBtn.onclick = () => {
+    snd.muted = !snd.muted;
+    geluidBtn.setAttribute('aria-pressed', !snd.muted);
+    if (snd.muted) { audioWanted = false; audioGeneration += 1; snd.pause(); }
+    else if (playing) { audioWanted = true; laadAudio(); synchroniseerAudio(); }
+  };
   playBtn.onclick = () => playing ? pause() : play();
   start.onclick = play;
   frame.onclick = e => { if (e.target === start || start.contains(e.target)) return; if (document.body.classList.contains('speelt')) playing ? pause() : play(); };
-  scrub.oninput = () => { t = +scrub.value; try { snd.currentTime = t; } catch (e) {} render(t); ui(); };
+  scrub.oninput = () => {
+    t = +scrub.value;
+    if (!RENDER && !snd.muted) { laadAudio(); synchroniseerAudio(); }
+    else if (audioRequested && snd.readyState >= 2 && !audioFailed) { try { snd.currentTime = t; } catch (e) { /* Media kan nog aan het seeken zijn. */ } }
+    render(t); ui();
+  };
   addEventListener('keydown', e => { if (e.code === 'Space' && e.target === document.body) { e.preventDefault(); playing ? pause() : play(); } });
   function setCC(on) { document.body.classList.toggle('cc-uit', !on); ccBtn.setAttribute('aria-pressed', on); }
   ccBtn.onclick = () => setCC(ccBtn.getAttribute('aria-pressed') !== 'true');

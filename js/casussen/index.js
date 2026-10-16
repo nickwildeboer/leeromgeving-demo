@@ -15,6 +15,6 @@ import authenticator from './authenticator.js';
 import wondzorg from './wondzorg.js';
 import onsdossier from './onsdossier.js';
 
-export const NORM = 0.8;
+export { NORM } from '../casussen-norm.js';
 
 export const CASUSSEN = Object.fromEntries([overdracht, opzoeken, rapporteren, klinimetrie, zorgplan, mikzo, episodes, escaleren, familie, zp10, mic, authenticator, wondzorg, onsdossier].map((c) => [c.id, c]));

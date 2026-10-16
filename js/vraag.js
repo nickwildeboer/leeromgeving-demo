@@ -1,3 +1,5 @@
+import { metMaatwerk } from './maatwerk.js';
+import { nu } from './state.js';
 // "Vraag het": zoeken in het handboek van de organisatie, met een kort antwoord en de bron erbij.
 // Twee mount-functies die zelf renderen en hun eigen listeners aan hun container hangen.
 // Ze gebruiken data-vraag-* attributen, zodat ze niet botsen met data-actie in app.js.
@@ -14,6 +16,10 @@ const SLEUTEL_VRAGEN = 'leeromgeving-vragen-v1';
 const SLEUTEL_BRONNEN = 'leeromgeving-bronnen-v1';
 const MAX_BESTAND = 200 * 1024;
 const MAX_VRAGEN = 300;
+const sessieCollecties = new Map();
+const sessieOpslag = new Set();
+const lopendeUploads = new Set();
+let uploadResetGeneratie = 0;
 
 export const VOORBEELDVRAGEN = [
   'Wie is mijn key-user?',
@@ -21,6 +27,23 @@ export const VOORBEELDVRAGEN = [
   'Hoe vaak meet ik pijn?',
   'Ik ben mijn Authenticator kwijt',
 ];
+
+/** Heuristische signalering; geen volledige controle op persoonsgegevens. */
+export function detecteerPersoonsgegevens(tekst) {
+  if (typeof tekst !== 'string') return [];
+  const bron = tekst.normalize('NFKC');
+  const soorten = new Set();
+  for (const match of bron.matchAll(/(?<!\d)\d{9}(?!\d)/g)) {
+    const cijfers = [...match[0]].map(Number);
+    const som = cijfers.slice(0, 8).reduce((totaal, cijfer, i) => totaal + cijfer * (9 - i), 0) - cijfers[8];
+    if (som > 0 && som % 11 === 0 && !/^0+$/.test(match[0])) soorten.add('bsn');
+  }
+  if (/\b(?:geboortedatum|geboren|geb\.?|dob)\s*[:=]?\s*(?:\d{1,2}[-/.]\d{1,2}[-/.](?:19|20)\d{2}|(?:19|20)\d{2}[-/.]\d{1,2}[-/.]\d{1,2})\b/iu.test(bron)) soorten.add('geboortedatum');
+  if (/\b[1-9]\d{3}\s?[A-Z]{2}\s*[,;]?\s*(?:(?:huisnummer|nr\.?)\s*[:=]?\s*)?\d{1,5}[A-Z]?\b/iu.test(bron)) soorten.add('adres');
+  if (/[\w.+-]+@[\w-]+(?:\.[\w-]+)+/u.test(bron)) soorten.add('e-mailadres');
+  if (/(?<!\d)(?:(?:\+31|0031)[\s()-]*[1-9]|0[\s()-]*[1-9])(?:[\s()-]*\d){8}(?!\d)/u.test(bron)) soorten.add('telefoonnummer');
+  return [...soorten].sort();
+}
 
 const ICOON = {
   zoek: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>',
@@ -35,25 +58,141 @@ const ICOON = {
 
 const escStandaard = (t) => String(t ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
-// ---------- opslag, altijd met try/catch ----------
+// ---------- opslag met een eerlijke sessiefallback ----------
+
+function normaleTekst(waarde) {
+  return typeof waarde === 'string' ? waarde : '';
+}
+
+function normaliseerVraagRecord(record) {
+  if (!record || typeof record !== 'object' || Array.isArray(record)) return null;
+  if (typeof record.vraag !== 'string' || !record.vraag.trim()) return null;
+  if (typeof record.tijd !== 'string' || Number.isNaN(Date.parse(record.tijd))) return null;
+  if (typeof record.antwoord !== 'boolean') return null;
+  const optioneelTekst = (waarde) => waarde == null || typeof waarde === 'string';
+  if (!optioneelTekst(record.sectie) || !optioneelTekst(record.kop) || !optioneelTekst(record.bron)) return null;
+  return {
+    tijd: record.tijd,
+    vraag: record.vraag.slice(0, 300),
+    sectie: record.sectie || null,
+    kop: record.kop || null,
+    bron: record.bron || null,
+    antwoord: record.antwoord,
+  };
+}
+
+function normaliseerBronRecord(record) {
+  if (!record || typeof record !== 'object' || Array.isArray(record)) return null;
+  if (typeof record.id !== 'string' || !record.id.trim() || typeof record.naam !== 'string' || !record.naam.trim()) return null;
+  if (!Array.isArray(record.secties)) return null;
+  const secties = record.secties.flatMap((passage) => {
+    if (!passage || typeof passage !== 'object' || Array.isArray(passage)) return [];
+    if (typeof passage.id !== 'string' || !passage.id.trim() || !Array.isArray(passage.tekst)) return [];
+    const tekst = passage.tekst.filter((alinea) => typeof alinea === 'string' && alinea.trim());
+    if (!tekst.length) return [];
+    return [{
+      id: passage.id,
+      hoofdstuk: normaleTekst(passage.hoofdstuk),
+      kop: normaleTekst(passage.kop),
+      tekst,
+      module: typeof passage.module === 'string' ? passage.module : null,
+      bron: typeof passage.bron === 'string' ? passage.bron : record.naam,
+    }];
+  });
+  if (!secties.length) return null;
+  const grootte = Number(record.grootte);
+  return [{
+    id: record.id,
+    naam: record.naam.trim(),
+    datum: typeof record.datum === 'string' && !Number.isNaN(Date.parse(record.datum)) ? record.datum : new Date(0).toISOString(),
+    grootte: Number.isFinite(grootte) && grootte >= 0 ? grootte : 0,
+    secties,
+  }];
+}
+
+function normaliseerCollectie(sleutel, waarde) {
+  if (!Array.isArray(waarde)) return [];
+  const gezien = new Set();
+  return waarde.flatMap((record) => {
+    const lijst = sleutel === SLEUTEL_VRAGEN
+      ? [normaliseerVraagRecord(record)].filter(Boolean)
+      : normaliseerBronRecord(record) || [];
+    return lijst.filter((item) => {
+      const id = sleutel === SLEUTEL_VRAGEN ? null : item.id;
+      if (!id) return true;
+      if (gezien.has(id)) return false;
+      gezien.add(id);
+      return true;
+    });
+  });
+}
+
+function alleenSessie(sleutel) {
+  return sessieOpslag.has(sleutel);
+}
 
 function lees(sleutel) {
+  if (sessieCollecties.has(sleutel)) return sessieCollecties.get(sleutel);
   try {
-    const ruw = localStorage.getItem(sleutel);
-    const data = ruw ? JSON.parse(ruw) : [];
-    return Array.isArray(data) ? data : [];
+    const opslag = globalThis.localStorage;
+    const ruw = opslag.getItem(sleutel);
+    const origineel = ruw ? JSON.parse(ruw) : [];
+    const data = normaliseerCollectie(sleutel, origineel);
+    if (JSON.stringify(data) !== JSON.stringify(origineel)) {
+      try { opslag.setItem(sleutel, JSON.stringify(data)); }
+      catch {
+        sessieCollecties.set(sleutel, data);
+        sessieOpslag.add(sleutel);
+      }
+    }
+    return data;
   } catch {
+    sessieOpslag.add(sleutel);
     return [];
   }
 }
 
 function schrijf(sleutel, data) {
+  const veilig = normaliseerCollectie(sleutel, data);
   try {
-    localStorage.setItem(sleutel, JSON.stringify(data));
-    return true;
+    globalThis.localStorage.setItem(sleutel, JSON.stringify(veilig));
+    sessieCollecties.delete(sleutel);
+    sessieOpslag.delete(sleutel);
+    return { opgeslagen: true, alleenSessie: false };
   } catch {
-    return false;
+    sessieCollecties.set(sleutel, veilig);
+    sessieOpslag.add(sleutel);
+    return { opgeslagen: true, alleenSessie: true };
   }
+}
+
+function wisCollectie(sleutel) {
+  try {
+    globalThis.localStorage.removeItem(sleutel);
+    sessieCollecties.delete(sleutel);
+    sessieOpslag.delete(sleutel);
+  } catch {
+    sessieCollecties.set(sleutel, []);
+    sessieOpslag.add(sleutel);
+  }
+}
+
+function opslagmelding() {
+  const bronnen = alleenSessie(SLEUTEL_BRONNEN);
+  const vragen = alleenSessie(SLEUTEL_VRAGEN);
+  if (!bronnen && !vragen) return '';
+  const wat = bronnen && vragen ? 'Bronnen en vragen' : bronnen ? 'Bronnen' : 'Vragen';
+  return `<p class="bron__opslagmelding" role="status" data-vraag-opslagmelding>${wat} worden alleen in deze sessie bewaard. Ze verdwijnen als je deze sessie afsluit.</p>`;
+}
+
+export function resetVraag() {
+  uploadResetGeneratie += 1;
+  for (const lezer of lopendeUploads) {
+    try { lezer.abort(); } catch { /* Een reeds afgeronde read hoeft niet te worden afgebroken. */ }
+  }
+  lopendeUploads.clear();
+  for (const sleutel of [SLEUTEL_VRAGEN, SLEUTEL_BRONNEN]) wisCollectie(sleutel);
+  cache = { sleutel: null, index: null };
 }
 
 export function leesVragen() {
@@ -70,22 +209,23 @@ function registreer(vraag, a) {
     bron: a.zeker ? a.bron : null,
     antwoord: Boolean(a.zeker),
   });
-  schrijf(SLEUTEL_VRAGEN, lijst.slice(-MAX_VRAGEN));
+  const resultaat = schrijf(SLEUTEL_VRAGEN, lijst.slice(-MAX_VRAGEN));
+  return resultaat;
 }
 
 function leesUploads() {
-  return lees(SLEUTEL_BRONNEN).filter((b) => b && b.id && Array.isArray(b.secties));
+  return lees(SLEUTEL_BRONNEN);
 }
 
 /** Alle passages: het handboek, Wie doet wat en de geüploade documenten. */
 export function alleBronnen() {
-  return [...HANDBOEK, ...WIE_DOET_WAT, ...leesUploads().flatMap((b) => b.secties)];
+  return [...metMaatwerk(HANDBOEK, nu().maatwerk), ...WIE_DOET_WAT, ...leesUploads().flatMap((b) => b.secties)];
 }
 
 // De index bouwen we opnieuw zodra er een document bij komt of af gaat.
 let cache = { sleutel: null, index: null };
 function huidigeIndex() {
-  const sleutel = leesUploads().map((b) => b.id).join('|');
+  const sleutel = JSON.stringify(leesUploads()) + JSON.stringify(nu().maatwerk?.actief || null);
   if (cache.sleutel !== sleutel || !cache.index) cache = { sleutel, index: maakIndex(alleBronnen()) };
   return cache.index;
 }
@@ -116,13 +256,13 @@ function persoonKaart(p, esc) {
     </li>`;
 }
 
-function personenBlok(personen, esc, kop = 'Bij wie je terechtkunt') {
+function personenBlok(personen, esc, kop = 'Bij wie je terechtkunt', getoondeBron = null) {
   if (!personen?.length) return '';
   return `
     <div class="vraag-blok">
       <h4 class="vraag-blok__kop">${esc(kop)}</h4>
       <ul class="vraag-personen">${personen.map((p) => persoonKaart(p, esc)).join('')}</ul>
-      <p class="vraag-bron">${ICOON.mensen}<span>Uit: ${esc(personen[0].bron || 'Wie doet wat (SharePoint)')}</span></p>
+      ${getoondeBron === personen[0].bron ? '' : `<p class="vraag-bron">${ICOON.mensen}<span>Uit: ${esc(personen[0].bron || 'Wie doet wat (voorbeeld)')}</span></p>`}
     </div>`;
 }
 
@@ -161,13 +301,15 @@ function meerBlok(treffers, esc, kop) {
     </section>`;
 }
 
-function antwoordHtml(vraag, a, esc, index) {
+function antwoordHtml(vraag, a, esc, index, { alleenSessie: vraagAlleenSessie = false } = {}) {
   if (!a.zeker) {
+    const saveMessage = vraagAlleenSessie ? 'Je vraag blijft alleen in deze sessie bewaard.' : 'Je vraag is bewaard.';
     return `
       <article class="vraag-antwoord vraag-antwoord--open" tabindex="-1" data-vraag-antwoord>
-        <p class="vraag-antwoord__label">${ICOON.open}<span>Geen antwoord in het handboek</span></p>
+        <p class="vraag-antwoord__label">${ICOON.open}<span>Geen passend antwoord gevonden</span></p>
         <h3 class="vraag-antwoord__vraag">${esc(vraag)}</h3>
-        <p class="vraag-antwoord__tekst">${esc(a.tekst)} Je vraag is bewaard. Zo zien we wat er nog in het handboek mist.</p>
+        <p class="vraag-antwoord__tekst">${esc(a.tekst)} ${saveMessage} Zo kun je controleren of de informatie ontbreekt of lastig te vinden is.</p>
+        <p>Kun je door een probleem niet verder werken? Bel dan de servicedesk op toestel 2140.</p>
         ${personenBlok(a.personen, esc, 'Je key-user')}
       </article>
       ${meerBlok(a.treffers, esc, 'Misschien helpt dit')}`;
@@ -180,7 +322,7 @@ function antwoordHtml(vraag, a, esc, index) {
       <blockquote class="vraag-antwoord__tekst"><p>${esc(a.tekst)}</p></blockquote>
       ${bronRegel(a, esc)}
       ${sectie ? `<details class="vraag-heel"><summary>Lees het hele stuk</summary><div class="vraag-heel__tekst">${passage(sectie, esc)}</div></details>` : ''}
-      ${personenBlok(a.personen, esc)}
+      ${personenBlok(a.personen, esc, 'Bij wie je terechtkunt', a.bron)}
       ${modulesBlok(a.modules, esc)}
     </article>
     ${meerBlok(a.treffers, esc, 'Ook gevonden')}`;
@@ -224,11 +366,20 @@ export function mountVraag(container, { esc = escStandaard, beginVraag, naarModu
       veld.focus();
       return;
     }
+    if (detecteerPersoonsgegevens(v).length) {
+      veld.value = '';
+      uitkomst.innerHTML = `<article class="vraag-antwoord vraag-antwoord--open" tabindex="-1" data-vraag-antwoord><p class="vraag-antwoord__label">${ICOON.let}<span>Zoeken gestopt</span></p><p class="vraag-antwoord__tekst">Deze tekst bevat patronen die op persoonsgegevens kunnen lijken. Verwijder die gegevens en probeer het opnieuw. Deze controle is een hulpmiddel en herkent niet alle persoonsgegevens.</p><p>Bij een inhoudelijke vraag kun je terecht bij de key-user van je afdeling.</p></article>`;
+      if (focus) uitkomst.querySelector('[data-vraag-antwoord]')?.focus({ preventScroll: true });
+      return { geblokkeerd: true };
+    }
     veld.value = v;
     const index = huidigeIndex();
     const a = antwoord(index, v, { afdeling: MEDEWERKER.afdeling });
-    registreer(v, a);
-    uitkomst.innerHTML = antwoordHtml(v, a, esc, index);
+    const opgeslagen = registreer(v, a);
+    uitkomst.innerHTML = antwoordHtml(v, a, esc, index, { alleenSessie: opgeslagen.alleenSessie });
+    if (a.zeker && opgeslagen.alleenSessie) {
+      uitkomst.insertAdjacentHTML('beforeend', opslagmelding());
+    }
     if (typeof beginVraag === 'function') beginVraag(v, a);
     if (focus) uitkomst.querySelector('[data-vraag-antwoord]')?.focus({ preventScroll: true });
     uitkomst.querySelector('[data-vraag-antwoord]')?.scrollIntoView?.({ block: 'nearest', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
@@ -277,12 +428,27 @@ function grootte(bytes) {
 export function mountBronnen(container, { esc = escStandaard, meld = () => {} } = {}) {
   if (!container) return null;
   const nr = ++teller;
+  let destroyed = false;
+  let uploadVolgnummer = 0;
+  const readers = new Set();
+  const nieuwstePerNaam = new Map();
+  const hashBijMount = globalThis.location?.hash || '';
+
+  const isConnected = () => !destroyed && container.isConnected && (globalThis.location?.hash || '') === hashBijMount;
+
+  function verwijderLezer(lezer) {
+    readers.delete(lezer);
+    lopendeUploads.delete(lezer);
+  }
 
   function render() {
     const uploads = leesUploads();
     const vragen = leesVragen().slice().reverse();
     const zonder = vragen.filter((v) => !v.antwoord).length;
     const toon = vragen.slice(0, 50);
+    const voorbeelden = HANDBOEK.flatMap(({ kop, tekst }) => tekst.flatMap((alinea) =>
+      (alinea.match(/[^.!?]*\?/g) || []).map((vraag) => ({ vraag: vraag.trim(), kop }))))
+      .slice(0, 4);
 
     container.innerHTML = `
       <section class="bronnen" aria-labelledby="bronnen-kop-${nr}">
@@ -296,7 +462,8 @@ export function mountBronnen(container, { esc = escStandaard, meld = () => {} } 
             <input class="sr" type="file" accept=".txt,.md,.markdown,text/plain,text/markdown" data-vraag-upload>
           </label>
         </div>
-        <p class="bronnen__uitleg">Medewerkers zoeken in deze bronnen als ze een vraag stellen. Je kunt een .txt- of .md-bestand toevoegen, tot 200 kB. Elke kop wordt een eigen stuk tekst.</p>
+        <p class="bronnen__uitleg">In deze demo zoek je in deze voorbeeldbronnen. Voeg alleen verzonnen testtekst toe. Je kunt een .txt- of .md-bestand toevoegen, tot 200 kB. Elke kop wordt een eigen stuk tekst.</p>
+        ${opslagmelding()}
         <ul class="bronnen__lijst">
           <li class="bron">
             <span class="bron__icoon" aria-hidden="true">${ICOON.boek}</span>
@@ -304,7 +471,7 @@ export function mountBronnen(container, { esc = escStandaard, meld = () => {} } 
               <p class="bron__naam">Handboek De Wilgenhof</p>
               <p class="bron__meta">${HANDBOEK.length} stukken tekst · werkafspraken per onderwerp</p>
             </div>
-            <span class="bron__labels"><span class="bron__label">SharePoint</span><span class="bron__status">${ICOON.vink}gekoppeld</span></span>
+            <span class="bron__labels"><span class="bron__label">Voorbeeldbron</span><span class="bron__status">${ICOON.vink}beschikbaar</span></span>
           </li>
           <li class="bron">
             <span class="bron__icoon" aria-hidden="true">${ICOON.mensen}</span>
@@ -312,7 +479,7 @@ export function mountBronnen(container, { esc = escStandaard, meld = () => {} } 
               <p class="bron__naam">Wie doet wat</p>
               <p class="bron__meta">${WIE_DOET_WAT.length} personen en rollen · key-users, EVV'ers, servicedesk</p>
             </div>
-            <span class="bron__labels"><span class="bron__label">SharePoint</span><span class="bron__status">${ICOON.vink}gekoppeld</span></span>
+            <span class="bron__labels"><span class="bron__label">Voorbeeldbron</span><span class="bron__status">${ICOON.vink}beschikbaar</span></span>
           </li>
           ${uploads.map((b) => `
           <li class="bron">
@@ -331,7 +498,7 @@ export function mountBronnen(container, { esc = escStandaard, meld = () => {} } 
           <h2>Wat medewerkers vroegen</h2>
           <p class="bronnen__telling">${vragen.length} ${vragen.length === 1 ? 'vraag' : 'vragen'}, waarvan ${zonder} zonder antwoord</p>
         </div>
-        <p class="bronnen__uitleg">Een vraag zonder antwoord is een signaal. Dan mist er iets in het handboek. Vul het aan, of voeg een document toe. Dan vindt de volgende collega het antwoord wel.</p>
+        <p class="bronnen__uitleg">Geen antwoord gevonden? Controleer of de informatie ontbreekt of lastig te vinden is. Vul het handboek zo nodig aan.</p>
         ${toon.length ? `
         <div class="tabelwrap">
           <table class="tabel tabel--kaarten bronnen__tabel">
@@ -347,12 +514,17 @@ export function mountBronnen(container, { esc = escStandaard, meld = () => {} } 
             </tbody>
           </table>
         </div>
-        ${vragen.length > toon.length ? `<p class="opmerking">Je ziet de laatste ${toon.length} vragen.</p>` : ''}` : '<p class="bronnen__leeg">Er zijn nog geen vragen gesteld. Zodra een medewerker iets vraagt bij Vraag het, staat het hier.</p>'}
+        ${vragen.length > toon.length ? `<p class="opmerking">Je ziet de laatste ${toon.length} vragen.</p>` : ''}` : `<p class="bronnen__leeg">Er zijn nog geen medewerkersvragen geregistreerd. Deze voorbeelden zijn zinnen uit het handboek, geen gebruiksregistraties.</p>
+          <ul class="bronnen__voorbeelden">${voorbeelden.map((voorbeeld) => `<li><span>${esc(voorbeeld.vraag)}</span><small>Uit: ${esc(voorbeeld.kop)}</small></li>`).join('')}</ul>`}
       </section>`;
   }
 
   function voegToe(bestand) {
+    if (!isConnected()) return;
     const naam = bestand.name || 'Document';
+    const basis = naam.replace(/\.[^.]+$/, '');
+    const token = ++uploadVolgnummer;
+    nieuwstePerNaam.set(basis, token);
     if (!/\.(txt|md|markdown)$/i.test(naam)) {
       meld('Je kunt alleen een .txt- of .md-bestand toevoegen.');
       return;
@@ -361,51 +533,84 @@ export function mountBronnen(container, { esc = escStandaard, meld = () => {} } 
       meld(`${naam} is ${grootte(bestand.size)}. Dat is te groot, het mag tot 200 kB zijn. Knip het op in kleinere delen.`);
       return;
     }
+    const resetGeneratie = uploadResetGeneratie;
     const lezer = new FileReader();
-    lezer.onerror = () => meld(`${naam} kon niet worden gelezen. Probeer het nog een keer.`);
+    readers.add(lezer);
+    lopendeUploads.add(lezer);
+    const actueel = () => isConnected()
+      && resetGeneratie === uploadResetGeneratie
+      && nieuwstePerNaam.get(basis) === token;
+    lezer.onerror = () => {
+      verwijderLezer(lezer);
+      if (actueel()) meld(`${naam} kon niet worden gelezen. Probeer het nog een keer.`);
+    };
     lezer.onload = () => {
-      const secties = leesDocument(String(lezer.result || ''), naam);
+      verwijderLezer(lezer);
+      if (!actueel()) return;
+      const tekst = String(lezer.result || '');
+      if (tekst.includes('\uFFFD') || /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/.test(tekst)) {
+        meld(`${naam} bevat tekst die niet betrouwbaar als UTF-8 kan worden gelezen. Controleer het bestand en probeer het opnieuw.`);
+        return;
+      }
+      const secties = leesDocument(tekst, naam);
       if (!secties.length) {
         meld(`In ${naam} staat geen tekst die we kunnen gebruiken.`);
         return;
       }
       const uploads = leesUploads();
-      const basis = naam.replace(/\.(txt|md|markdown)$/i, '');
-      const id = `upload-${Date.now().toString(36)}`;
+      const id = `upload-${Date.now().toString(36)}-${nr.toString(36)}-${token.toString(36)}`;
       const bron = { id, naam: basis, datum: new Date().toISOString(), grootte: bestand.size, secties: secties.map((s) => ({ ...s, id: `${id}-${s.id}` })) };
       const zelfde = uploads.findIndex((b) => b.naam === basis);
       if (zelfde >= 0) uploads.splice(zelfde, 1, bron); else uploads.push(bron);
-      if (!schrijf(SLEUTEL_BRONNEN, uploads)) {
-        meld('Er is geen ruimte meer om dit document te bewaren. Verwijder eerst een ander document.');
-        return;
-      }
+      const opslag = schrijf(SLEUTEL_BRONNEN, uploads);
       render();
-      meld(`${basis} is toegevoegd, met ${secties.length} ${secties.length === 1 ? 'stuk' : 'stukken'} tekst. Medewerkers vinden het nu bij Vraag het.`);
+      meld(`${basis} is toegevoegd, met ${secties.length} ${secties.length === 1 ? 'stuk' : 'stukken'} tekst. Je vindt het nu bij Vraag het in deze browser.${opslag.alleenSessie ? ' Deze bron wordt alleen in deze sessie bewaard.' : ''}`);
     };
+    lezer.onabort = () => verwijderLezer(lezer);
     lezer.readAsText(bestand);
   }
 
-  container.addEventListener('change', (e) => {
+  function handleChange(e) {
+    if (!isConnected()) return;
     const input = e.target.closest('[data-vraag-upload]');
     if (!input) return;
     const [bestand] = input.files || [];
     input.value = '';
     if (bestand) voegToe(bestand);
-  });
+  }
 
-  container.addEventListener('click', (e) => {
+  function handleClick(e) {
+    if (!isConnected()) return;
     const weg = e.target.closest('[data-vraag-verwijder]');
     if (!weg) return;
     const id = weg.dataset.vraagVerwijder;
     const uploads = leesUploads();
     const bron = uploads.find((b) => b.id === id);
     if (!bron) return;
-    schrijf(SLEUTEL_BRONNEN, uploads.filter((b) => b.id !== id));
+    nieuwstePerNaam.set(bron.naam, ++uploadVolgnummer);
+    const opslag = schrijf(SLEUTEL_BRONNEN, uploads.filter((b) => b.id !== id));
     render();
-    meld(`${bron.naam} is verwijderd. Medewerkers zoeken er niet meer in.`);
+    meld(`${bron.naam} is verwijderd. Vraag het zoekt er in deze browser niet meer in.${opslag.alleenSessie ? ' De bronnenlijst wordt alleen in deze sessie bewaard.' : ''}`);
     container.querySelector('[data-vraag-upload]')?.focus();
-  });
+  }
+
+  container.addEventListener('change', handleChange);
+  container.addEventListener('click', handleClick);
 
   render();
-  return { render };
+  return {
+    render,
+    destroy() {
+      if (destroyed) return;
+      destroyed = true;
+      container.removeEventListener('change', handleChange);
+      container.removeEventListener('click', handleClick);
+      for (const lezer of readers) {
+        try { lezer.abort(); } catch { /* Abort is best effort; generation checks remain authoritative. */ }
+        lopendeUploads.delete(lezer);
+      }
+      readers.clear();
+      nieuwstePerNaam.clear();
+    },
+  };
 }

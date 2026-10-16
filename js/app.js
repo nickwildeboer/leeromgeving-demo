@@ -1,18 +1,26 @@
+import { viewUitleg, mountUitleg } from './uitleg.js';
+import { beginMaatwerk, viewMaatwerk, mountMaatwerk, maatwerkBronnen, metMaatwerk } from './maatwerk.js';
 import { ORGANISATIE, PROFIELEN, DELEN, MODULES, MEDEWERKER, COLLEGAS, TIPS, TOEWIJZING, HUISSTIJL_VOORBEELDEN } from './data.js';
-import { CASUSSEN, NORM } from './casussen/index.js';
+import { NORM, maakToetsPoging } from './casussen-norm.js';
 import { bereken, cssVariabelen, STANDAARD, VERPLICHT, OPTIONEEL, LABELS, isHex, contrast } from './theme.js';
 import { laad, zet, nu, opnieuw } from './state.js';
 import { startRondleiding, stopRondleiding } from './tour.js';
-import { mountVraag, mountBronnen } from './vraag.js';
+import { mountVraag, mountBronnen, resetVraag } from './vraag.js';
 import { HANDBOEK } from './handboek.js';
-import { mountOefenen, resetOefenen } from './oefenen.js';
-import { schermKaart, geraakt, ONS_GECONTROLEERD } from './schermkaart.js';
+import { schermKaart, geraakt } from './schermkaart.js';
 import { viewLes, viewDoorklik, beginStap, fasen, richtDoel, tijdTekst } from './doorklik.js';
 import { beloonAfronding, toonWachtendMoment, badgeBlok, deelBadge, certificaatPagina, aantalBadges, badgeTeller, delenMetModules } from './beloning.js';
 
 const DEMO_VANDAAG = '2026-10-06';
+const CASUSSEN = Object.create(null);
 const app = document.getElementById('app');
 const melding = document.getElementById('melding');
+let casusIndexPromise = null;
+let casusIndexGeladen = false;
+let oefenenModule = null;
+let oefenenModulePromise = null;
+let renderGeneratie = 0;
+const PRESENTATIE = new URLSearchParams(window.location.search).get('presentatie') === '1';
 
 // ---------- hulpjes ----------
 
@@ -111,9 +119,13 @@ function schil(inhoud, opties = {}) {
   const rol = nu().rol;
   const route = opties.route || '';
   const navs = {
-    medewerker: [['#/overzicht', 'Mijn overzicht'], ['#/oefenen', 'Oefenen in ONS'], ['#/vraag', 'Vraag het'], ['#/module/rondleiding', 'Rondleiding']],
-    opleider: [['#/opleider', 'Dashboard'], ['#/opleider/profielen', 'Profielen']],
-    beheer: [['#/beheer', 'Modules'], ['#/beheer/schermen', 'Schermkaart'], ['#/beheer/bronnen', 'Handboek'], ['#/beheer/klanten', 'Klanten'], ['#/beheer/huisstijl', 'Huisstijl']],
+    medewerker: PRESENTATIE
+      ? [['#/overzicht', 'Start'], ['#/module/rapporteren', 'Rapporteren'], ['#/vraag', 'Vraag het'], ['#/demo/uitproberen', 'Verander de afspraak'], ['#/opleider', 'Opleider']]
+      : [['#/overzicht', 'Mijn overzicht'], ['#/oefenen', 'Oefenen in ONS'], ['#/vraag', 'Vraag het'], ['#/module/rondleiding', 'Rondleiding']],
+    opleider: PRESENTATIE
+      ? [['#/opleider', 'Opleiderdashboard'], ['#/overzicht', 'Terug naar medewerker']]
+      : [['#/opleider', 'Dashboard'], ['#/opleider/profielen', 'Profielen']],
+    beheer: [['#/demo', 'Op maat'], ['#/beheer', 'Modules'], ['#/beheer/schermen', 'Schermkaart'], ['#/beheer/bronnen', 'Handboek'], ['#/beheer/klanten', 'Klanten'], ['#/beheer/huisstijl', 'Huisstijl']],
   };
   const wie = { medewerker: `${MEDEWERKER.naam} ${MEDEWERKER.achternaam}`, opleider: 'Opleider De Wilgenhof', beheer: 'Nick en Erwin' }[rol] || '';
   const merk = rol === 'beheer'
@@ -135,7 +147,8 @@ function schil(inhoud, opties = {}) {
         </div>
       </div>
     </header>
-    <main id="inhoud" tabindex="-1">${inhoud}</main>
+    ${nu().maatwerk?.actief ? `<div class="maat-terug"><span>Werkafspraken versie ${esc(nu().maatwerk.actief.bron.versie)} actief in deze demo${route === '#/opleider' ? '<br>Dit ziet de opleider. De korte oefening telt niet als een afgeronde module.' : ''}</span><div class="maat-terug__acties">${route === '#/vraag' ? '<button type="button" class="linkknop" data-actie="demo-voortgang">Bekijk de voortgang →</button>' : ''}<a href="#/demo/uitproberen">Terug naar de maatwerkdemonstratie →</a></div></div>` : ''}
+    <main id="inhoud" tabindex="-1"><p class="demo-melding">Demo met verzonnen gegevens. Afgeronde modules tonen oefenvoortgang, geen bewezen bekwaamheid.</p>${inhoud}</main>
     ${voet()}`;
 }
 
@@ -144,28 +157,38 @@ function voet() {
     <footer class="voet">
       <div class="voet__in">
         <p class="voet__gemaakt">Gemaakt door ${OOM_MERK}</p>
-        <p class="voet__demo"><button type="button" class="linkknop" data-actie="opnieuw">Demo opnieuw beginnen</button></p>
+        <p class="voet__demo"><a class="linkknop" href="${PRESENTATIE ? '#/overzicht' : '#/demo'}">Terug naar start</a> ${PRESENTATIE ? '' : '<a class="linkknop" href="#/rollen">Andere demorollen</a> <a class="linkknop" href="#/uitleg">Over deze demo</a>'} <button type="button" class="linkknop" data-actie="opnieuw">Demo opnieuw beginnen</button></p>
       </div>
     </footer>`;
 }
 
+function presentatieNavigatie(routeActief) {
+  if (!PRESENTATIE) return '';
+  const links = [
+    ['#/overzicht', 'Start'], ['#/module/rapporteren', 'Rapporteren'], ['#/vraag', 'Vraag het'],
+    ['#/demo/uitproberen', 'Verander de afspraak'], ['#/opleider', 'Opleider'],
+  ];
+  return `<nav class="presentatie-navigatie" aria-label="Demonstratieroute">${links.map(([href, label]) => `<a href="${href}"${routeActief === href.slice(1) ? ' aria-current="step"' : ''}>${label}</a>`).join('')}</nav>`;
+}
+
 // ---------- inloggen ----------
 
-function viewInloggen() {
+function viewRollen() {
   return `
     <main class="inlog" id="inhoud" tabindex="-1">
       <section class="inlog__paneel">
         <div class="inlog__logo">${logo()}</div>
         <div class="inlog__tekst">
-          <p class="bovenregel">Zo werkt het bij ons</p>
+
           <h1>Leren bij ${esc(orgNaam())}</h1>
-          <p class="lead">Hier leer je hoe wij werken in Nedap ONS. Op jouw afdeling, met onze afspraken. Eerst uitleg, dan samen doorklikken, dan oefenen met situaties uit je eigen dienst.</p>
+          <p class="lead">Probeer de leeromgeving als medewerker, opleider of beheerder.</p><p>Demo met verzonnen gegevens. Inloggen is een voorbeeld, zonder echte koppeling.</p>
         </div>
         <p class="inlog__gemaakt">Gemaakt door ${OOM_MERK}</p>
       </section>
       <section class="inlog__werk">
         <div class="werkpaneel inlog__kaart">
-          <h2>Inloggen</h2>
+
+          <details class="demo-inloggen"><summary>Inloggen met je organisatieaccount</summary>
           <button type="button" class="btn btn--merk btn--breed" data-actie="sso">${ICOON.gebouw} Inloggen met je account van ${esc(orgNaam())}</button>
           <p class="scheiding"><span>of met je e-mailadres</span></p>
           <form class="inlog__form" data-form="mail" novalidate>
@@ -173,8 +196,9 @@ function viewInloggen() {
             <input id="mail" name="mail" type="email" autocomplete="email" placeholder="naam@dewilgenhof.nl">
             <button type="submit" class="btn btn--rand btn--breed">${ICOON.mail} Stuur me een inloglink</button>
           </form>
+          </details>
           <div class="demo-keuze">
-            <h3>Demo: kies als wie je binnenkomt</h3>
+            <h2>Kies je rol</h2>
             <div class="rollen">
               <button type="button" class="rol" data-actie="rol" data-rol="medewerker">
                 <span class="rol__naam">Sanne, verzorgende IG</span>
@@ -193,6 +217,7 @@ function viewInloggen() {
               </button>
             </div>
           </div>
+          <div class="knoppen"><a class="linkknop" href="#/demo">Terug naar start</a><button type="button" class="linkknop" data-actie="opnieuw">Demo opnieuw beginnen</button></div>
         </div>
       </section>
     </main>`;
@@ -203,7 +228,7 @@ function viewInloggen() {
 // De welkomstvideo neemt naam en kleuren over uit de huisstijl van de klant.
 function videoAdres() {
   const { kleuren } = bereken(nu().huisstijl.kleuren);
-  const q = new URLSearchParams({ ingebed: '1', org: orgNaam(), primair: kleuren.paneel, accent: kleuren.actie, opaccent: kleuren.opActie, grond: kleuren.grond, tekst: kleuren.tekst });
+  const q = new URLSearchParams({ v: '21', ingebed: '1', org: orgNaam(), primair: kleuren.paneel, opprimair: kleuren.opPaneel, focus: kleuren.actieOpPaneel, accent: kleuren.actie, opaccent: kleuren.opActie, grond: kleuren.grond, tekst: kleuren.tekst });
   return `/video/?${q}`;
 }
 
@@ -217,6 +242,7 @@ function viewWelkom() {
           <h1>Hoi ${MEDEWERKER.naam}, welkom bij ${esc(orgNaam())}.</h1>
           <p class="lead">Vandaag leer je hoe wij werken in Nedap ONS. Niet hoe het systeem in het algemeen werkt, maar hoe wij het hier gebruiken. Er staan ${aantal} korte modules voor je klaar.</p>
           <p class="lead">Je hoeft niet alles vandaag te doen. Je kunt hier altijd terugkomen, ook later als je iets wilt opzoeken.</p>
+          <p class="welkom__privacy">Je opleider ziet welke modules je hebt afgerond. Je opleider ziet niet wat je precies bij ‘Vraag het’ hebt gezocht.</p>
           <div class="knoppen">
             <button type="button" class="btn btn--actie btn--groot" data-actie="start-rondleiding">Start de rondleiding ${ICOON.pijl}</button>
             <button type="button" class="btn btn--stil btn--op-paneel" data-actie="sla-welkom-over">Sla over, naar mijn overzicht</button>
@@ -233,8 +259,25 @@ function viewWelkom() {
 
 function viewOverzicht() {
   const lijst = mijnModules();
+  if (PRESENTATIE) {
+    return schil(`
+      <section class="paneel leer-start">
+        <div class="paneel__in overzicht-kop presentatie-kop">
+          <div>
+            <p class="bovenregel">Een korte demonstratie · vier momenten</p>
+            <h1>Van werkafspraak naar voortgang</h1>
+            <p class="lead">Demo met verzonnen gegevens. Kies waar je wilt beginnen.</p>
+            <nav class="presentatie-momenten" aria-label="Vier momenten in de demonstratie">
+              <a href="#/module/rapporteren"><span>1</span><strong>Een werkafspraak in een module</strong><small>Bekijk uitleg en oefening bij Rapporteren.</small></a>
+              <a href="#/vraag"><span>2</span><strong>Een vraag tijdens de dienst</strong><small>Zoek een afspraak terug met de bron erbij.</small></a>
+              <a href="#/demo/uitproberen"><span>3</span><strong>De afspraak verandert</strong><small>Vergelijk versie 1 en versie 2 in uitleg, oefening en naslag.</small></a>
+              <a href="#/opleider"><span>4</span><strong>Voortgang voor de opleider</strong><small>Bekijk de demo-voortgang van Sanne.</small></a>
+            </nav>
+          </div>
+        </div>
+      </section>`, { route: '#/overzicht' });
+  }
   const klaar = lijst.filter((m) => isKlaar(m.id)).length;
-  const pct = lijst.length ? Math.round((klaar / lijst.length) * 100) : 0;
   const volgende = volgendeModule();
   const profiel = PROFIELEN[MEDEWERKER.profiel];
   const tipIndex = (nu().tip ?? new Date().getDate()) % TIPS.length;
@@ -279,24 +322,22 @@ function viewOverzicht() {
   const knopTekst = klaar === 0 && !nu().voortgang.rondleiding ? `Begin met ${esc(volgende?.titel.split(':')[0] || 'de eerste module')}` : volgende ? `Verder waar je was: ${esc(volgende.titel.split(':')[0])}` : 'Alles klaar, bekijk je modules';
 
   return schil(`
-    <section class="paneel">
+    <section class="paneel leer-start">
       <div class="paneel__in overzicht-kop">
         <div>
           <p class="bovenregel">${esc(profiel.naam)} · ${esc(MEDEWERKER.afdeling)}</p>
           <h1>${groet()} ${MEDEWERKER.naam}</h1>
-          <p class="lead">Er staan ${lijst.length} modules voor je klaar, omdat je ${esc(profiel.jij)} bent.</p>
-          <div class="voortgang" data-tour="voortgang">
-            <div class="voortgang__balk" role="progressbar" aria-valuemin="0" aria-valuemax="${lijst.length}" aria-valuenow="${klaar}" aria-label="Voortgang"><span style="width:${pct}%"></span></div>
-            <p class="voortgang__tekst"><strong>${klaar} van ${lijst.length}</strong> klaar</p>
-          </div>
-          ${volgende ? `<a class="btn btn--actie btn--groot" data-tour="verder" href="#/module/${volgende.id}">${knopTekst} ${ICOON.pijl}</a>` : ''}
+          <p class="lead">${volgende ? `Er staan ${lijst.length} modules voor je klaar, omdat je ${esc(profiel.naam.toLowerCase())} bent.` : 'Je hebt alle modules afgerond. Je kunt altijd terugkomen om iets op te zoeken.'}</p>
+          <p class="voortgang__tekst" data-tour="voortgang"><strong>${klaar} van ${lijst.length}</strong> modules afgerond.</p>
+          ${volgende ? `<a class="btn btn--actie btn--groot" data-tour="verder" href="#/module/${volgende.id}">${knopTekst} ${ICOON.pijl}</a>` : lijst.length && klaar === lijst.length ? `<a class="btn btn--actie btn--groot" href="#/certificaat">Bekijk je certificaat ${ICOON.pijl}</a>` : ''}
           <form class="snelvraag" data-form="vraag" role="search">
             <label class="sr" for="snelvraag">Stel je vraag of zoek in het handboek</label>
-            <input id="snelvraag" name="vraag" type="search" autocomplete="off" placeholder="Vraag het: bij wie meld ik een val?">
+            <input id="snelvraag" name="vraag" type="search" autocomplete="off" placeholder="Bij wie meld ik een val?">
             <button type="submit" class="btn btn--rand btn--op-paneel">Zoek</button>
           </form>
+          <a class="linkknop start-versie" href="#/demo/uitproberen">Verander de afspraak: bekijk versie 2</a>
         </div>
-        <aside class="tip" data-tour="tip" aria-labelledby="tip-kop">
+        <aside class="tip leer-tip" data-tour="tip">
           <p class="tip__label">${ICOON.lamp} Tip van de dag</p>
           <h2 id="tip-kop">${esc(tip.kop)}</h2>
           <p>${esc(tip.tekst)}</p>
@@ -306,7 +347,10 @@ function viewOverzicht() {
     </section>
     <div class="wrap overzicht">
       ${badgeBlok({ toegewezen: lijst.map((m) => m.id), voortgang: nu().voortgang, dagen: nu().dagen })}
-      ${delen}
+      <details class="leer-details" data-modulecatalogus>
+        <summary><span>Alle modules</span><span class="leer-details__meta">${klaar} van ${lijst.length} afgerond</span></summary>
+        <div class="leer-details__inhoud">${delen}</div>
+      </details>
       <a class="oefenkaart" href="#/oefenen">
         <span class="oefenkaart__icoon" aria-hidden="true">${ICOON.speel}</span>
         <span><strong>Vrij oefenen in Nedap ONS</strong><span class="klein">Klik overal rond met testcliënten. Er kan niets kapot gaan.</span></span>
@@ -323,7 +367,7 @@ function viewOverzicht() {
 }
 
 const RONDLEIDING = [
-  { doel: '[data-tour="voortgang"]', kop: 'Hier zie je hoe ver je bent', tekst: 'Elke module die je afrondt krijgt een vinkje. Je opleider ziet ook hoe ver je bent, zodat je inwerkchecklist vanzelf bijblijft.' },
+  { doel: '[data-tour="voortgang"]', kop: 'Je begint met een lege stand', tekst: 'Elke module die je afrondt krijgt een vinkje. In dit demo-overzicht zie je hoeveel modules klaar zijn.' },
   { doel: '[data-tour="verder"]', kop: 'Met deze knop ga je verder', tekst: 'Kom je terug, dan begin je hier. Hij brengt je naar de module waar je gebleven was.' },
   { doel: '[data-tour="deel"]', kop: 'Je modules staan in vijf delen', tekst: 'Van het starten van je dienst tot de apps op je telefoon. In elke module krijg je eerst uitleg en klik je samen met ons door Nedap ONS. Daarna oefen je met een situatie uit je eigen werk.' },
   { doel: '[data-tour="tip"]', kop: 'Elke dag een tip', tekst: 'Korte tips over hoe wij hier werken. Wil je er meer? Klik op Nog een tip.' },
@@ -331,6 +375,9 @@ const RONDLEIDING = [
 ];
 
 function startTour() {
+  document.querySelector('.leer-tip')?.setAttribute('open', '');
+  const catalogus = document.querySelector('[data-modulecatalogus]');
+  if (catalogus) catalogus.open = true;
   startRondleiding(RONDLEIDING, (klaar) => {
     if (klaar) {
       markeer('rondleiding', 'klaar');
@@ -346,7 +393,8 @@ function startTour() {
 let casus = null;
 
 function nieuweCasus(id) {
-  return { id, stap: beginStap(CASUSSEN[id]), lesPagina: 0, klik: 0, stand: 'mee', zelf: null, speelt: false, keuze: null, koppel: {}, volgorde: null, gecontroleerd: false, antwoorden: {} };
+  const inhoud = CASUSSEN[id];
+  return { id, stap: beginStap(inhoud), lesPagina: 0, klik: 0, stand: 'mee', zelf: null, speelt: false, keuze: null, koppel: {}, volgorde: null, gecontroleerd: false, antwoorden: {}, toets: maakToetsPoging(inhoud?.vragenbank || inhoud?.toets || [], inhoud?.vragenPerPoging || 5) };
 }
 
 function deelVan(m) {
@@ -396,25 +444,23 @@ function viewModule(id) {
     </div>`, { route: `#/module/${id}` });
 }
 
-// De werkafspraak-knop: wissel tussen hoe Nedap ONS werkt en hoe wij het hier doen. De tekst komt uit het handboek van de klant.
+// Een compacte werkafspraak bij de oefening, met de volledige bron op verzoek.
 function werkafspraak(id) {
-  const secties = HANDBOEK.filter((x) => x.module === id);
+  const eigen = id === 'rapporteren' ? maatwerkBronnen(nu().maatwerk) : [];
+  const secties = metMaatwerk(HANDBOEK, nu().maatwerk).filter((x) => x.module === id);
   if (!secties.length) return '';
-  const aan = !!casus.afspraak;
   return `
-    <div class="afspraak${aan ? ' is-aan' : ''}">
-      <div class="afspraak__wissel" role="group" aria-label="Wat wil je zien?">
-        <button type="button" class="afspraak__knop${aan ? '' : ' is-nu'}" data-actie="afspraak" data-aan="0" aria-pressed="${!aan}">Zo werkt ONS</button>
-        <button type="button" class="afspraak__knop${aan ? ' is-nu' : ''}" data-actie="afspraak" data-aan="1" aria-pressed="${aan}">Zo doen wij het bij ${esc(orgNaam())}</button>
-      </div>
-      ${aan ? `<div class="afspraak__inhoud">${secties.map((x) => `<div class="afspraak__sectie"><h3>${esc(x.kop)}</h3>${x.tekst.map((t) => `<p>${esc(t)}</p>`).join('')}</div>`).join('')}<p class="afspraak__bron">${ICOON.boek} Uit: ${esc(secties[0].bron || 'Handboek')} ${esc(orgNaam())}</p></div>` : ''}
-    </div>`;
+    <details class="afspraak afspraak--compact">
+      <summary><span class="afspraak__label">Zo doen wij het bij ${esc(orgNaam())}</span> <span>${esc(secties[0].kop)}</span><span class="klein">Bekijk onze werkafspraak</span></summary>
+      <div class="afspraak__inhoud">${secties.map((x) => `<div class="afspraak__sectie"><h3>${esc(x.kop)}</h3>${x.tekst.map((t) => `<p>${esc(t)}</p>`).join('')}</div>`).join('')}<p class="afspraak__bron">${ICOON.boek} Uit: ${esc(secties[0].bron || `Handboek ${orgNaam()}`)}${eigen.length ? ` · versie ${nu().maatwerk.actief.bron.versie}` : ''}</p></div>
+    </details>`;
 }
 
-const datumNL = (iso) => new Date(iso).toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' });
+const datumNL = (iso) => iso ? new Date(iso).toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
 
-function versieregel() {
-  return `<p class="versieregel">${ICOON.vink} Gecontroleerd in Nedap ONS op ${datumNL(ONS_GECONTROLEERD)}</p>`;
+function versieregel(moduleId) {
+  const gecontroleerd = schermKaart(CASUSSEN).find((scherm) => scherm.modules.includes(moduleId) && scherm.gecontroleerdOp)?.gecontroleerdOp;
+  return gecontroleerd ? `<p class="versieregel">${ICOON.vink} Gecontroleerd in Nedap ONS op ${datumNL(gecontroleerd)}</p>` : '';
 }
 
 function stapper(c, actief) {
@@ -462,7 +508,7 @@ function viewCasus(m) {
         <h1>${esc(m.titel)}</h1>
         <p class="lead">${esc(m.leer)}</p>
         ${stapper(c, stapNr)}
-        ${versieregel()}
+        ${versieregel(c.id)}
       </div>
     </section>
     <div class="wrap smal casus" aria-live="polite">${inhoud}</div>`, { route: `#/module/${m.id}` });
@@ -474,9 +520,9 @@ function viewKeuze(stap) {
   return `
     <article class="werkpaneel">
       <h2>${esc(stap.vraag)}</h2>
-      <div class="keuzes" role="radiogroup" aria-label="${esc(stap.vraag)}">
+      <div class="keuzes" role="group" aria-label="${esc(stap.vraag)}">
         ${stap.opties.map((o, i) => `
-          <button type="button" role="radio" aria-checked="${gekozen === i}" class="keuze${gekozen === i ? (o.goed ? ' is-goed' : ' is-fout') : ''}" data-actie="kies" data-i="${i}" ${gekozen !== null ? 'disabled' : ''}>
+          <button type="button" aria-pressed="${gekozen === i}" class="keuze${gekozen === i ? (o.goed ? ' is-goed' : ' is-fout') : ''}" data-actie="kies" data-i="${i}" ${gekozen !== null ? 'disabled' : ''}>
             <span class="keuze__letter">${'ABCDE'[i]}</span>
             <span class="keuze__tekst">${esc(o.tekst)}</span>
           </button>`).join('')}
@@ -728,7 +774,7 @@ function viewVolgorde(stap) {
 const nogOpen = (n) => (n ? `Nog ${n} ${n === 1 ? 'vraag' : 'vragen'} open` : 'Alles ingevuld');
 
 function viewToets(c) {
-  const t = c.toets;
+  const t = casus.toets;
   const open = t.filter((_, i) => casus.antwoorden[i] === undefined).length;
   const alles = open === 0;
   const nodig = Math.ceil(t.length * NORM);
@@ -771,17 +817,18 @@ function metingRegel(id) {
 }
 
 function viewUitslag(c) {
-  const t = c.toets;
+  const t = casus.toets;
   const goed = t.filter((v, i) => casus.antwoorden[i] === v.goed).length;
   const gehaald = goed / t.length >= NORM;
   return `
     <article class="werkpaneel uitslag ${gehaald ? 'is-gehaald' : ''}">
       <span class="uitslag__icoon" aria-hidden="true">${gehaald ? ICOON.vink : ICOON.let}</span>
-      <h2>${gehaald ? 'Module klaar' : 'Bijna'}</h2>
+      <h2>${gehaald ? 'Module klaar' : 'Nog niet'}</h2>
       <p class="uitslag__score">Je had er <strong>${goed} van de ${t.length}</strong> goed.</p>
       <ul class="uitslag__lijst">
-        ${t.map((v, i) => `<li class="${casus.antwoorden[i] === v.goed ? 'is-goed' : 'is-fout'}">${casus.antwoorden[i] === v.goed ? ICOON.vink : ICOON.let}<span>${esc(v.vraag)}${casus.antwoorden[i] === v.goed ? '' : ` <em>Goed antwoord: ${esc(v.opties[v.goed])}</em>`}</span></li>`).join('')}
+        ${t.map((v, i) => `<li class="${casus.antwoorden[i] === v.goed ? 'is-goed' : 'is-fout'}">${casus.antwoorden[i] === v.goed ? ICOON.vink : ICOON.let}<span>${esc(v.vraag)}${casus.antwoorden[i] === v.goed || gehaald ? '' : ' <em>Bekijk de uitleg bij deze vraag en probeer het daarna opnieuw.</em>'}</span></li>`).join('')}
       </ul>
+      ${!gehaald ? '<p>Bekijk de uitleg opnieuw en probeer daarna het meetmoment nog eens.</p>' : ''}
       ${metingRegel(c.id)}
       ${gehaald ? samenvatting(c) : ''}
       <div class="knoppen">
@@ -853,8 +900,8 @@ function metingBlok() {
   }).join('');
   return `
       <div class="werkpaneel werkpaneel--vol meetblok">
-        <div class="tabelkop"><h2>Zelf in Nedap ONS: Sanne Visser</h2></div>
-        <p>Bij Doe zelf klikt de medewerker zonder hulp door Nedap ONS. Wij meten de tijd, hoe vaak ze mis klikt en hoe vaak ze om een hint vraagt. De eerste keer is de nulmeting.</p>
+        <div class="tabelkop"><h2>Oefenmetingen van Sanne Visser</h2></div>
+        <p>Bij Doe zelf oefent Sanne zonder begeleiding in de oefenomgeving. Je ziet de tijd, het aantal verkeerde klikken en gebruikte hints. Dit zegt iets over deze oefening, niet over haar bekwaamheid in de praktijk.</p>
         ${rijen ? `<div class="tabelwrap"><table class="tabel tabel--kaarten"><thead><tr><th scope="col">Module</th><th scope="col">Eerste keer</th><th scope="col">Laatste keer</th><th scope="col">Verschil</th></tr></thead><tbody>${rijen}</tbody></table></div>`
           : '<p class="leeg">Sanne heeft nog geen opdracht zelf gedaan. Log in als Sanne en kies in een module Doe zelf.</p>'}
       </div>`;
@@ -881,59 +928,58 @@ function viewOpleider() {
   const scores = alle.filter((r) => r.toets !== null);
   const gem = scores.length ? Math.round(scores.reduce((s, r) => s + r.toets, 0) / scores.length) : 0;
   const tegel = (getal, tekst) => `<div class="tegel"><p class="tegel__getal">${getal}</p><p class="tegel__tekst">${tekst}</p></div>`;
-  const statusTekst = { klaar: 'Klaar met inwerken', achter: 'Loopt achter', schema: 'Op schema' };
+  const statusTekst = { klaar: 'Modules afgerond', achter: 'Loopt achter', schema: 'Op schema' };
   return schil(`
     <section class="paneel">
       <div class="paneel__in">
         <p class="bovenregel">Dashboard opleider</p>
         <h1>Inwerken bij ${esc(orgNaam())}</h1>
         <p class="lead">Zo ver zijn je nieuwe collega's met hun modules.</p>
-        <div class="tegels">
+        <div class="tegels tegels--rustig">
           ${tegel(alle.length, 'nieuwe medewerkers')}
-          ${tegel(alle.filter((r) => r.status === 'klaar').length, 'klaar met inwerken')}
+          ${tegel(alle.filter((r) => r.status === 'klaar').length, 'medewerkers met alle modules afgerond')}
           <button type="button" class="tegel tegel--knop${achter ? ' is-let-op' : ''}" data-actie="filter" data-filter="achter" aria-pressed="${filter === 'achter'}">
             <span class="tegel__getal">${achter}</span>
             <span class="tegel__tekst">${achter === 1 ? 'loopt achter' : 'lopen achter'}</span>
             <span class="tegel__actie">${filter === 'achter' ? 'Laat iedereen zien' : 'Laat zien wie'} ${ICOON.pijl}</span>
           </button>
           ${tegel(gem + '%', 'gemiddelde score meetmoment')}
-          ${(() => { const o = alle.filter((r) => r.ons); const f = o.length ? Math.round((o.reduce((a, r) => a + r.ons.fouten, 0) / o.length) * 10) / 10 : 0; return tegel(komma(f), 'keer mis geklikt per opdracht in ONS'); })()}
         </div>
       </div>
     </section>
     <div class="wrap">
       <div class="werkpaneel werkpaneel--vol">
         <div class="tabelkop">
-          <h2>Medewerkers</h2>
+          <h2>Medewerkers <span class="leer-demo-label">Demogegevens</span></h2>
           <div class="filter" role="group" aria-label="Filter op profiel">
             ${[['alle', 'Alle profielen'], ['vig', 'Verzorgende IG'], ['helpende', 'Helpende en wzo'], ['achter', 'Lopen achter']].map(([id, t]) => `<button type="button" class="chip" aria-pressed="${filter === id}" data-actie="filter" data-filter="${id}">${t}</button>`).join('')}
           </div>
         </div>
         <div class="tabelwrap">
           <table class="tabel tabel--kaarten">
-            <thead><tr><th scope="col">Naam</th><th scope="col">Profiel</th><th scope="col">Afdeling</th><th scope="col">Gestart</th><th scope="col">Voortgang</th><th scope="col">Per deel</th><th scope="col">Badges</th><th scope="col">Meetmoment</th><th scope="col">Zelf in ONS</th><th scope="col">Status</th></tr></thead>
+            <thead><tr><th scope="col">Medewerker</th><th scope="col">Voortgang</th><th scope="col">Status</th><th scope="col">Meer inzicht</th></tr></thead>
             <tbody>
               ${rijen.map((r) => `
                 <tr${r.live ? ' class="is-live"' : ''}>
-                  <th scope="row">${esc(r.naam)}${r.live ? ' <span class="live">jij</span>' : ''}</th>
-                  <td data-label="Profiel" class="tabel__breed">${esc(PROFIELEN[r.profiel].naam)}</td>
-                  <td data-label="Afdeling">${esc(r.afdeling)}</td>
-                  <td data-label="Gestart">${new Date(r.start).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })}</td>
-                  <td data-label="Voortgang" class="tabel__breed"><div class="minibalk" role="img" aria-label="${r.klaar} van ${r.totaal} klaar"><span style="width:${Math.round(r.pct * 100)}%"></span></div><span class="klein">${r.klaar} van ${r.totaal}</span></td>
-                  <td data-label="Per deel"><span class="deelvinken">${vinkjesPerDeel(r)}</span></td>
-                  <td data-label="Badges">${badgeTeller(aantalBadges(r, nu().toewijzing[r.profiel] || [], nu().voortgang), delenMetModules(nu().toewijzing[r.profiel] || []).length)}</td>
-                  <td data-label="Meetmoment">${r.toets === null ? '<span class="klein">nog niet</span>' : r.toets + '%'}</td>
-                  <td data-label="Zelf in ONS" title="Gemiddeld mis geklikt per opdracht in Nedap ONS, aantal opdrachten en gemiddelde tijd">${onsCel(r.ons)}</td>
+                  <th scope="row">${esc(r.naam)}${r.live ? ' <span class="live">deze sessie</span>' : ''}<span class="klein">${esc(PROFIELEN[r.profiel].naam)} · ${esc(r.afdeling)}</span></th>
+                  <td data-label="Voortgang" class="tabel__breed"><div class="minibalk" role="img" aria-label="${r.klaar} van ${r.totaal} klaar"><span style="width:${Math.round(r.pct * 100)}%"></span></div><span class="klein">${r.klaar} van ${r.totaal} modules</span></td>
                   <td data-label="Status"><span class="status status--${r.status}">${statusTekst[r.status]}</span></td>
+                  <td data-label="Meer inzicht"><details class="leer-medewerker"${PRESENTATIE && r.live ? ' open' : ''}><summary>Bekijk details<span class="sr"> van ${esc(r.naam)}</span></summary><dl>
+                    <div><dt>Gestart</dt><dd>${new Date(r.start).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })}</dd></div>
+                    <div><dt>Per deel</dt><dd><span class="deelvinken">${vinkjesPerDeel(r)}</span></dd></div>
+                    ${PRESENTATIE ? '' : `<div><dt>Badges</dt><dd>${badgeTeller(aantalBadges(r, nu().toewijzing[r.profiel] || [], nu().voortgang), delenMetModules(nu().toewijzing[r.profiel] || []).length)}</dd></div>`}
+                    <div><dt>Meetmoment</dt><dd>${r.toets === null ? 'Nog niet gedaan' : r.toets + '%'}</dd></div>
+                    <div><dt>In de oefenomgeving</dt><dd>${onsCel(r.ons)}</dd></div>
+                  </dl></details></td>
                 </tr>`).join('')}
             </tbody>
           </table>
         </div>
         ${rijen.length ? '' : '<p class="leeg">Niemand loopt achter. Mooi zo.</p>'}
         <p class="opmerking">Loopt achter betekent: langer dan twee weken gestart en minder dan 60 procent klaar.</p>
-        <p class="opmerking">Zelf in ONS: gemiddeld zo vaak mis geklikt per opdracht in Nedap ONS, het aantal opdrachten en de gemiddelde tijd.</p>
+        <p class="opmerking">Bij details zie je de resultaten in de oefenomgeving. De collega’s zijn voorbeelden. Alleen Sannes voortgang verandert mee met deze demosessie.</p>
       </div>
-      ${metingBlok()}
+      <details class="leer-details leer-details--metingen"><summary><span>Oefenmetingen van Sanne</span><span class="leer-details__meta">Eerste en laatste poging</span></summary>${metingBlok()}</details>
     </div>`, { route: '#/opleider' });
 }
 
@@ -980,7 +1026,7 @@ function viewBeheerModules() {
       <div class="paneel__in">
         <p class="bovenregel">Beheercentrum · alleen voor Ons Op Maat</p>
         <h1>De bibliotheek</h1>
-        <p class="lead">Elke module is een casus met varianten. De generieke laag is voor elke klant hetzelfde. De klantlaag maakt hem van De Wilgenhof: hun schermen, hun afspraken, hun namen.</p>
+        <p class="lead">Elke module is een casus met varianten. De basis is voor elke organisatie hetzelfde. In dit voorbeeld zie je de schermen, afspraken en verzonnen namen van De Wilgenhof.</p>
       </div>
     </section>
     <div class="wrap">
@@ -996,13 +1042,13 @@ function viewBeheerModules() {
                   <td data-label="Deel">${esc(DELEN.find((d) => d.id === m.deel).titel)}</td>
                   <td data-label="Varianten">${m.varianten || '<span class="klein">geen</span>'}</td>
                   <td data-label="Meetmoment">${m.toets ? ICOON.vink + '<span class="sr">ja</span>' : '<span class="klein">nee</span>'}</td>
-                  <td data-label="Lagen" class="tabel__breed"><span class="laag">Generiek</span> <span class="laag laag--klant">De Wilgenhof</span></td>
-                  <td data-label="Stand">${CASUSSEN[m.id] ? '<span class="status status--klaar">Uitgewerkt</span>' : '<span class="status">Opzet</span>'}</td>
+                  <td data-label="Lagen" class="tabel__breed"><span class="laag">Basis</span> <span class="laag laag--klant">De Wilgenhof</span></td>
+                  <td data-label="Stand">${m.id === 'rondleiding' || CASUSSEN[m.id] ? '<span class="status status--klaar">Uitgewerkt</span>' : '<span class="status">Opzet</span>'}</td>
                 </tr>`).join('')}
             </tbody>
           </table>
         </div>
-        <p class="opmerking">De bibliotheek groeit met elke klant. Wat generiek is, maak je één keer. Zie de kennisbank, wat-we-leveren.</p>
+        <p class="opmerking">De bibliotheek toont de basis en de voorbeeldafspraken per organisatie.</p>
       </div>
     </div>`, { route: '#/beheer' });
 }
@@ -1018,29 +1064,29 @@ function viewSchermkaart() {
       <div class="paneel__in">
         <p class="bovenregel">Beheercentrum · alleen voor Ons Op Maat</p>
         <h1>Schermkaart</h1>
-        <p class="lead">Welk scherm van Nedap ONS zit in welke module. Komt er een release, vink dan aan welke schermen veranderd zijn. Je ziet meteen welke modules je moet nakijken, voor alle klanten tegelijk.</p>
+        <p class="lead">Welk scherm van Nedap ONS zit in welke module. Komt er een ONS-update, vink dan aan welke schermen veranderd zijn. Je ziet meteen welke modules je moet nakijken, voor alle klanten tegelijk.</p>
       </div>
     </section>
     <div class="wrap">
       <div class="werkpaneel werkpaneel--vol releasecheck" aria-live="polite">
-        <h2>Release-check</h2>
+        <h2>Controle na een ONS-update</h2>
         ${veranderd.length
           ? `<p><strong>${raak.length} ${raak.length === 1 ? 'module' : 'modules'} nakijken</strong> door ${veranderd.length} ${veranderd.length === 1 ? 'veranderd scherm' : 'veranderde schermen'}:</p>
              <ul class="chips">${raak.map((id) => `<li><a class="chip" href="#/beheer">${titel(id)}</a></li>`).join('')}</ul>
              <button type="button" class="btn btn--rand btn--klein" data-actie="release-leeg">Alles weer uitzetten</button>`
-          : '<p>Vink hieronder aan welke schermen in de nieuwe release van Nedap ONS veranderd zijn.</p>'}
+          : '<p>Vink hieronder aan welke schermen in de nieuwe update van Nedap ONS veranderd zijn.</p>'}
       </div>
       <div class="werkpaneel werkpaneel--vol">
         <div class="tabelkop"><h2>${kaart.length} schermen in ${MODULES.length - 1} modules</h2></div>
         <div class="tabelwrap">
           <table class="tabel tabel--kaarten">
-            <thead><tr><th scope="col">Scherm</th><th scope="col">Zit in</th><th scope="col">Gecontroleerd</th><th scope="col">Veranderd in release</th></tr></thead>
+            <thead><tr><th scope="col">Scherm</th><th scope="col">Zit in</th><th scope="col">Gecontroleerd</th><th scope="col">Veranderd in update</th></tr></thead>
             <tbody>
               ${kaart.map((r, i) => `
                 <tr>
                   <th scope="row">${esc(r.scherm)}</th>
-                  <td data-label="Zit in" class="tabel__breed">${r.modules.map(titel).join(', ')}</td>
-                  <td data-label="Gecontroleerd">${datumNL(ONS_GECONTROLEERD)}</td>
+                  <td data-label="Zit in" class="tabel__breed">${r.modules.length ? r.modules.map(titel).join(', ') : 'Geen bestaande casus, alleen vrije oefenomgeving'}</td>
+                  <td data-label="Gecontroleerd">${r.gecontroleerdOp ? `Gecontroleerd in Nedap ONS op ${datumNL(r.gecontroleerdOp)}` : 'Nog niet bevestigd'}</td>
                   <td data-label="Veranderd"><label class="vinkvak"><input type="checkbox" data-scherm="${esc(r.scherm)}" ${veranderd.includes(r.scherm) ? 'checked' : ''}><span class="sr">${esc(r.scherm)} is veranderd</span><span class="vinkvak__box" aria-hidden="true">${ICOON.vink}</span></label></td>
                 </tr>`).join('')}
             </tbody>
@@ -1072,7 +1118,7 @@ function viewBeheerKlanten() {
             <div><dt>ECD</dt><dd>${ORGANISATIE.ecd}</dd></div>
             <div><dt>Profielen</dt><dd>${Object.values(PROFIELEN).map((p) => esc(p.naam)).join(', ')}</dd></div>
             <div><dt>Medewerkers</dt><dd>${aantal}</dd></div>
-            <div><dt>Inloggen</dt><dd>eigen inlog of SSO via het portaal van de klant</dd></div>
+            <div><dt>Inloggen</dt><dd>Inlogvoorbeeld, zonder echte koppeling</dd></div>
           </dl>
           <div class="stalen" aria-label="Huisstijlkleuren">${['paneel', 'merk', 'actie', 'zacht'].map((k) => `<span style="background:${kleuren[k]}" title="${LABELS[k].naam} ${kleuren[k]}"></span>`).join('')}</div>
           <div class="knoppen">
@@ -1083,7 +1129,7 @@ function viewBeheerKlanten() {
         <article class="werkpaneel klant klant--nieuw">
           <span class="klant__plus" aria-hidden="true">+</span>
           <h2>Nieuwe klant</h2>
-          <p>Een klant aanmaken komt in de echte versie. Dan kies je het ECD, de profielen en de modules uit de bibliotheek.</p>
+          <p>Nieuwe klanten voeg je niet in deze demo toe. Je kunt hier de voorbeeldinstellingen van De Wilgenhof bekijken.</p>
         </article>
       </div>
     </div>`, { route: '#/beheer/klanten' });
@@ -1091,6 +1137,15 @@ function viewBeheerKlanten() {
 
 // concept van de huisstijl, los van wat al is toegepast
 let concept = null;
+let huisstijlGeneratie = 0;
+let logoLezer = null;
+let invoerTimer;
+function stopHuisstijlWerk() {
+  huisstijlGeneratie += 1;
+  clearTimeout(invoerTimer);
+  logoLezer?.abort();
+  logoLezer = null;
+}
 
 function viewHuisstijl() {
   if (!concept) concept = JSON.parse(JSON.stringify(nu().huisstijl));
@@ -1175,7 +1230,7 @@ function viewHuisstijl() {
             <div class="preview__grond">
               <div class="preview__vlak">
                 <span class="preview__nr">${ICOON.vink}</span>
-                <span><strong>Rapporteren</strong><br><span class="preview__meta">7 min · casus · meetmoment</span></span>
+                <span><strong>Rapporteren</strong><br><span class="preview__meta">10 min · casus · meetmoment</span></span>
               </div>
               <div class="preview__tip"><strong>Tip van de dag</strong> Schrijf voor de volgende dienst.</div>
               <p class="preview__fout">${ICOON.let} Zo loopt het af: de plek is nu open.</p>
@@ -1211,7 +1266,7 @@ function viewVraag() {
         <a class="terug" href="#/overzicht">${ICOON.terug} Mijn overzicht</a>
         <p class="bovenregel">Vraag het</p>
         <h1>Zoek in het handboek van ${esc(orgNaam())}</h1>
-        <p class="lead">Een vraag over een werkafspraak, of bij wie je moet zijn? Je krijgt het antwoord uit ons eigen handboek, met de bron erbij.</p>
+        <p class="lead">Een vraag over een werkafspraak, of bij wie je moet zijn? Zoek het antwoord in het voorbeeldhandboek, met de bron erbij.</p>
       </div>
     </section>
     <div class="wrap smal"><div class="werkpaneel" id="vraag-het"></div></div>`, { route: '#/vraag' });
@@ -1223,7 +1278,7 @@ function viewBronnen() {
       <div class="paneel__in">
         <p class="bovenregel">Beheercentrum · De Wilgenhof</p>
         <h1>Handboek en bronnen</h1>
-        <p class="lead">Hieruit beantwoordt Vraag het de vragen van medewerkers. Zet het handboek van de klant erin, en wie wat doet uit SharePoint. Vragen zonder antwoord laten zien wat er in het handboek ontbreekt.</p>
+        <p class="lead">Vraag het zoekt in deze voorbeeldbronnen. Wie doet wat is een voorbeeld, zonder SharePoint-koppeling. Voeg alleen verzonnen testtekst toe.</p>
       </div>
     </section>
     <div class="wrap"><div class="werkpaneel werkpaneel--vol" id="bronnen"></div></div>`, { route: '#/beheer/bronnen' });
@@ -1256,13 +1311,119 @@ function route() {
   return window.location.hash.replace(/^#/, '') || '/';
 }
 
-function render(opties = {}) {
+function casusIndexNodig(pad) {
+  const rol = nu().rol;
+  if (rol === 'medewerker' && pad.startsWith('/module/')) {
+    const id = pad.split('/')[2];
+    return id !== 'rondleiding' && MODULES.some((module) => module.id === id);
+  }
+  return rol === 'beheer' && (pad === '/beheer' || pad === '/beheer/schermen');
+}
+
+function laadCasusIndex() {
+  if (casusIndexGeladen) return Promise.resolve();
+  if (casusIndexPromise) return casusIndexPromise;
+  casusIndexPromise = import('./casussen/index.js')
+    .then(({ CASUSSEN: geladen }) => {
+      Object.assign(CASUSSEN, geladen);
+      casusIndexGeladen = true;
+    })
+    .catch((fout) => {
+      casusIndexPromise = null;
+      throw fout;
+    });
+  return casusIndexPromise;
+}
+
+function laadOefenModule() {
+  if (oefenenModule) return Promise.resolve();
+  if (oefenenModulePromise) return oefenenModulePromise;
+  oefenenModulePromise = import('./oefenen.js')
+    .then((module) => { oefenenModule = module; })
+    .catch((fout) => {
+      oefenenModulePromise = null;
+      throw fout;
+    });
+  return oefenenModulePromise;
+}
+
+function toonCasusLaden(pad) {
+  stopGemonteerdeSchermen();
+  pasHuisstijlToe(nu().rol === 'beheer');
+  document.body.dataset.rol = nu().rol || 'gast';
+  app.innerHTML = schil('<div class="wrap smal"><div class="werkpaneel" role="status" aria-live="polite">De inhoud wordt geladen.</div></div>', { route: `#${pad}` });
+  document.title = `Laden · Leren bij ${orgNaam()}`;
+}
+
+function toonCasusLaadfout(pad, generatie) {
+  if (generatie !== renderGeneratie || route() !== pad) return;
+  pasHuisstijlToe(nu().rol === 'beheer');
+  document.body.dataset.rol = nu().rol || 'gast';
+  app.innerHTML = schil(`
+    <div class="wrap smal">
+      <div class="werkpaneel" role="alert">
+        <h1>Deze inhoud is niet geladen</h1>
+        <p>Controleer je verbinding en probeer het opnieuw.</p>
+        <button type="button" class="btn btn--actie" data-casus-opnieuw>Opnieuw proberen</button>
+      </div>
+    </div>`, { route: `#${pad}` });
+  document.title = `Inhoud laden · Leren bij ${orgNaam()}`;
+  app.querySelector('[data-casus-opnieuw]')?.addEventListener('click', () => window.location.reload());
+}
+
+function renderMetCasusdata() {
   const pad = route();
+  const generatie = ++renderGeneratie;
+  const casesNodig = casusIndexNodig(pad) && !casusIndexGeladen;
+  const oefenenNodig = nu().rol === 'medewerker' && pad === '/oefenen' && !oefenenModule;
+  if (!casesNodig && !oefenenNodig) {
+    render();
+    return;
+  }
+  toonCasusLaden(pad);
+  Promise.all([
+    ...(casesNodig ? [laadCasusIndex()] : []),
+    ...(oefenenNodig ? [laadOefenModule()] : []),
+  ]).then(() => {
+    if (generatie !== renderGeneratie || route() !== pad) return;
+    render();
+  }).catch(() => toonCasusLaadfout(pad, generatie));
+}
+
+let stopUitleg = () => {};
+let stopMaatwerk = () => {};
+let stopBronnen = () => {};
+let stopOefenen = () => {};
+function stopGemonteerdeSchermen() {
+  stopMaatwerk(); stopMaatwerk = () => {};
+  stopBronnen(); stopBronnen = () => {};
+  stopOefenen(); stopOefenen = () => {};
+  stopUitleg(); stopUitleg = () => {};
+}
+function render(opties = {}) {
+  stopGemonteerdeSchermen();
+  let pad = route();
+  if (PRESENTATIE) {
+    const toegestaan = ['/', '/demo', '/overzicht', '/module/rapporteren', '/vraag', '/demo/uitproberen', '/opleider'];
+    if (!toegestaan.includes(pad)) { window.location.hash = '/overzicht'; return; }
+    if (pad === '/opleider' && nu().rol !== 'opleider') zet({ rol: 'opleider' });
+    if (pad !== '/opleider' && nu().rol !== 'medewerker') zet({ rol: 'medewerker' });
+  }
+  const isHome = pad === '/' || pad === '/demo';
+  if (isHome && nu().rol !== 'medewerker') zet({ rol: 'medewerker' });
   const rol = nu().rol;
   let html;
   let beheer = false;
-  if (pad === '/' || !rol) {
-    html = viewInloggen();
+  if (isHome) {
+    html = viewOverzicht();
+  } else if (pad === '/uitleg') {
+    html = viewUitleg(OOM_MERK);
+    beheer = true;
+  } else if (pad === '/demo/uitproberen') {
+    html = `${presentatieNavigatie(pad)}${viewMaatwerk(nu().maatwerk || beginMaatwerk(), OOM_MERK)}`;
+    beheer = true;
+  } else if (pad === '/rollen' || !rol) {
+    html = viewRollen();
   } else if (rol === 'medewerker') {
     if (pad === '/welkom') html = viewWelkom();
     else if (pad === '/overzicht') html = viewOverzicht();
@@ -1283,23 +1444,44 @@ function render(opties = {}) {
   }
   pasHuisstijlToe(beheer);
   document.body.dataset.rol = rol || 'gast';
+  document.body.dataset.presentatie = PRESENTATIE ? '1' : '0';
   app.innerHTML = html;
-  const titels = { '/': 'Inloggen', '/welkom': 'Welkom', '/overzicht': 'Mijn overzicht', '/opleider': 'Dashboard', '/opleider/profielen': 'Profielen', '/beheer': 'Bibliotheek', '/beheer/klanten': 'Klanten', '/beheer/huisstijl': 'Huisstijl', '/beheer/schermen': 'Schermkaart', '/certificaat': 'Certificaat', '/oefenen': 'Oefenen in ONS', '/vraag': 'Vraag het', '/beheer/bronnen': 'Handboek' };
+  const titels = { '/demo': 'Mijn overzicht', '/uitleg': 'Zo werkt Ons Op Maat', '/demo/uitproberen': 'Probeer het maatwerk', '/rollen': 'Kies je rol', '/': 'Mijn overzicht', '/welkom': 'Welkom', '/overzicht': 'Mijn overzicht', '/opleider': 'Dashboard', '/opleider/profielen': 'Profielen', '/beheer': 'Bibliotheek', '/beheer/klanten': 'Klanten', '/beheer/huisstijl': 'Huisstijl', '/beheer/schermen': 'Schermkaart', '/certificaat': 'Certificaat', '/oefenen': 'Oefenen in ONS', '/vraag': 'Vraag het', '/beheer/bronnen': 'Handboek' };
   document.title = `${titels[pad] || 'Module'} · Leren bij ${orgNaam()}`;
   if (!opties.houdScroll) {
     window.scrollTo(0, 0);
     document.getElementById('inhoud')?.focus({ preventScroll: true });
   }
   const oefen = document.getElementById('oefenomgeving');
-  if (oefen) mountOefenen(oefen, { esc, meld, onOpdracht: () => {} });
+  if (oefen && oefenenModule) {
+    const controller = oefenenModule.mountOefenen(oefen, { esc, meld, onOpdracht: () => {} });
+    stopOefenen = () => controller?.destroy?.();
+  }
   const vraag = document.getElementById('vraag-het');
   if (vraag) {
     mountVraag(vraag, { esc, beginVraag: wachtVraag || undefined, naarModule: (id) => ga(`/module/${id}`) });
     wachtVraag = '';
   }
   const bronnen = document.getElementById('bronnen');
-  if (bronnen) mountBronnen(bronnen, { esc, meld });
-  toonWachtendMoment();
+  if (bronnen) {
+    const bronController = mountBronnen(bronnen, { esc, meld });
+    stopBronnen = () => bronController?.destroy?.();
+  }
+  const uitleg = app.querySelector('.uitleg');
+  if (uitleg) stopUitleg = mountUitleg(uitleg);
+  const maat = app.querySelector('.maat');
+  if (maat) { const maatController = mountMaatwerk(maat, {
+    lees: () => nu().maatwerk || beginMaatwerk(),
+    schrijf: (maatwerk) => zet({ maatwerk }),
+    render: () => { render({ houdScroll: true }); const kop = app.querySelector('#maat-podium h2'); if (kop) { kop.setAttribute('tabindex','-1'); kop.focus({preventScroll:true}); } },
+    medewerker: () => { zet({ rol: 'medewerker', welkomGezien: true }); casus = null; ga('/module/rapporteren'); },
+    naslag: () => {
+      zet({ rol: 'medewerker', welkomGezien: true }); casus = null;
+      wachtVraag = nu().maatwerk.actief.bron.versie === 2 ? 'Wat is de afspraak over de vervolgactie bij rapporteren?' : 'Wat is de afspraak over het doel bij rapporteren?';
+      ga('/vraag');
+    },
+  }); stopMaatwerk = () => maatController?.destroy?.(); }
+  if (!PRESENTATIE) toonWachtendMoment();
 }
 
 // Een nieuwe stap in de casus: schuif naar de vraag en zet de focus erop, ook op een telefoon.
@@ -1373,19 +1555,27 @@ const ACTIES = {
     else if (rol === 'opleider') ga('/opleider');
     else ga('/beheer');
   },
+  'demo-voortgang'() {
+    zet({ rol: 'opleider', filter: 'alle' }); casus = null; ga('/opleider');
+  },
   sso() {
-    meld(`In de echte versie log je hier in met je account van ${orgNaam()}. Kies in de demo hieronder als wie je binnenkomt.`);
+    meld('Deze demo is niet gekoppeld aan een organisatieaccount. Kies hieronder met welke rol je de demo wilt bekijken.');
   },
   uitloggen() {
+    stopHuisstijlWerk();
     zet({ rol: null });
     casus = null;
     concept = null;
-    ga('/');
+    ga('/rollen');
   },
   opnieuw() {
+    stopHuisstijlWerk();
     opnieuw();
-    resetOefenen();
-    try { localStorage.removeItem('leeromgeving-vragen-v1'); } catch { /* geen opslag */ }
+    if (oefenenModule) oefenenModule.resetOefenen();
+    else {
+      try { window.localStorage.removeItem('leeromgeving-oefenen-v1'); } catch { /* De rest van de demo kan blijven werken. */ }
+    }
+    resetVraag();
     casus = null;
     concept = null;
     ga('/');
@@ -1409,6 +1599,7 @@ const ACTIES = {
     const huidig = nu().tip ?? new Date().getDate();
     zet({ tip: (huidig + 1) % TIPS.length });
     render({ houdScroll: true });
+    app.querySelector('[data-actie="volgende-tip"]')?.focus();
   },
   'markeer-klaar'(knop) {
     markeer(knop.dataset.id, 'klaar');
@@ -1452,6 +1643,7 @@ const ACTIES = {
   'kijk-speel'() {
     casus.speelt = !casus.speelt;
     render({ houdScroll: true });
+    app.querySelector('[data-actie="kijk-speel"]')?.focus();
     planKijk();
   },
   'zelf-goed'() {
@@ -1470,7 +1662,10 @@ const ACTIES = {
     casus.zelf.fouten += 1;
     casus.zelf.foutNu = true;
     render({ houdScroll: true });
-    app.querySelector('.doorklik__fout')?.scrollIntoView({ block: 'nearest' });
+    const feedback = app.querySelector('.doorklik__fout');
+    feedback?.setAttribute('tabindex', '-1');
+    feedback?.focus();
+    feedback?.scrollIntoView({ block: 'nearest' });
   },
   'zelf-hint'() {
     casus.zelf.hints += 1;
@@ -1542,9 +1737,14 @@ const ACTIES = {
   'koppel-check'() {
     casus.gecontroleerd = true;
     render({ houdScroll: true });
+    const feedback = app.querySelector('.variant');
+    feedback?.setAttribute('tabindex', '-1');
+    feedback?.focus();
   },
   'toets-opnieuw'() {
     casus.antwoorden = {};
+    const inhoud = CASUSSEN[casus.id];
+    casus.toets = maakToetsPoging(inhoud.vragenbank || inhoud.toets || [], inhoud.vragenPerPoging || 5);
     casus.stap = 'toets';
     render({ houdScroll: true });
     naarStap();
@@ -1578,20 +1778,24 @@ const ACTIES = {
     ga('/opleider/profielen');
   },
   voorbeeld(knop) {
+    stopHuisstijlWerk();
     const v = HUISSTIJL_VOORBEELDEN.find((x) => x.id === knop.dataset.id);
     concept = { ...concept, voorbeeld: v.id, kleuren: { ...v.kleuren }, logo: v.logo || null };
     render({ houdScroll: true });
   },
   'logo-weg'() {
+    stopHuisstijlWerk();
     concept.logo = null;
     render({ houdScroll: true });
   },
   'huisstijl-toepassen'() {
+    stopHuisstijlWerk();
     zet({ huisstijl: JSON.parse(JSON.stringify(concept)) });
     render({ houdScroll: true });
     meld(`Toegepast. Log in als Sanne of als opleider om Leren bij ${orgNaam()} in deze kleuren te zien.`);
   },
   'huisstijl-terug'() {
+    stopHuisstijlWerk();
     concept = JSON.parse(JSON.stringify(nu().huisstijl));
     render({ houdScroll: true });
   },
@@ -1605,6 +1809,13 @@ app.addEventListener('click', (e) => {
 });
 
 document.addEventListener('click', (e) => {
+  if (e.target.closest('.naar-inhoud')) {
+    e.preventDefault();
+    const inhoud = document.getElementById('inhoud');
+    inhoud?.focus({ preventScroll: true });
+    inhoud?.scrollIntoView({ block: 'start', behavior: 'instant' });
+    return;
+  }
   const knop = e.target.closest('.voet [data-actie]');
   if (knop && !app.contains(knop)) ACTIES[knop.dataset.actie]?.(knop, e);
 });
@@ -1619,11 +1830,11 @@ app.addEventListener('submit', (e) => {
     return;
   }
   if (form.dataset.form === 'mail') {
-    meld('In de echte versie krijg je nu een mail met een inloglink, zonder wachtwoord. Kies in de demo hieronder als wie je binnenkomt.');
+    meld('Deze demo verstuurt geen e-mail. Kies hieronder met welke rol je de demo wilt bekijken.');
   }
   if (form.dataset.form === 'toets') {
     casus.stap = 'uitslag';
-    const t = CASUSSEN[casus.id].toets;
+    const t = casus.toets;
     const goed = t.filter((v, i) => casus.antwoorden[i] === v.goed).length;
     const score = Math.round((goed / t.length) * 100);
     zet({ scores: { ...nu().scores, [casus.id]: Math.max(score, nu().scores[casus.id] || 0) } });
@@ -1646,7 +1857,7 @@ app.addEventListener('change', (e) => {
   if (el.name && /^v\d+$/.test(el.name)) {
     casus.antwoorden[Number(el.name.slice(1))] = Number(el.value);
     const knop = app.querySelector('[data-form="toets"] [type="submit"]');
-    const open = CASUSSEN[casus.id].toets.filter((_, i) => casus.antwoorden[i] === undefined).length;
+    const open = casus.toets.filter((_, i) => casus.antwoorden[i] === undefined).length;
     if (knop) knop.disabled = open > 0;
     const teller = app.querySelector('#toets-open');
     if (teller) teller.textContent = nogOpen(open);
@@ -1675,12 +1886,20 @@ app.addEventListener('change', (e) => {
     render({ houdScroll: true });
   }
   if (el.dataset.logo !== undefined) {
+    stopHuisstijlWerk();
+    if (!concept || route() !== '/beheer/huisstijl') return;
+    const generatie = huisstijlGeneratie;
     const bestand = el.files?.[0];
     if (!bestand) return;
     if (bestand.size > 300 * 1024) return meld('Dit logo is groter dan 300 kB. Kies een kleiner bestand.');
     if (!/^image\/(png|svg\+xml|jpeg|webp)$/.test(bestand.type)) return meld('Kies een SVG, PNG, JPG of WebP.');
     const lezer = new FileReader();
+    logoLezer = lezer;
+    const geldig = () => generatie === huisstijlGeneratie && logoLezer === lezer && concept && route() === '/beheer/huisstijl';
+    lezer.onerror = () => { if (geldig()) { logoLezer = null; meld('Het logo kon niet worden gelezen. Probeer opnieuw.'); } };
     lezer.onload = () => {
+      if (!geldig()) return;
+      logoLezer = null;
       concept = { ...concept, logo: String(lezer.result) };
       render({ houdScroll: true });
     };
@@ -1688,10 +1907,11 @@ app.addEventListener('change', (e) => {
   }
 });
 
-let invoerTimer;
 app.addEventListener('input', (e) => {
   const el = e.target;
   if (el.dataset.kleur || el.dataset.hex) {
+    if (!concept || route() !== '/beheer/huisstijl') return;
+    const generatie = huisstijlGeneratie;
     const k = el.dataset.kleur || el.dataset.hex;
     const waarde = el.value.startsWith('#') ? el.value : '#' + el.value;
     if (!isHex(waarde)) return;
@@ -1699,14 +1919,18 @@ app.addEventListener('input', (e) => {
     clearTimeout(invoerTimer);
     const id = el.id;
     invoerTimer = setTimeout(() => {
+      if (generatie !== huisstijlGeneratie || !concept || route() !== '/beheer/huisstijl') return;
       render({ houdScroll: true });
       if (id) document.getElementById(id)?.focus();
     }, el.dataset.kleur ? 60 : 250);
   }
   if (el.dataset.naam !== undefined) {
+    if (!concept || route() !== '/beheer/huisstijl') return;
+    const generatie = huisstijlGeneratie;
     concept = { ...concept, naam: el.value };
     clearTimeout(invoerTimer);
     invoerTimer = setTimeout(() => {
+      if (generatie !== huisstijlGeneratie || !concept || route() !== '/beheer/huisstijl') return;
       const pos = el.selectionStart;
       render({ houdScroll: true });
       const nieuw = document.getElementById('orgnaam');
@@ -1727,11 +1951,12 @@ window.addEventListener('message', (e) => {
 });
 
 window.addEventListener('hashchange', () => {
+  stopHuisstijlWerk();
   stopRondleiding();
   clearTimeout(kijkTimer);
   if (casus && route() !== `/module/${casus.id}`) casus = null;
   if (route() !== '/beheer/huisstijl') concept = null;
-  render();
+  renderMetCasusdata();
 });
 
 // Op een telefoon zeggen we één keer dat de leeromgeving het best werkt op een laptop of tablet.
@@ -1744,15 +1969,17 @@ function toonSchermtip() {
   } catch {
     // geen opslag, dan tonen we hem gewoon
   }
-  const venster = document.createElement('dialog');
+  const venster = document.createElement('aside');
   venster.className = 'schermtip';
+  venster.setAttribute('role', 'region');
   venster.setAttribute('aria-labelledby', 'schermtip-kop');
+  venster.setAttribute('aria-describedby', 'schermtip-uitleg');
   venster.innerHTML = `
     <div class="moment__kaart schermtip__kaart">
       <svg class="schermtip__beeld" viewBox="0 0 96 64" aria-hidden="true"><rect x="16" y="8" width="64" height="40" rx="5"/><path d="M6 54h84"/><rect x="62" y="24" width="20" height="34" rx="4" class="schermtip__tel"/></svg>
       <h2 id="schermtip-kop">Pak er een laptop of tablet bij</h2>
-      <p>Deze leeromgeving is gemaakt voor een groter scherm. Daar zie je Nedap ONS zoals op je werk, en klik je makkelijker mee.</p>
-      <p>Rondkijken op je telefoon kan ook.</p>
+      <div id="schermtip-uitleg"><p>Op een laptop of tablet zie je Nedap ONS en klik je makkelijker mee.</p>
+      <p>Op je telefoon kun je ook rondkijken.</p></div>
       <button type="button" class="btn btn--actie btn--breed" data-schermtip-dicht>Begrepen</button>
     </div>`;
   const sluit = () => {
@@ -1761,16 +1988,12 @@ function toonSchermtip() {
     } catch {
       // niet te bewaren, dan zie je hem bij een volgend bezoek nog een keer
     }
-    venster.close();
+    venster.remove();
   };
   venster.querySelector('[data-schermtip-dicht]').addEventListener('click', sluit);
-  venster.addEventListener('cancel', sluit);
-  venster.addEventListener('close', () => venster.remove());
   document.body.append(venster);
-  if (typeof venster.showModal === 'function') venster.showModal();
-  else venster.setAttribute('open', '');
 }
 
 laad();
-render();
+renderMetCasusdata();
 toonSchermtip();

@@ -1,3 +1,5 @@
+import * as extraSchermen from './ons-schermen.js';
+
 // Vrije oefenomgeving in Nedap ONS Dossier. De medewerker klikt overal rond, er kan niets kapot.
 // Elk scherm is nagebouwd naar een schermafdruk uit de testomgeving (kennisbank, middelen/ons-schermen).
 // Waar geen afdruk van is, laten we weg of tonen we de lege staat zoals ONS die toont.
@@ -44,8 +46,9 @@ export const CLIENTEN = [
     id: 'tt', naam: 'T Tester', nummer: '12345', status: 'geen', labels: ['benadering', 'besmetting', 'geenzorg'],
     episode: { start: '08-09-2026', titel: 'Testepisode e-learning: ontbijt' },
     rapportages: [
+      { id: 'oef-tt-bloeddruk', soort: 'bloeddruk', auteur: MEDEWERKER, datum: '16-10-2026', tijd: '14:42:05', eigen: true, boven: '120', onder: '80', pols: '72', tekst: 'Testmeting voor schermafdruk e-learning.' },
       { soort: 'vrij', auteur: MEDEWERKER, datum: '08-09-2026', tijd: '15:46:12', tekst: 'Tweede testregistratie voor e-learning: ontbijt. Uitsluitend oefentekst voor de zoekfunctie.' },
-      { soort: 'vrij', auteur: MEDEWERKER, datum: '08-09-2026', tijd: '15:41:03', tekst: 'Testregistratie om het koppelen aan een episode te oefenen.' },
+      { soort: 'vrij', auteur: MEDEWERKER, datum: '08-09-2026', tijd: '15:46:03', tekst: 'Testregistratie voor e-learning: ontbijt. Deze tekst is uitsluitend bedoeld om het zoeken en koppelen aan een episode te oefenen.' },
     ],
     contacten: [], ice: null,
     plan: [{ domein: 'A - Mijn Verhaal en Mijn Wensen', onderwerp: 'Mijn Verhaal en Mijn Wensen', antwoord: 'x', doelen: [] }],
@@ -128,6 +131,7 @@ const MODULES = [
 // ---------- iconen (zelfde lijnstijl als de oefenschermen in app.js) ----------
 
 const IC = {
+  hart: '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/><path d="M4 12h4l2-4 3 8 2-4h5"/>',
   overzicht: '<path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/>',
   vragenlijst: '<path d="M6 3h9l4 4v6M6 3v18h7M14 3v5h5"/><circle cx="17" cy="17" r="3"/>',
   plan: '<path d="M3 15h4l5 3 7-4M12 11c-3-2-5-4-5-6a2.5 2.5 0 0 1 5-1 2.5 2.5 0 0 1 5 1c0 2-2 4-5 6z"/>',
@@ -186,13 +190,16 @@ const esc = (t) => String(t ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '
 function nieuweState() {
   return {
     scherm: 'zoeken', zoek: '', mijn: false, statussen: [], clientId: null, pagina: 'overzicht', laatst: ['tt', 'mj'],
-    venster: null, terugFocus: null, meerInfo: false, ingeklapt: false, agendaMenu: false, week: 0,
+    venster: null, terugFocus: null, meerInfo: false, ingeklapt: Boolean(globalThis.matchMedia?.('(max-width: 600px)').matches), agendaMenu: false, week: 0,
     vlTab: 'actueel', vlOpen: null, vlZoek: '', vensterZoek: '',
     planTab: 'zorgplan', planStap: null, planDomein: 0,
     rapTab: 'lijst', rapZoek: '', rapSoort: 'alle', metingen: true,
     concept: { tekst: '', s: '', o: '', e: '', p: '' },
     docTab: 'actueel', onsMelding: null, focus: null,
-    extraDoelen: {},
+    extraDoelen: {}, episodeOpen: false, episodeTab: 'rapportages', omahaStap: null, omahaWoning: false, omahaSymptomen: [],
+    ovzOpen: false, ovzMelding: true, ovzTab: 'zorg', klinTab: 'klin', rapEditId: null, rapEditTekst: '', agendaItems: [],
+    onsForm: { aanleiding: '', thuiszorg: '', initiatief: '', kenmerk: 'Individu', actueel: 'Actueel', geldig: '2026-10-16', geldigTot: '15-04-2027 (+6 maanden)', besproken: 'is besproken met cliënt/vertegenwoordiger en deze is akkoord',
+      agTitel: '', agNotities: '', agBegin: '', agEind: '', agDuur: '', herhaling: 'Niet', dagtype: 'Hele dag', dagdeel: 'Kies een dagdeel', beginNa: '', afronden: '', reden: '', boven: '', onder: '', pols: '', opmerking: '', starttijd: '', actiesVoor: 'Medici', zichtbaar: 'Iedereen (of kies deskundigheden)' },
     opgeslagen: { rapportages: {}, vragenlijsten: {}, klaar: {} },
   };
 }
@@ -201,13 +208,50 @@ let S = nieuweState();
 let huidig = null;
 const gekoppeld = new WeakSet();
 
+// Oude browseropslag mag geen kapotte oefenschermen opleveren.
+export function normaliseerOefenopslag(invoer) {
+  const record = (waarde) => waarde !== null && typeof waarde === 'object' && !Array.isArray(waarde);
+  const tekst = (waarde) => typeof waarde === 'string' ? waarde : '';
+  const uit = { rapportages: {}, vragenlijsten: {}, klaar: {} };
+  if (!record(invoer)) return uit;
+  for (const c of CLIENTEN) {
+    const rapportages = record(invoer.rapportages) ? invoer.rapportages[c.id] : null;
+    if (Array.isArray(rapportages)) {
+      uit.rapportages[c.id] = rapportages.filter((r) => record(r)
+        && ['vrij', 'soep', 'bloeddruk'].includes(r.soort)
+        && (r.soort !== 'bloeddruk' || ['boven', 'onder', 'pols'].every(k => typeof r[k] === 'string' && (r[k] === '' || /^\d{1,3}$/.test(r[k]))))
+        && typeof r.tekst === 'string'
+        && (r.soort !== 'soep' || ['s', 'o', 'e', 'p'].every((k) => typeof r[k] === 'string')))
+        .map((r) => ({
+          ...(typeof r.id === 'string' && /^oef-[a-z0-9-]{1,100}$/.test(r.id) ? { id: r.id } : {}),
+          ...(r.soort === 'bloeddruk' ? Object.fromEntries(['boven','onder','pols'].map(k=>[k,r[k]])) : {}),
+          soort: r.soort, tekst: tekst(r.tekst), auteur: tekst(r.auteur),
+          datum: tekst(r.datum), tijd: tekst(r.tijd), eigen: r.eigen === true,
+          ...(r.soort === 'soep' ? Object.fromEntries(['s', 'o', 'e', 'p'].map((k) => [k, tekst(r[k])])) : {}),
+        }));
+    }
+    const vragenlijsten = record(invoer.vragenlijsten) ? invoer.vragenlijsten[c.id] : null;
+    if (Array.isArray(vragenlijsten)) {
+      uit.vragenlijsten[c.id] = vragenlijsten.filter((v) => record(v) && typeof v.titel === 'string' && v.titel.trim())
+        .map((v) => ({ titel: tekst(v.titel), door: tekst(v.door), aangepast: tekst(v.aangepast), gemaakt: tekst(v.gemaakt) }));
+    }
+  }
+  if (record(invoer.klaar)) {
+    for (const opdracht of TEKSTEN.opdrachten) if (invoer.klaar[opdracht.id] === true) uit.klaar[opdracht.id] = true;
+  }
+  return uit;
+}
+
 function laad() {
   try {
     const ruw = localStorage.getItem(SLEUTEL);
     if (!ruw) return;
-    const d = JSON.parse(ruw);
-    S.opgeslagen = { rapportages: d.rapportages || {}, vragenlijsten: d.vragenlijsten || {}, klaar: d.klaar || {} };
-  } catch { /* geen opslag beschikbaar, de oefening werkt dan zonder geheugen */ }
+    S.opgeslagen = normaliseerOefenopslag(JSON.parse(ruw));
+    const schoon = JSON.stringify(S.opgeslagen);
+    if (schoon !== ruw) {
+      try { localStorage.setItem(SLEUTEL, schoon); } catch { /* De sessiestand blijft bruikbaar. */ }
+    }
+  } catch { /* De oefening werkt ook zonder browseropslag. */ }
 }
 
 function bewaar() {
@@ -221,7 +265,9 @@ export function resetOefenen() {
 }
 
 const client = () => CLIENTEN.find((c) => c.id === S.clientId);
-const rapportagesVan = (c) => [...(S.opgeslagen.rapportages[c.id] || []), ...c.rapportages];
+const rapportagesVan = (c) => { const eigen = S.opgeslagen.rapportages[c.id] || []; return [...eigen, ...c.rapportages.filter(r=>!r.id || !eigen.some(e=>e.id===r.id))]; };
+const aanvullingen = () => ({ S, esc, knop, icoon, kaart, tabs, clientKop, rapLijst, opslaanKnop });
+const recentEigen = r => { const [d,m,y] = r.datum.split('-').map(Number); const age=Date.now()-new Date(y,m-1,d,...r.tijd.split(':').map(Number)).getTime(); return r.eigen === true && r.auteur === MEDEWERKER && r.id && age>=0 && age<=24*60*60*1000; };
 const vragenlijstenVan = (c) => [
   ...(S.opgeslagen.vragenlijsten[c.id] || []),
   { titel: 'Mikzo Kompas® (2025.1)', door: MEDEWERKER, aangepast: '06-10-2026', gemaakt: '08-09-2026' },
@@ -304,7 +350,7 @@ function clientKop(c) {
         <span class="ons__initialen" aria-hidden="true">${esc(initialen)}</span>
         <div class="ons__client-tekst">
           <h3 class="ons__naam oef-kop__naam">${esc(c.naam)} ${c.labels.map(label).join(' ')}</h3>
-          <p class="ons__gegevens">Geboortedatum is onbekend | ${esc(c.nummer)} | <span aria-label="BSN verborgen">•••••••••</span> ${icoon('oog')} | <u>Adres is onbekend</u></p>
+          <p class="ons__gegevens">Geboortedatum is onbekend | ${esc(c.nummer)} | <span><span aria-hidden="true">•••••••••</span><span class="sr">BSN verborgen</span></span> ${icoon('oog')} | <u>Adres is onbekend</u></p>
         </div>
         ${knop('meer-info', `${S.meerInfo ? 'Minder info' : 'Meer info'} ${icoon(S.meerInfo ? 'omhoog' : 'omlaag')}`, { klasse: 'oef-meer', extra: `aria-expanded="${S.meerInfo}" aria-controls="oef-meerinfo"` })}
       </div>
@@ -397,7 +443,7 @@ function pOverzicht(c) {
         ${kaart('Zorgstatus', `<p class="oef-zin">De cliënt heeft <strong>geen actieve zorgopname</strong></p>`)}
         ${kaart('Episodes', `<p class="oef-subkop">Relevante episodes</p>
           <div class="oef-tabelwrap"><table class="oef-mini"><thead><tr><th>Startdatum</th><th>Code</th><th>Titel</th></tr></thead>
-          <tbody><tr><td>${esc(c.episode.start)}</td><td></td><td>${knop('niet', esc(c.episode.titel), { klasse: 'oef-link oef-link--plat' })}</td></tr></tbody></table></div>`)}
+          <tbody><tr><td data-label="Startdatum">${esc(c.episode.start)}</td><td data-label="Code"></td><td data-label="Titel">${knop(c.id === 'tt' ? 'episode-open' : 'niet', esc(c.episode.titel), { klasse: 'oef-link oef-link--plat' })}</td></tr></tbody></table></div>`)}
         ${kaart('Medische voorgeschiedenis', leeg('Geen relevante medische problemen'))}
         ${kaart('Allergieën en overgevoeligheden', `${leeg('Geen actieve allergieën of overgevoeligheden')}<p class="oef-subtitel">Verpleegkundige notities</p>${leeg('Geen verpleegkundige notities')}`)}
         ${kaart('Labuitslagen', leeg('Geen beschikbare labuitslagen'))}
@@ -421,12 +467,14 @@ function vlRijen(c) {
   const z = norm(S.vlZoek);
   const rijen = S.vlTab === 'archief' ? [] : vragenlijstenVan(c).filter((v) => !z || norm(v.titel).includes(z));
   if (!rijen.length) return `<tr><td colspan="6" class="oef-leeg">Geen vragenlijsten gevonden</td></tr>`;
-  return rijen.map((v, i) => `<tr><td><span class="oef-status">Concept</span></td><td>${knop('vl-open', esc(v.titel), { waarde: i, klasse: 'oef-link' })}</td><td>${esc(v.door)}</td><td>${esc(v.aangepast)}</td><td>${esc(v.gemaakt)}</td><td></td></tr>`).join('');
+  return rijen.map((v, i) => `<tr><td data-label="Status"><span class="oef-status">Concept</span></td><td data-label="Titel">${knop('vl-open', esc(v.titel), { waarde: i, klasse: 'oef-link' })}</td><td data-label="Gemaakt door">${esc(v.door)}</td><td data-label="Aangepast op">${esc(v.aangepast)}</td><td data-label="Gemaakt op">${esc(v.gemaakt)}</td><td data-label="Episodes"></td></tr>`).join('');
 }
 
 function pVragenlijsten(c) {
+  if (c.id === 'tt' && S.omahaStap !== null) return extraSchermen.omaha(aanvullingen(),c);
   if (S.vlOpen !== null) {
     const v = vragenlijstenVan(c)[S.vlOpen] || vragenlijstenVan(c)[0];
+    if (c.id === 'tt' && v.titel === 'Omaha inventarisatie') return extraSchermen.omaha(aanvullingen(),c);
     const deel = c.plan[0];
     return `
       ${knop('vl-terug', `${icoon('terug')} Vragenlijsten - Overzicht`, { klasse: 'oef-kruimel' })}
@@ -463,7 +511,7 @@ function pVragenlijsten(c) {
 }
 
 function tabs(actie, lijst, actief) {
-  return `<div class="ons__tabs oef-tabs" role="tablist">${lijst.map(([id, naam]) => knop(actie, esc(naam), { waarde: id, klasse: `oef-tab${id === actief ? ' is-actief' : ''}`, extra: `role="tab" aria-selected="${id === actief}"` })).join('')}</div>`;
+  return `<div class="ons__tabs oef-tabs" role="group" aria-label="Weergave">${lijst.map(([id, naam]) => knop(actie, esc(naam), { waarde: id, klasse: `oef-tab${id === actief ? ' is-actief' : ''}`, extra: `aria-pressed="${id === actief}"` })).join('')}</div>`;
 }
 
 function conceptKaart(knoppen) {
@@ -476,6 +524,7 @@ function conceptKaart(knoppen) {
 }
 
 function pPlan(c) {
+  if (c.id === 'tt' && S.ovzOpen) return extraSchermen.ovz(aanvullingen(),c);
   const kruimel = (t) => knop('plan-terug', `${icoon('terug')} ${t}`, { klasse: 'oef-kruimel' });
   if (S.planStap === 'plan') {
     const extra = S.extraDoelen[c.id] || [];
@@ -525,16 +574,16 @@ function pPlan(c) {
   }
   return `
     ${clientKop(c)}
-    ${tabs('plan-tab', [['zorgplan', 'Zorgplan'], ['ovz', 'Onvrijwillige zorg(0)']], S.planTab)}
-    ${S.planTab === 'zorgplan' ? `
+    ${tabs('plan-tab', [['zorgplan', 'Zorgplan'], ['ovz', c.id === 'tt' ? 'Onvrijwillige zorg(1)' : 'Onvrijwillige zorg(0)']], S.planTab)}
+    ${S.planTab === 'zorgplan' || c.id === 'tt' ? `
       <div class="ons__kopregel ons__kopregel--lijn"><h3 class="ons__titel" tabindex="-1">Zorgplan</h3>${knop('niet', 'Dagoverzicht', { klasse: 'ons__knop ons__knop--blauw' })}</div>
       ${conceptKaart(`${knop('niet', 'Afronden', { klasse: 'ons__knop ons__knop--groen' })}${knop('plan-wijzig', 'Wijzigen', { klasse: 'ons__knop ons__knop--rand' })}${knop('niet', 'Verwijder', { klasse: 'ons__knop oef-knop--rood' })}`)}
       <p class="oef-rechtslink">${knop('niet', 'Toon alle zorgplannen (1)', { klasse: 'oef-blink' })}</p>` : ''}
-    <div class="oef-ovz">
+    <div class="oef-ovz" id="oef-ovz-blok" tabindex="-1">
       <div class="ons__kopregel ons__kopregel--lijn oef-ovz__kop"><h3 class="ons__titel">Onvrijwillige zorg</h3>
         <span class="oef-knoppen">${knop('niet', 'Tijdlijn', { klasse: 'oef-knop oef-knop--wit' })}${knop('niet', 'Onvoorziene zorg registreren', { klasse: 'oef-knop oef-knop--wit' })}${knop('niet', 'Nieuwe onvrijwillige zorg', { klasse: 'oef-knop oef-knop--paars' })}</span></div>
       <div class="ons__kaart oef-ovz__juridisch">Juridische status</div>
-      <p class="oef-leeg oef-ovz__leeg">Er is geen onvrijwillige zorg opgegeven</p>
+      ${c.id === 'tt' ? extraSchermen.ovzKaart(aanvullingen()) : '<p class="oef-leeg oef-ovz__leeg">Er is geen onvrijwillige zorg opgegeven</p>'}
     </div>`;
 }
 
@@ -544,16 +593,16 @@ function rapRegels(c) {
   if (!lijst.length) return `<li class="oef-leeg">Geen rapportages gevonden</li>`;
   return lijst.map((r, i) => `
     <li class="oef-rap"${i === 0 && r.eigen ? ' id="oef-nieuwste" tabindex="-1"' : ''}>
-      ${icoon(r.soort === 'soep' ? 'document' : 'rapportage', `oef-ic oef-rap__ic${r.soort === 'soep' ? ' is-soep' : ''}`)}
+      ${icoon(r.soort === 'bloeddruk' ? 'hart' : r.soort === 'soep' ? 'document' : 'rapportage', `oef-ic oef-rap__ic${r.soort === 'bloeddruk' ? ' is-bloeddruk' : r.soort === 'soep' ? ' is-soep' : ''}`)}
       <p class="oef-rap__wie">${esc(r.auteur)}<br>${esc(r.datum)}<br>${esc(r.tijd)}</p>
-      <div class="oef-rap__tekst">${r.soort === 'soep'
+      <div class="oef-rap__tekst">${r.soort === 'bloeddruk' ? `<p>Bloeddruk: <strong>${esc(r.boven)}/${esc(r.onder)} mmHg</strong><br>Pols: <strong>${esc(r.pols)} bpm</strong></p>` : ''}${S.rapEditId === r.id && r.id ? `<label class="sr" for="oef-inline-tekst">Opmerking</label><textarea id="oef-inline-tekst" class="oef-tekstvak" data-oefen-invoer="inline-tekst">${esc(S.rapEditTekst)}</textarea><div class="oef-ons-acties">${knop('rap-annuleer','Annuleren',{klasse:'oef-knop oef-knop--rand'})}${knop('rap-bewaar-wijzig','Wijzig',{klasse:'oef-knop oef-knop--groen'})}</div>` : r.soort === 'soep'
         ? [['S', r.s], ['O', r.o], ['E', r.e], ['P', r.p]].filter(([, t]) => t).map(([k, t]) => `<p><strong>${k}:</strong> ${esc(t)}</p>`).join('')
         : `<p>${esc(r.tekst)}</p>`}</div>
-      <span class="oef-rap__iconen" aria-hidden="true">${icoon('slot')}${icoon('ster')}${icoon('verberg')}${icoon('prullenbak')}</span>
+      <span class="oef-rap__iconen"><span aria-hidden="true">${icoon('slot')}${icoon('ster')}</span>${recentEigen(r)?knop('rap-wijzig',icoon('pen'),{waarde:r.id,klasse:'oef-icoonknop',label:'Wijzig eigen rapportage'}):''}<span aria-hidden="true">${icoon('verberg')}${icoon('prullenbak')}</span></span>
     </li>`).join('');
 }
 
-const kanOpslaan = () => (S.rapTab === 'soep' ? ['s', 'o', 'e', 'p'].some((k) => S.concept[k].trim()) : S.concept.tekst.trim().length > 0);
+const kanOpslaan = () => S.rapTab === 'bloeddruk' ? ['boven','onder','pols'].some(k=>S.onsForm[k] !== '') && ['boven','onder','pols'].every(k=>S.onsForm[k] === '' || /^\d{1,3}$/.test(S.onsForm[k])) : (S.rapTab === 'soep' ? ['s', 'o', 'e', 'p'].some((k) => S.concept[k].trim()) : S.concept.tekst.trim().length > 0);
 
 function opslaanKnop() {
   return knop('rap-opslaan', `${icoon('vink')} Opslaan`, { klasse: 'ons__knop ons__knop--groen oef-opslaan', extra: kanOpslaan() ? '' : 'disabled' });
@@ -586,11 +635,12 @@ function pRapportages(c) {
         <div class="oef-soep__rij"><label for="oef-soep-tijd">Starttijd</label><span class="oef-soep__tijd"><input id="oef-soep-tijd" class="oef-klein-invoer" placeholder="HH:MM" inputmode="numeric" maxlength="5"> <em>vandaag</em></span></div>
       </div>`;
   }
+  if (S.rapTab === 'bloeddruk') formulier = extraSchermen.bloeddruk(aanvullingen());
   return `
     ${clientKop(c)}
     <section class="ons__kaart oef-rapkaart">
       <div class="oef-rtabs">
-        ${rtab('lijst', 'document', 'Rapportages')}${rtab('vrij', 'rapportage', 'Nieuwe rapportage')}${S.rapTab === 'soep' ? rtab('soep', 'document', 'Nieuwe SOEP-rapportage', ' is-soep') : ''}
+        ${rtab('lijst', 'document', 'Rapportages')}${rtab('vrij', 'rapportage', 'Nieuwe rapportage')}${c.id==='tt'?rtab('bloeddruk','hart','Nieuwe Bloeddruk-rapportage',' is-bloeddruk'):''}${S.rapTab === 'soep' ? rtab('soep', 'document', 'Nieuwe SOEP-rapportage', ' is-soep') : ''}
         ${knop('rap-plus', icoon('plus'), { klasse: 'oef-rplus', label: 'Rapportagetype toevoegen', extra: 'aria-haspopup="dialog"' })}
       </div>
       ${formulier}
@@ -599,7 +649,7 @@ function pRapportages(c) {
     ${S.rapTab !== 'lijst' ? `<section class="ons__kaart oef-rapkaart">${rapLijst(c)}</section>` : ''}`;
 }
 
-function rapLijst(c) {
+function rapLijst(c, alleenFilters = false) {
   return `
     <div class="oef-rapfilter">
       <div class="oef-zoekveld oef-zoekveld--rond">${icoon('zoek')}<label class="sr" for="oef-rapzoek">Zoeken in rapportages</label><input id="oef-rapzoek" type="search" placeholder="Zoeken" value="${esc(S.rapZoek)}" data-oefen-invoer="rap-zoek"></div>
@@ -607,6 +657,7 @@ function rapLijst(c) {
       <select id="oef-rapsoort" class="ons__select" data-oefen-invoer="rap-soort">
         <option value="alle" ${S.rapSoort === 'alle' ? 'selected' : ''}>Alle rapportages</option>
         <option value="vrij" ${S.rapSoort === 'vrij' ? 'selected' : ''}>Rapportage</option>
+        <option value="bloeddruk" ${S.rapSoort === 'bloeddruk' ? 'selected' : ''}>Bloeddruk</option>
         <option value="soep" ${S.rapSoort === 'soep' ? 'selected' : ''}>SOEP</option>
       </select>
       <span class="ons__nep-select">Alle deskundigheden (of kies deskundigheid)</span>
@@ -617,11 +668,11 @@ function rapLijst(c) {
       <label class="sr" for="oef-tot">Tot en met datum</label><input id="oef-tot" class="oef-klein-invoer" placeholder="DD-MM-YYYY">
       <label class="oef-vink oef-vink--klein"><input type="checkbox"> verborgen rapportages</label>
     </div>
-    <ul class="oef-raplijst" data-oefen-regio="rap-lijst">${rapRegels(c)}</ul>`;
+    ${alleenFilters ? '' : `<ul class="oef-raplijst" data-oefen-regio="rap-lijst">${rapRegels(c)}</ul>`}`;
 }
 
 function pAgenda(c) {
-  const maandag = new Date(2026, 9, 5 + 7 * S.week);
+  const maandag = new Date(2026, 9, (c.id === 'tt' ? 12 : 5) + 7 * S.week);
   const { nr, jaar } = weekNr(maandag);
   const dagen = Array.from({ length: 7 }, (_, i) => new Date(maandag.getFullYear(), maandag.getMonth(), maandag.getDate() + i));
   const vandaag = new Date(2026, 9, 7);
@@ -654,7 +705,7 @@ function pAgenda(c) {
             <span class="oef-agitem__wat"><span class="oef-agitem__ic oef-agitem__ic--groen" aria-hidden="true"></span>Onvrijwillige zorg moet geactiveerd worden (opnemen in plan)<small>De cliënt heeft onvrijwillige zorg in het zorgplan die geactiveerd moet worden</small></span>
             <span class="oef-agitem__acties">${knop('niet', icoon('link'), { klasse: 'oef-icoonknop', label: 'Openen' })}</span>
           </li>` : ''}
-          ${item(datum(d))}
+          ${item(datum(d))}${S.agendaItems.filter(x=>x.clientId===c.id && x.datum===datum(d)).map(x=>`<li class="oef-agitem"><span class="oef-agitem__vink"></span><span class="oef-agitem__tijd">${esc(x.soort)}</span><span class="oef-agitem__wat">${esc(x.titel)}<small>${esc(x.notities)}</small></span><span class="oef-agitem__acties"></span></li>`).join('')}
         </ul>
       </section>`).join('')}`;
 }
@@ -779,12 +830,12 @@ function pDocumenten(c) {
 const pLeeg = (c) => clientKop(c);
 
 const PAGINAS = {
-  overzicht: (c) => `${clientKop(c)}${pOverzicht(c)}`,
+  overzicht: (c) => c.id === 'tt' && S.episodeOpen ? extraSchermen.episode(aanvullingen(),c) : `${clientKop(c)}${pOverzicht(c)}`,
   vragenlijsten: pVragenlijsten,
   plan: pPlan,
   rapportages: pRapportages,
   agenda: pAgenda,
-  klinimetrie: pLeeg,
+  klinimetrie: (c) => c.id === 'tt' ? extraSchermen.klinimetrie(aanvullingen(),c) : pLeeg(c),
   snelkoppelingen: pLeeg,
   'a-overzicht': pAdminOverzicht,
   'a-algemeen': pAlgemeen,
@@ -815,12 +866,13 @@ function vensterRapportagetype() {
       <div class="oef-typen">${RAPPORTAGETYPEN.map(([naam, kleur]) => knop('rap-type', `<span class="oef-type__ic" style="--k:${kleur}" aria-hidden="true">${naam === 'SOEP' ? '<b>SO<br>EP</b>' : icoon(TYPE_IC[naam] || 'document')}</span>${esc(naam)}`, { waarde: naam, klasse: 'oef-type' })).join('')}</div>
     </div>`;
 }
-const TYPE_IC = { Bloeddruk: 'ster', Temperatuur: 'klinimetrie', Medisch: 'plus', Stemming: 'zon', Klinimetrie: 'klinimetrie', Fotorapportage: 'document', 'Keten communicatie': 'netwerk', 'Familie communicatie': 'netwerk' };
+const TYPE_IC = { Bloeddruk: 'hart', Temperatuur: 'klinimetrie', Medisch: 'plus', Stemming: 'zon', Klinimetrie: 'klinimetrie', Fotorapportage: 'document', 'Keten communicatie': 'netwerk', 'Familie communicatie': 'netwerk' };
 
 function modulekiezer() {
   return `
     <div class="oef-modules" role="dialog" aria-modal="true" aria-label="Modules">
-      <p class="oef-modules__test">${icoon('waarschuwing')} Testomgeving</p>
+      <div class="oef-modules__kop"><p class="oef-modules__test">${icoon('waarschuwing')} Testomgeving</p>${knop('sluit', icoon('sluit'), { klasse: 'oef-sluit', label: 'Modules sluiten' })}</div>
+      <p class="oef-modules__melding" role="status"></p>
       <div class="oef-modules__lijf">
         ${MODULES.map(([groep, lijst], i) => `
           <div class="oef-modules__kolom${i === 0 ? ' is-eerste' : ''}">
@@ -829,6 +881,12 @@ function modulekiezer() {
           </div>`).join('')}
       </div>
     </div>`;
+}
+
+function vensterAanvulling() {
+  const meting = S.venster === 'meting';
+  const titel = meting ? 'Nieuwe meting' : S.venster === 'handeling' ? 'Nieuwe handeling' : 'Nieuwe afwezigheid';
+  return `<div class="oef-venster oef-venster--wit oef-ons-venster${meting?' oef-ons-venster--meting':''}" role="dialog" aria-modal="true" aria-labelledby="oef-venster-kop"><div class="oef-venster__kop"><h3 id="oef-venster-kop">${titel}</h3>${knop('sluit',icoon('sluit'),{klasse:'oef-sluit',label:'Sluiten'})}</div><div class="oef-venster__lijf">${extraSchermen.nieuwVenster(aanvullingen())}</div><div class="oef-ons-voeter">${knop('sluit',meting?'Annuleren':'Terug',{klasse:'oef-knop oef-knop--wit'})}${meting?'':knop('ag-opslaan','Opslaan',{klasse:'oef-knop oef-knop--paars'})}</div></div>`;
 }
 
 // ---------- opdrachten ----------
@@ -861,13 +919,30 @@ function opdrachtenPaneel() {
     </section>`;
 }
 
+// Achtergrond is ook voor hulpsoftware niet bedienbaar zolang een venster openstaat.
+const vensterAchtergrond = new Map();
+function herstelAchtergrond() {
+  for (const [element, inert] of vensterAchtergrond) element.inert = inert;
+  vensterAchtergrond.clear();
+}
+function schermAchtergrondAf(venster) {
+  for (let element = venster; element && element !== document.body; element = element.parentElement) {
+    for (const broer of element.parentElement?.children || []) {
+      if (broer === element) continue;
+      vensterAchtergrond.set(broer, broer.inert);
+      broer.inert = true;
+    }
+  }
+}
+
 // ---------- render ----------
 
 function render() {
   const { container } = huidig;
+  herstelAchtergrond();
   const c = client();
   const dossier = S.scherm === 'dossier' && c;
-  const venster = S.venster === 'vragenlijst' ? vensterVragenlijst() : S.venster === 'rapportagetype' ? vensterRapportagetype() : '';
+  const venster = S.venster === 'vragenlijst' ? vensterVragenlijst() : S.venster === 'rapportagetype' ? vensterRapportagetype() : ['meting','handeling','afwezigheid'].includes(S.venster) ? vensterAanvulling() : '';
   container.innerHTML = `
     <div class="oef">
       ${opdrachtenPaneel()}
@@ -877,25 +952,26 @@ function render() {
         ${dossier ? `
           <div class="ons__lijf">
             ${menu()}
-            <main class="ons__inhoud oef-inhoud" data-oefen-regio="inhoud">${PAGINAS[S.pagina](c)}</main>
+            <div class="ons__inhoud oef-inhoud" data-oefen-regio="inhoud">${PAGINAS[S.pagina](c)}</div>
           </div>` : `<div class="oef-startlijf">${startscherm()}</div>`}
         ${venster ? `<div class="oef-dimmer">${venster}</div>` : ''}
         ${S.onsMelding ? `<p class="ons__melding" role="status"><span aria-hidden="true">✓</span> ${esc(S.onsMelding)}</p>` : ''}
       </div>
     </div>`;
+  if (S.venster) {
+    const dialoog = container.querySelector('[role="dialog"]');
+    if (dialoog) schermAchtergrondAf(dialoog);
+  }
   if (S.onsMelding) {
     S.onsMelding = null;
     const el = container.querySelector('.ons__melding');
     setTimeout(() => el?.remove(), 3200);
   }
-  // Op een telefoon is het menu een rij om te schuiven. Houd het actieve item in beeld.
-  const nav = container.querySelector('.oef-menu');
-  const actief = nav?.querySelector('.is-actief');
-  if (nav && actief && nav.scrollWidth > nav.clientWidth) nav.scrollLeft = actief.offsetLeft - nav.offsetLeft - 48;
   if (S.focus) {
     const el = container.querySelector(S.focus);
     S.focus = null;
     el?.focus();
+    if (el?.id === 'oef-ovz-blok') el.scrollIntoView({block:'start'});
   }
 }
 
@@ -913,7 +989,7 @@ function opDossier(id) {
 function naarPagina(p) {
   Object.assign(S, {
     pagina: p, venster: null, meerInfo: false, agendaMenu: false, vlOpen: null, vlZoek: '', planStap: null, planTab: 'zorgplan',
-    rapTab: 'lijst', rapZoek: '', rapSoort: 'alle', docTab: 'actueel',
+    rapTab: 'lijst', rapZoek: '', rapSoort: 'alle', docTab: 'actueel', episodeOpen: false, omahaStap: null, ovzOpen: false, rapEditId: null,
   });
 }
 
@@ -928,12 +1004,13 @@ function opslaan() {
   const c = client();
   if (!c || !kanOpslaan()) return;
   const nu = new Date();
-  const basis = { auteur: MEDEWERKER, datum: datum(nu), tijd: tijd(nu), eigen: true };
-  const r = S.rapTab === 'soep'
+  const basis = { id: 'oef-' + crypto.randomUUID(), auteur: MEDEWERKER, datum: datum(nu), tijd: S.rapTab === 'bloeddruk' && /^\d{2}:\d{2}$/.test(S.onsForm.starttijd) ? S.onsForm.starttijd + ':00' : tijd(nu), eigen: true };
+  const r = S.rapTab === 'bloeddruk' ? { ...basis, soort:'bloeddruk', boven:S.onsForm.boven, onder:S.onsForm.onder, pols:S.onsForm.pols, tekst:S.onsForm.opmerking.trim() } : S.rapTab === 'soep'
     ? { ...basis, soort: 'soep', s: S.concept.s.trim(), o: S.concept.o.trim(), e: S.concept.e.trim(), p: S.concept.p.trim(), tekst: ['s', 'o', 'e', 'p'].map((k) => S.concept[k]).join(' ') }
     : { ...basis, soort: 'vrij', tekst: S.concept.tekst.trim() };
   S.opgeslagen.rapportages[c.id] = [r, ...(S.opgeslagen.rapportages[c.id] || [])];
   bewaar();
+  if (S.rapTab === 'bloeddruk') { for (const k of ['boven','onder','pols','opmerking','starttijd']) S.onsForm[k]=''; S.rapTab='lijst'; }
   S.concept = { tekst: '', s: '', o: '', e: '', p: '' };
   S.rapZoek = '';
   S.rapSoort = 'alle';
@@ -957,14 +1034,18 @@ function actie(a, w, el) {
       break;
     case 'module':
       if (w === 'Dossier') { sluitVenster(); if (S.scherm === 'dossier' && isAdmin()) naarPagina('overzicht'); }
-      else { meld?.(TEKSTEN.module); S.focus = null; return; }
+      else {
+        const melding = huidig.container.querySelector('.oef-modules__melding');
+        if (melding) melding.textContent = TEKSTEN.module;
+        meld?.(TEKSTEN.module); S.focus = null; return;
+      }
       break;
     case 'sluit': sluitVenster(); break;
     case 'niet': meld?.(TEKSTEN.niet); S.focus = null; return;
     case 'meer-info': S.meerInfo = !S.meerInfo; break;
     case 'vl-tab': S.vlTab = w; break;
-    case 'vl-open': S.vlOpen = Number(w); S.focus = '.oef-vl__titel'; break;
-    case 'vl-terug': S.vlOpen = null; S.focus = '.ons__titel'; break;
+    case 'vl-open': S.vlOpen = Number(w); if (S.clientId === 'tt' && vragenlijstenVan(client())[S.vlOpen]?.titel === 'Omaha inventarisatie') S.omahaStap=0; S.focus = '.oef-vl__titel'; break;
+    case 'vl-terug': S.omahaStap=null; S.vlOpen = null; S.focus = '.ons__titel'; break;
     case 'vl-nieuw': S.venster = 'vragenlijst'; S.terugFocus = '[data-oefen="vl-nieuw"]'; S.focus = '#oef-vlvenster'; break;
     case 'vl-kies': {
       const c = client();
@@ -974,9 +1055,10 @@ function actie(a, w, el) {
       sluitVenster();
       S.vlTab = 'actueel';
       S.onsMelding = 'Vragenlijst is aangemaakt';
+      if (c.id==='tt' && w==='Omaha inventarisatie') { S.omahaStap=0; S.vlOpen=0; }
       break;
     }
-    case 'plan-tab': S.planTab = w; break;
+    case 'plan-tab': S.planTab = w; if(w==='ovz') S.focus='#oef-ovz-blok'; break;
     case 'plan-wijzig':
       S.planStap = 'plan'; S.focus = '#oef-plan-start';
       if (S.clientId === 'jdv') klaar('b');
@@ -997,14 +1079,54 @@ function actie(a, w, el) {
     case 'rap-tab': S.rapTab = w; S.focus = w === 'lijst' ? `[data-oefen="rap-tab"][data-waarde="lijst"]` : '#oef-rap-kop'; break;
     case 'rap-plus': S.venster = 'rapportagetype'; S.terugFocus = '[data-oefen="rap-plus"]'; S.focus = '[data-oefen="rap-type"]'; break;
     case 'rap-type':
-      if (w === 'SOEP') { S.venster = null; S.rapTab = 'soep'; S.focus = '#oef-soep-s'; }
+      if (w === 'Bloeddruk' && S.clientId === 'tt') { S.venster=null; S.rapTab='bloeddruk'; S.focus='#oef-ons-boven'; }
+      else if (w === 'SOEP') { S.venster = null; S.rapTab = 'soep'; S.focus = '#oef-soep-s'; }
       else { meld?.(TEKSTEN.type); S.focus = null; return; }
       break;
     case 'rap-opslaan': opslaan(); break;
     case 'metingen': S.metingen = !S.metingen; break;
     case 'agenda-week': S.week += Number(w); break;
     case 'agenda-menu': S.agendaMenu = !S.agendaMenu; if (S.agendaMenu) S.focus = '[data-oefen="agenda-kies"]'; break;
-    case 'agenda-kies': S.agendaMenu = false; S.focus = '[data-oefen="agenda-menu"]'; meld?.(TEKSTEN.niet); break;
+    case 'agenda-kies':
+      S.agendaMenu = false;
+      if (S.clientId === 'tt' && ['Handeling','Afwezigheid'].includes(w)) { S.venster=w==='Handeling'?'handeling':'afwezigheid'; S.terugFocus='[data-oefen="agenda-menu"]'; S.focus=S.venster==='handeling'?'#oef-ons-agTitel':'#oef-ons-agBegin'; }
+      else { S.focus='[data-oefen="agenda-menu"]'; meld?.(TEKSTEN.niet); }
+      break;
+    case 'episode-open': S.episodeOpen=true; S.focus='.oef-ons-episode'; break;
+    case 'episode-terug': S.episodeOpen=false; break;
+    case 'episode-tab': if(['rapportages','doelen','vragen'].includes(w)) S.episodeTab=w; break;
+    case 'omaha-terug': S.omahaStap=null; S.vlOpen=null; S.focus='[data-oefen="vl-nieuw"]'; break;
+    case 'omaha-woning': S.omahaWoning=!S.omahaWoning; break;
+    case 'omaha-stap': if(Number.isInteger(Number(w)) && Number(w)>=0 && Number(w)<5 && (![2,3].includes(Number(w)) || S.omahaWoning)) S.omahaStap=Number(w); break;
+    case 'omaha-plan': S.omahaStap=null; S.vlOpen=null; S.pagina='plan'; break;
+    case 'ovz-open': S.ovzOpen=true; S.focus='.oef-ons-ovzkop h3'; break;
+    case 'ovz-terug': S.ovzOpen=false; S.focus='#oef-ovz-blok'; break;
+    case 'ovz-melding-sluit': S.ovzMelding=false; break;
+    case 'ovz-tab': if(['zorg','tijdlijn'].includes(w)) S.ovzTab=w; break;
+    case 'klin-tab': if(['klin','zorgvraag','tijdlijn'].includes(w)) S.klinTab=w; break;
+    case 'meting-nieuw': S.venster='meting'; S.vensterZoek=''; S.terugFocus='[data-oefen="meting-nieuw"]'; S.focus='#oef-metingzoek'; break;
+    case 'ag-duur': S.onsForm.agDuur=String(Math.max(0,Math.min(1440,(Number(S.onsForm.agDuur)||0)+Number(w)))); break;
+    case 'ag-opslaan': {
+      const f=S.onsForm;
+      if (!f.agBegin || (S.venster==='handeling' && !f.agTitel.trim()) || (S.venster==='afwezigheid' && (!f.agEind || f.agEind<f.agBegin))) { meld?.('Vul de datum en de velden van deze oefening in.'); S.focus='#oef-ons-agBegin'; break; }
+      const [y,m,d]=f.agBegin.split('-');
+      S.agendaItems.push({clientId:S.clientId,soort:S.venster==='handeling'?'Handeling':'Afwezigheid',datum:`${d}-${m}-${y}`,titel:S.venster==='handeling'?f.agTitel:'Afwezigheid',notities:f.agNotities});
+      sluitVenster(); S.onsMelding='Opgeslagen in deze oefening'; break;
+    }
+    case 'rap-wijzig': {
+      const r=rapportagesVan(client()).find(r=>r.id===w);
+      if(!r || !recentEigen(r)) return;
+      S.rapEditId=w; S.rapEditTekst=r.tekst; S.focus='#oef-inline-tekst'; break;
+    }
+    case 'rap-annuleer': S.rapEditId=null; break;
+    case 'rap-bewaar-wijzig': {
+      const c=client(); const r=rapportagesVan(c).find(r=>r.id===S.rapEditId);
+      if(!r || !recentEigen(r)) return;
+      const lijst=S.opgeslagen.rapportages[c.id] || [];
+      const edited={...r,tekst:S.rapEditTekst};
+      S.opgeslagen.rapportages[c.id]=[edited,...lijst.filter(x=>x.id!==r.id)];
+      S.rapEditId=null; bewaar(); S.onsMelding='Rapportage is gewijzigd'; break;
+    }
     case 'doc-tab': S.docTab = w; break;
     case 'ice':
       if (w === ICE_GOED) { klaar('d'); S.focus = '.oef__opnieuw'; }
@@ -1018,10 +1140,18 @@ function actie(a, w, el) {
 
 function opInvoer(e) {
   const el = e.target;
+  if (el.dataset?.onsVeld && Object.hasOwn(S.onsForm,el.dataset.onsVeld)) {
+    S.onsForm[el.dataset.onsVeld]=el.value;
+    if(el.dataset.onsVeld==='dagtype') { for(const key of ['dagdeel','beginNa','afronden']) {const input=huidig.container.querySelector('#oef-ons-'+key);if(input)input.disabled=key==='dagdeel'?el.value!=='Dagdeel':el.value!=='Periode';} }
+    huidig.container.querySelectorAll('.oef-opslaan').forEach(b=>{b.disabled=!kanOpslaan();}); return;
+  }
+  if (el.dataset?.onsSymptoom) { const t=el.dataset.onsSymptoom; S.omahaSymptomen=el.checked?[...new Set([...S.omahaSymptomen,t])]:S.omahaSymptomen.filter(x=>x!==t); return; }
   const soort = el.dataset?.oefenInvoer;
   if (!soort) return;
   const c = client();
   const regio = (naam, html) => { const r = huidig.container.querySelector(`[data-oefen-regio="${naam}"]`); if (r) r.innerHTML = html; };
+  if (soort === 'inline-tekst') { S.rapEditTekst=el.value; return; }
+  if (soort === 'meting-zoek') { S.vensterZoek=el.value; regio('instrumenten',extraSchermen.instrumenten(aanvullingen())); return; }
   if (soort === 'zoek') { S.zoek = el.value; regio('resultaten', resultaten()); return; }
   if (soort === 'vl-zoek') { S.vlZoek = el.value; regio('vl-rijen', vlRijen(c)); return; }
   if (soort === 'rap-zoek') { S.rapZoek = el.value; regio('rap-lijst', rapRegels(c)); return; }
@@ -1040,7 +1170,7 @@ function opWijziging(e) {
     huidig.container.querySelector('[data-oefen-regio="resultaten"]').innerHTML = resultaten();
     return;
   }
-  if (e.target.dataset?.oefenInvoer === 'rap-soort') opInvoer(e);
+  if (e.target.dataset?.oefenInvoer === 'rap-soort' || e.target.dataset?.onsVeld || e.target.dataset?.onsSymptoom) opInvoer(e);
 }
 
 function opToets(e) {
@@ -1057,7 +1187,8 @@ function opToets(e) {
     if (!f.length) return;
     const eerste = f[0];
     const laatste = f[f.length - 1];
-    if (e.shiftKey && document.activeElement === eerste) { e.preventDefault(); laatste.focus(); }
+    if (!v.contains(document.activeElement)) { e.preventDefault(); (e.shiftKey ? laatste : eerste).focus(); }
+    else if (e.shiftKey && document.activeElement === eerste) { e.preventDefault(); laatste.focus(); }
     else if (!e.shiftKey && document.activeElement === laatste) { e.preventDefault(); eerste.focus(); }
   }
 }
@@ -1096,4 +1227,10 @@ export function mountOefenen(container, opties = {}) {
   if (eerste) laad();
   koppel(container);
   render();
+  return { destroy() {
+    if (huidig?.container !== container) return;
+    herstelAchtergrond();
+    S.venster = null;
+    S.focus = null;
+  } };
 }

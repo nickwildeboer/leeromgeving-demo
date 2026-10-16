@@ -1,7 +1,10 @@
+import { ONS_AANVULLINGEN } from './ons-schermen.js';
 // De schermkaart: welk scherm van Nedap ONS of welke app zit in welke module.
 // Komt er een release, dan zie je hier welke modules je moet nakijken. Onderhoud schaalt zo met het aantal releases, niet met het aantal klanten.
 
-export const ONS_GECONTROLEERD = '2026-10-06';
+// Alleen schermen met aantoonbare controle krijgen een datum. Er is in de
+// huidige bronnen geen controle per scherm vastgelegd, dus deze kaart start leeg.
+export const ONS_GECONTROLEERD = Object.freeze({});
 
 const KOPPELSCHERM = { 'nieuwe-episode': 'Dossier · Nieuwe episode', zorgplan: 'Dossier · Plan, zorgplan', 'nieuwe-rapportage': 'Dossier · Nieuw, rapportage' };
 const ADMIN = ['Algemeen', 'Cliëntnetwerk', 'Financieel', 'Documenten'];
@@ -28,7 +31,12 @@ export function schermKaart(casussen) {
     }
     for (const s of c.stappen || []) if (s.ons?.scherm) voeg(KOPPELSCHERM[s.ons.scherm] || s.ons.scherm, c.id);
   }
-  return [...kaart.entries()].map(([scherm, ids]) => ({ scherm, modules: [...ids] })).sort((a, b) => a.scherm.localeCompare(b.scherm, 'nl'));
+  for (const r of ONS_AANVULLINGEN) {
+    const ids=r.modules.filter(id=>Object.values(casussen).some(c=>c.id===id));
+    if (!kaart.has(r.scherm)) kaart.set(r.scherm,new Set());
+    ids.forEach(id=>voeg(r.scherm,id));
+  }
+  return [...kaart.entries()].map(([scherm, ids]) => ({ scherm, modules: [...ids], gecontroleerdOp: ONS_GECONTROLEERD[scherm] || null })).sort((a, b) => a.scherm.localeCompare(b.scherm, 'nl'));
 }
 
 // Welke modules raakt een release waarin deze schermen veranderd zijn?

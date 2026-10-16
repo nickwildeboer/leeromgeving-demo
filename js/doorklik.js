@@ -52,7 +52,7 @@ function onderdeel(h, ctx, { inhoud, klasse, label, doel, tag = 'span', extra = 
     return `<button type="button" class="${klasse} dk-zelf${doel && hint ? ' dk-doel' : ''}" data-actie="${actie}" ${aria}>${inhoud}</button>`;
   }
   if (!doel) return `<${tag} class="${klasse}${extra}" aria-hidden="true">${inhoud}</${tag}>`;
-  if (modus === 'kijk') return `<span class="${klasse} dk-doel dk-kijk" ${aria}>${inhoud}</span>`;
+  if (modus === 'kijk') return `<span class="${klasse} dk-doel dk-kijk" role="img" ${aria}>${inhoud}</span>`;
   return `<button type="button" class="${klasse} dk-doel" data-actie="doorklik-verder" ${aria}>${inhoud}</button>`;
 }
 
@@ -165,7 +165,7 @@ function viewZelfKlaar(h, d, casus, plekNaam) {
         <div><dt>Mis geklikt</dt><dd>${keer(z.fouten, 'keer', 'keer')}</dd></div>
         <div><dt>Hulp gevraagd</dt><dd>${keer(z.hints, 'keer', 'keer')}</dd></div>
       </dl>
-      <p>${foutloos ? 'Je vond de weg zonder hulp. Zo doe je het straks ook in je dienst.' : 'Klik nog een keer zelf door. De tweede keer gaat het vaak sneller.'} Je opleider ziet deze uitkomst ook.</p>
+      <p>${foutloos ? 'Je hebt deze oefening zonder hints afgerond.' : 'Klik nog een keer zelf door. Je kunt de oefening nog eens doen.'} Je opleider ziet deze uitkomst ook.</p>
       <div class="knoppen">
         <button type="button" class="btn btn--rand" data-actie="stand" data-stand="zelf">Doe het nog een keer</button>
         <button type="button" class="btn btn--actie" data-actie="doorklik-klaar">Naar de situatie ${ICOON.pijl}</button>
@@ -187,7 +187,7 @@ export function viewDoorklik(c, casus, h, extra = '') {
     return `${kop}
     <article class="werkpaneel doorklik">
       <p class="bovenregel bovenregel--merk">${stand === 'kijk' ? 'Kijk' : 'Doe mee'} in ${esc(plekNaam)} · klaar</p>
-      <h2>${stand === 'kijk' ? 'Zo gaat het' : 'Je kent nu de weg'}</h2>
+      <h2>${stand === 'kijk' ? 'Zo gaat het' : 'Samen doorklikken afgerond'}</h2>
       ${(Array.isArray(d.klaar) ? d.klaar : [d.klaar]).map((t) => `<p>${esc(t)}</p>`).join('')}
       <p>${stand === 'kijk' ? 'Nu klik jij zelf mee. Wat je moet aanklikken licht op.' : 'Doe het nu zelf, zonder dat er iets oplicht. Lukt het niet, dan vraag je om een hint.'}</p>
       ${extra}

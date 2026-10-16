@@ -101,6 +101,9 @@ blockquote.vraag-antwoord__tekst p{margin:0}
 .bronnen__antwoord.is-ja{color:var(--merk-tekst)}
 .bronnen__antwoord.is-nee{color:var(--signaal-tekst)}
 .bronnen__leeg{padding:18px;border:1.5px dashed var(--lijn);border-radius:var(--r);color:var(--tekst-zacht)}
+.bronnen__voorbeelden{display:grid;gap:10px;margin:12px 0 0;padding:0;list-style:none}
+.bronnen__voorbeelden li{display:grid;gap:4px;padding:14px 16px;border:1px solid var(--lijn);border-radius:var(--r);background:var(--grond)}
+.bronnen__voorbeelden small{color:var(--tekst-zacht)}
 
 @keyframes vraag-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
