@@ -1,7 +1,7 @@
 /* Eén visueel verhaal. De inhoud blijft bruikbaar zonder beweging. */
 .uitleg{min-height:100vh;background:var(--grond);color:var(--tekst)}
 .uitleg-balk{max-width:1280px;margin:auto;padding:26px 40px;display:flex;justify-content:space-between;align-items:center;gap:24px}
-.uitleg-balk .oom{font-size:25px}.uitleg-balk .oom__a{color:var(--paneel)}.uitleg-balk .oom__b{color:var(--actie)}
+.uitleg-balk .oom-logo img{height:28px}
 .uitleg-balk>a:last-child{font-size:14px;color:var(--tekst-zacht);text-underline-offset:4px}
 .uitleg-main{max-width:1120px;margin:auto;padding:24px 40px 28px}
 .uitleg-main:focus{outline:none}
@@ -42,7 +42,6 @@
 .uitleg-speel{text-decoration:underline;text-underline-offset:4px;color:var(--paneel);white-space:nowrap}
 .uitleg-caption{text-align:center;color:var(--tekst-zacht);font-size:14px;line-height:1.6;min-height:24px;margin:17px 0 22px}
 .uitleg-acties{display:flex;justify-content:center;align-items:center;gap:24px}.uitleg-acties .linkknop{font-size:14px}
-.uitleg-demo{text-align:center;color:var(--tekst-zacht);font-size:11px;line-height:1.6;margin:24px 0 0}
 .uitleg :is(a,button):focus-visible{outline:3px solid var(--actie);outline-offset:4px}
 @media(max-width:800px){.uitleg-main{padding:20px 24px}.uitleg-balk{padding:20px 24px}.uitleg-toneel{padding:0;grid-template-columns:minmax(0,1fr) 65px minmax(0,1.25fr)}.uitleg-document{padding:22px 18px}.uitleg-les{padding:20px}.uitleg-verwerking{font-size:10px}.uitleg-bediening{flex-direction:column;gap:4px;margin-top:28px}.uitleg-stappen{gap:16px;justify-content:space-between;width:100%}.uitleg-acties{gap:18px}}
 @media(max-width:540px){.uitleg-kop{margin-top:0;margin-bottom:28px}.uitleg-kop h1{font-size:32px}.uitleg-kop p{font-size:16px}.uitleg-toneel{grid-template-columns:1fr;gap:0;max-width:360px;margin:auto}.uitleg-document{transform:none!important;padding:19px 22px}.uitleg-documentkop{margin-bottom:12px}.uitleg-documentkop strong{font-size:16px}.uitleg-documentkop>span{display:flex;gap:7px;align-items:baseline}.uitleg-documentkop br{display:none}.uitleg-regels{display:none}.uitleg-bronzin{font-size:15px;margin:0 -4px;padding:10px}.uitleg-bronzin br{display:none}.uitleg-bronvoet{margin-top:12px}.uitleg-verbinding{height:72px}.uitleg-lijn{width:72px;left:calc(50% - 36px);top:12px;transform:rotate(90deg)}.uitleg-goedkeuring{width:34px;height:34px;align-self:center}.uitleg-goedkeuring svg{width:21px}.uitleg-verwerking{left:calc(50% + 28px);right:0;top:22px;font-size:11px;text-align:left;max-width:100px}.uitleg-les{padding:20px 22px}.uitleg-les h2{font-size:23px}.uitleg-stappen{gap:8px}.uitleg-stappen button{flex-direction:column;text-align:center;gap:7px;flex:1;font-size:12px;line-height:1.4}.uitleg-acties{flex-direction:column;gap:18px}.uitleg-caption{min-height:46px}.uitleg-balk .oom{font-size:22px}.uitleg-balk>a:last-child{font-size:12px}}

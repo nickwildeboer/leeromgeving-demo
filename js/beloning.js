@@ -136,8 +136,7 @@ export function badgeBlok({ toegewezen, voortgang, dagen, vandaag = dagStempel()
     <div class="cert-kaart">
       <span class="cert-kaart__badges" aria-hidden="true">${verdiend.slice(0, 3).map((id) => badgeSvg(id)).join('')}</span>
       <div class="cert-kaart__tekst">
-        <h2 id="cert-kop">Alles is klaar. Je certificaat staat voor je klaar.</h2>
-        <p>Je hebt alle modules afgerond. Bewaar je certificaat, of druk het af voor je map.</p>
+        <h2 id="cert-kop">Je certificaat staat klaar</h2>
       </div>
       <a class="btn btn--rand" href="#/certificaat" aria-describedby="cert-kop">Bekijk je certificaat <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg></a>
     </div>` : '';
@@ -147,7 +146,7 @@ export function badgeBlok({ toegewezen, voortgang, dagen, vandaag = dagStempel()
       <header class="badges__kop">
         <div>
           <h2 id="badges-kop">Jouw badges</h2>
-          <p class="badges__uitleg">Rond je alle modules van een deel af, dan krijg je de badge van dat deel.</p>
+          <p class="badges__uitleg">Rond alle modules van een deel af, dan krijg je de badge.</p>
         </div>
         <div class="badges__tellers">
           <p class="badges__teller"><strong>${verdiend.length} van ${delen.length}</strong> verdiend</p>
@@ -183,7 +182,7 @@ export function certificaatPagina({ naam, profiel, afdeling, org, logo, merk, to
       <div class="wrap smal">
         <div class="werkpaneel cert-nog">
           <h1>Je certificaat komt hier</h1>
-          <p>Heb je alle modules afgerond, dan staat hier je certificaat. Je hebt er nu ${klaar} van ${totaal} klaar.</p>
+          <p>Je hebt ${klaar} van ${totaal} modules klaar.</p>
           <a class="btn btn--actie" href="#/overzicht">Naar mijn overzicht</a>
         </div>
       </div>`;
@@ -197,12 +196,11 @@ export function certificaatPagina({ naam, profiel, afdeling, org, logo, merk, to
         <button type="button" class="btn btn--actie" data-actie="afdrukken">Afdrukken</button>
       </div>
       <article class="certificaat" aria-labelledby="cert-naam">
-        <header class="certificaat__kop">
-          <span class="certificaat__logo">${logo}</span>
-          <p class="certificaat__titel">Leren bij ${esc(org)}</p>
-        </header>
+        <svg class="certificaat__kruis" viewBox="-8 -8 116 116" aria-hidden="true"><path d="M36,0 H64 Q71,0 71,7 V29 H93 Q100,29 100,36 V64 Q100,71 93,71 H71 V93 Q71,100 64,100 H36 Q29,100 29,93 V71 H7 Q0,71 0,64 V36 Q0,29 7,29 H29 V7 Q29,0 36,0 Z"/></svg>
+        <svg class="certificaat__cursor" viewBox="-6 -6 40 57" aria-hidden="true"><polygon points="0,0 0,36 9,28.5 17,45 24,42 16,25.5 28,24.5"/></svg>
+        <header class="certificaat__kop">${merk}<span class="certificaat__org">${logo}</span></header>
         <div class="certificaat__body">
-          <p class="certificaat__soort">Certificaat</p><p class="certificaat__demo">Demo met testgegevens. Dit is oefenvoortgang, geen bewijs van bekwaamheid.</p>
+          <p class="certificaat__soort">Certificaat van afronding</p>
           <h1 class="certificaat__naam" id="cert-naam">${esc(naam)}</h1>
           <p class="certificaat__wat">heeft alle modules van Leren bij ${esc(org)} afgerond.</p>
           <ul class="certificaat__badges">
@@ -217,7 +215,6 @@ export function certificaatPagina({ naam, profiel, afdeling, org, logo, merk, to
             <div><dt>Profiel</dt><dd>${esc(profiel)}${afdeling ? `, ${esc(afdeling)}` : ''}</dd></div>
             <div><dt>Datum</dt><dd>${esc(datumTekst(laatste))}</dd></div>
           </dl>
-          <p class="certificaat__gemaakt">Gemaakt door ${merk}</p>
         </footer>
       </article>
     </div>`;
@@ -265,9 +262,9 @@ function toonMoment({ deel, alles }) {
   laag.innerHTML = `
     <div class="moment__kaart" role="dialog" aria-modal="true" aria-labelledby="moment-kop" aria-describedby="moment-tekst">
       <div class="moment__badge">${badgeSvg(deel)}</div>
-      <p class="moment__boven">Deel ${nr} · ${esc(d.titel)}</p>
+      <p class="moment__boven">Deel ${nr}, ${esc(d.titel)}</p>
       <h2 class="moment__kop" id="moment-kop">Je badge ${esc(b.naam)}</h2>
-      <p class="moment__tekst" id="moment-tekst">${esc(b.tekst)}${alles ? ' En daarmee is alles klaar. Je certificaat staat voor je klaar.' : ''}</p>
+      <p class="moment__tekst" id="moment-tekst">${esc(b.tekst)}${alles ? ' Je certificaat staat klaar.' : ''}</p>
       <div class="moment__knoppen">
         ${alles ? '<a class="btn btn--actie" href="#/certificaat" data-moment="naar">Bekijk je certificaat</a>' : ''}
         <a class="btn ${alles ? 'btn--rand' : 'btn--actie'}" href="#/overzicht" data-moment="naar">Terug naar mijn overzicht</a>

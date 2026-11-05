@@ -122,9 +122,9 @@ export default {
         doel: { knop: '+ Nieuwe meting' },
         pagina: {
           tabs: ['Klinimetrie', 'Zorgvraagtypering', 'Tijdlijn'],
-          titel: 'Klinimetrie',
+          titel: 'Klinimetrie - Overzicht',
           knoppen: ['+ Nieuwe meting'],
-          kaarten: [{ regels: ['Er zijn nog geen metingen'] }],
+          kaarten: [{ regels: ['Er zijn geen metingen om weer te geven voor deze cliënt.'] }],
         },
       },
     ],

@@ -1,3 +1,4 @@
+@font-face{font-family:"IBM Plex Sans";font-style:normal;font-weight:400 600;font-display:swap;src:url('/assets/ibm-plex-sans-latin.woff2') format('woff2')}
 /* Vrije oefenomgeving in Nedap ONS (js/oefenen.js). Bouwt voort op de .ons-regels in styles.css.
    Het opdrachtenpaneel is in de stijl van de leeromgeving, het scherm eronder in de stijl van Nedap ONS. */
 
@@ -85,7 +86,7 @@
 .oef-knop--wit{background:#fff;border-color:#D4D4D4;color:#3B3FA0}
 .oef-knop--rand{background:#fff;border-color:var(--ons-blauw);color:var(--ons-blauw);border-radius:999px}
 .oef-knop--blauw{background:var(--ons-blauw);color:#fff;border-radius:999px}
-.oef-knop--rood,.ons__knop.oef-knop--rood{background:#fff;border-color:#E0473C;color:#E0473C}
+.oef-knop--rood,.ons__knop.oef-knop--rood{background:#fff;border-color:#dd3226;color:#dd3226}
 .oef-knop--klein{min-height:28px;padding:0 10px;border-color:var(--ons-blauw);border-radius:999px;background:#fff;color:var(--ons-blauw);font-size:.72rem}
 .oef-knop .oef-ic{width:14px;height:14px}
 .oef-knoppen{display:flex;flex-wrap:wrap;gap:6px}
@@ -503,3 +504,783 @@
 .oef-inhoud:has(.oef-ons-kliniekop)>.oef-tabs .oef-tab.is-actief{color:#258ab6;border-bottom-color:#20ade3}
 .oef-ons-omaha .oef-ons-grid2 .oef-ons-veld:has(#oef-ons-kenmerk)>span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
 @media(max-width:700px){.oef-ons-dagrij{grid-template-columns:85px minmax(0,1fr)}.oef-ons-dagrij .oef-ons-grid2{gap:10px}.oef-ons-venster .oef-venster__kop h3{font-size:21px}}
+
+/* ==========================================================================
+   4 november 2026: één op één met de schermafdrukken van Nedap ONS.
+   Maten in pixels, gemeten op de opnames van 1512 bij 793. Overschrijft de
+   eerdere benadering hierboven. Alleen binnen de vrije oefenomgeving.
+   ========================================================================== */
+.ons--oefen{--ons-paars:#4346B7;--ons-link:#4346B7;--ons-kaarttitel:#4A49A8;--ons-tekst:#333;--ons-zacht:#555;
+  font-family:"IBM Plex Sans","Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif;font-size:14px;line-height:20px;color:#333;background:#F5F5F5}
+@media (min-width:1300px){
+  .ons--oefen{--oef-w:min(1512px,calc(100vw - 32px));width:var(--oef-w);max-width:none;margin-inline:calc((100% - var(--oef-w)) / 2);min-height:793px;border-radius:4px}
+}
+/* bovenbalk */
+.ons--oefen .oef-balk{position:relative;height:48px;min-height:48px;padding:0 12px;gap:0;background:#FFCC7D;flex:none}
+.ons--oefen .ons__logo{width:24px;height:24px;margin-right:11px;background:#3B3631}
+.ons--oefen .ons__logo::after{left:6px;right:6px;top:12px;height:5px;background:#FFB01F}
+.ons--oefen .oef-pil{height:34px;min-height:34px;padding:0 16px 0 13px;gap:8px;border-radius:10px;background:var(--pil,#3667ff);font-size:13px;font-weight:600;letter-spacing:.01em}
+.ons--oefen .oef-pil--admin{--pil:#386E91}
+.ons--oefen .ons__raster{width:13px;height:13px;background:radial-gradient(circle,#fff 1.4px,transparent 1.8px) -0.25px -0.25px/4.5px 4.5px}
+.ons--oefen .oef-balkzoek{position:absolute;left:50%;top:8px;transform:translateX(-50%);width:min(498px,calc(100% - 420px));max-width:none;height:32px;margin:0;border-radius:6px;background:#FFD89A url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='none' stroke='%23533A12' stroke-width='2'%3E%3Ccircle cx='7.5' cy='7.5' r='5.5'/%3E%3Cpath d='m11.5 11.5 5 5'/%3E%3C/svg%3E") no-repeat 12px 50%}
+.ons--oefen .oef-balkzoek input{min-height:32px;padding:0 12px 0 36px;font-size:14px;color:#4A3B26}
+.ons--oefen .ons__rechts{gap:6px;margin-left:auto}
+.ons--oefen .oef-balkknop svg{width:22px;height:22px;stroke:#2B2118;stroke-width:1.7}
+.ons--oefen .ons__bel svg{width:20px;height:20px}
+.ons--oefen .ons__bel::after{top:-1px;right:0;width:7px;height:7px;background:#F0453A}
+.ons--oefen .ons__avatar{display:block;width:26px;height:26px;border-radius:50%;box-shadow:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 26'%3E%3Ccircle cx='13' cy='13' r='13' fill='%2386CB0A'/%3E%3Cpath d='M6 15.5c0-4 3-7 7-7s7 3 7 7c0 3.5-3 6-7 6s-7-2.5-7-6z' fill='%23F0FFC4'/%3E%3Ccircle cx='10.3' cy='14' r='1.3' fill='%2386CB0A'/%3E%3Ccircle cx='15.7' cy='14' r='1.3' fill='%2386CB0A'/%3E%3Cpath d='M10.5 17.3c1.5 1.3 3.5 1.3 5 0' stroke='%2386CB0A' stroke-width='1.3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") center/cover}
+/* menu links */
+.ons--oefen .ons__lijf{grid-template-columns:193px minmax(0,1fr)}
+.ons--oefen.is-ingeklapt .ons__lijf{grid-template-columns:56px minmax(0,1fr)}
+.ons--oefen .oef-menu{padding:14px 10px 0;font-size:13px;line-height:18px;background:#fff}
+.ons--oefen .ons__icoon{width:16px;height:16px;margin-right:8px;opacity:1;stroke-width:1.4;color:#555}
+.ons--oefen .oef-menu__terug{min-height:32px;padding:0 8px;margin:0 0 16px;color:#555;font-size:13px;font-weight:500}
+.ons--oefen .oef-menu .ons__groep{margin:0 0 14px;padding:0 3px;font-size:9.5px;line-height:12px;letter-spacing:.09em;color:#757575;font-weight:500}
+.ons--oefen .oef-menu ul{margin:0 0 13px}
+.ons--oefen .oef-menu ul li+li{margin-top:4px}
+.ons--oefen .oef-menu .ons__menu-item{min-height:32px;padding:0 8px;border-radius:6px;color:#333;font-size:13px;font-weight:500}
+.ons--oefen .oef-menu .ons__menu-item.is-actief{background:#EFEDFF;color:#2E2F7F}
+.ons--oefen .oef-menu .ons__menu-item.is-actief .ons__icoon{color:#4346B7}
+.ons--oefen .oef-menu__inklappen{min-height:32px;margin-top:auto;padding:0 8px;color:#333;font-size:13px}
+.ons--oefen .oef-menu .ons__nedap{display:flex;align-items:center;justify-content:center;gap:3px;height:44px;margin:8px -10px 0;padding:0;border-top:1px solid #E6E6E6;color:#757575;font-size:15px;font-weight:600;letter-spacing:.02em}
+/* inhoud en cliëntkop */
+.ons--oefen .oef-inhoud{max-width:none;padding:20px 16px 24px}
+.ons--oefen .oef-inhoud.is-smal{max-width:1025px}
+.ons--oefen .oef-kop{margin-bottom:14px;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.ons--oefen .oef-kop__boven{min-height:64px;padding:11px 16px;gap:6px 6px}
+.ons--oefen .ons__initialen{width:42px;height:42px;margin-right:0;background:#F4F2FD;color:#5F63AA;font-size:17px;font-weight:600}
+.ons--oefen .oef-kop__naam{font-size:16px;line-height:22px;font-weight:600;color:#4346B7;gap:5px}
+.ons--oefen .oef-kop__naam .oef-label:first-child{margin-left:2px}
+.ons--oefen .oef-label{gap:4px;padding:1px 5px;border-radius:3px;font-size:11px;line-height:16px;font-weight:400;color:#4A3200;border-color:#F0B860;background:#FFDFAE}
+.ons--oefen .oef-label--blauw{border-color:#86C9F0;background:#CDEBFB;color:#0B4366}
+.ons--oefen .oef-label .oef-ic{width:12px;height:12px;stroke-width:1.8}
+.ons--oefen .ons__gegevens{margin-top:2px;font-size:11px;line-height:16px;color:#555}
+.ons--oefen .ons__gegevens u{color:#4346B7}
+.ons--oefen .oef-meer{min-height:32px;padding:0 10px;font-size:14px;color:#555}
+.ons--oefen .oef-meer .oef-ic{width:14px;height:14px}
+/* kaarten */
+.ons--oefen .oef-twee{gap:16px}
+.ons--oefen .oef-kolom{gap:13px}
+.ons--oefen .oef-kaart{padding:11px 15px 19px;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.ons--oefen .oef-kaart__kop{margin-bottom:11px;min-height:22px}
+.ons--oefen .oef-kaart__titel{font-size:16px;line-height:22px;font-weight:600;color:var(--ons-kaarttitel)}
+.ons--oefen .oef-kaart__titel--grijs{color:#333}
+.ons--oefen .oef-kaart--admin .oef-kaart__titel{font-size:16px;color:#1D4F6E}
+.ons--oefen .oef-leeg,.ons--oefen .oef-zin{margin-left:3px;font-size:14px;line-height:20px;color:#555}
+.ons--oefen .oef-zin{color:#333}
+.ons--oefen .oef-zin strong{color:#111}
+.ons--oefen .oef-subtitel{margin:12px 0 12px!important;font-size:14px;color:var(--ons-kaarttitel)}
+.ons--oefen .oef-subkop{margin:0 0 6px!important;font-size:14px;color:#555}
+.ons--oefen .oef-waarsch{padding:2px 0 0 14px;gap:5px;font-weight:600;font-size:14px;line-height:20px;color:#333}
+.ons--oefen .oef-waarsch li{gap:12px}
+.ons--oefen .oef-waarsch .oef-ic{width:14px;height:14px;color:#EB7B45;stroke-width:2.2}
+.ons--oefen .oef-mini{background:#F8F8FA;font-size:14px}
+.ons--oefen .oef-mini thead{background:#F1F2F4}
+.ons--oefen .oef-mini th{padding:4px 12px;font-weight:400;color:#555;border-bottom:1px solid #DADADA}
+.ons--oefen .oef-mini td{padding:9px 12px;color:#333}
+.ons--oefen .oef-mini .oef-link{color:#4F51B5}
+.ons--oefen .oef-mini th:last-child{width:100%}
+.ons--oefen .oef-rondplus{color:#1D4F6E}
+.ons--oefen .oef-vierkantplus{width:28px;height:28px;border-color:#CFCFCF;color:#4346B7}
+@media (min-width:1300px){.ons--oefen .oef-menu{align-self:start;position:sticky;top:0;height:745px;min-height:0}}
+/* startscherm Cliënt zoeken (01) */
+.ons--oefen .oef-start{grid-template-columns:200px minmax(0,1fr) 202px;gap:0 28px;padding:35px 29px 40px 34px}
+.ons--oefen .oef-start__filters{gap:0;font-size:14px;line-height:19px}
+.ons--oefen .oef-start__mijn{padding:0;min-height:24px;color:#2E3061;font-size:14px;font-weight:600}
+.ons--oefen .oef-start__groep{margin:6px 0 0}
+.ons--oefen .oef-start__groep legend,.ons--oefen .oef-start__groep-kop{margin:0 0 1px;font-size:14px;font-weight:600;color:#4B4B4B}
+.ons--oefen .oef-start__groep-kop{margin-top:16px}
+.ons--oefen .oef-vink{min-height:19px;gap:6px;color:#5F5F5F;font-size:14px}
+.ons--oefen .oef-vink input{width:13px;height:13px;accent-color:#4346B7}
+.ons--oefen .oef-start__boom{font-size:13px;line-height:16px;color:#1474a9}
+.ons--oefen .oef-start__boom .oef-ic{width:11px;height:11px;stroke-width:2.4;vertical-align:-1px}
+.ons--oefen .oef-start__boom li:not(:first-child){padding-left:19px}
+.ons--oefen .oef-start__titel{margin:4px 0 20px;font-size:17px;line-height:24px;font-weight:600;color:#4E4E4E}
+.ons--oefen .oef-start__zoek{height:22px;padding:0 10px;gap:3px;border-color:#D9D9D9;border-radius:11px}
+.ons--oefen .oef-start__zoek .oef-ic{width:10px;height:10px;color:#757575;stroke-width:2.4}
+.ons--oefen .oef-start__zoek input{min-height:20px;font-size:11px;color:#333}
+.ons--oefen .oef-start__zoek input::placeholder{color:#AAA}
+.ons--oefen .oef-start__kaarten{gap:12px}
+.ons--oefen .oef-bkaart{border-radius:8px;box-shadow:0 1px 5px rgba(0,0,0,.09)}
+.ons--oefen .oef-bkaart h4{padding:0 16px;height:41px;display:flex;align-items:center;background:#0178c1;font-size:12px;font-weight:600}
+.ons--oefen .oef-bkaart>div{padding:15px 16px 16px;gap:0}
+.ons--oefen .oef-blink{min-height:16px;padding:0;font-size:11px;line-height:16px;color:#157ab1;letter-spacing:-.01em}
+.ons--oefen .oef-bkaart__sub{margin:5px 0 4px!important;font-size:11.5px;font-weight:600;color:#157ab1}
+.ons--oefen .oef-bkaart>.oef-bkaart__rijen{padding:0}
+.ons--oefen .oef-bkaart__rijen .oef-blink{min-height:37px;padding:0 16px;gap:6px}
+.ons--oefen .oef-bkaart__rijen .oef-blink+.oef-blink{border-top:1px solid #9E9E9E}
+.ons--oefen .oef-bkaart__rijen .oef-ic{width:15px;height:15px}
+.ons--oefen .oef-overleg{padding:12px 16px 16px;border-radius:8px;box-shadow:0 1px 5px rgba(0,0,0,.09)}
+.ons--oefen .oef-overleg__kop{margin-bottom:4px}
+.ons--oefen .oef-overleg h4{font-size:16px;font-weight:600;color:#4E4E4E}
+.ons--oefen .oef-overleg p{font-size:14px;line-height:19px;color:#555}
+.ons--oefen .oef-overleg .oef-vierkantplus{width:30px;height:30px;border-color:#DDD;border-radius:6px;color:#2E3061}
+/* administratiekaarten (20 tot en met 24) */
+.ons--oefen .oef-kaart--admin{padding:15px 15px 17px}
+.ons--oefen .oef-kaart--admin .oef-kaart__kop{margin-bottom:7px}
+.ons--oefen .oef-kaart--admin .oef-kaart__titel{font-weight:700;color:#1D4F6E}
+.ons--oefen .oef-kaart--admin .oef-leeg,.ons--oefen .oef-kaart--admin .oef-zin{margin:0;font-size:11px;line-height:16px;font-weight:500;color:#5E5E5E}
+.ons--oefen .oef-kaart--admin .oef-kaart__kop+.oef-leeg+.oef-kaart__kop{margin-top:14px}
+.ons--oefen .oef-kaart--admin .oef-link--oranje{display:inline-block;margin-top:14px;font-size:12px;color:#E8851A}
+.ons--oefen .oef-rondplus{width:22px;height:22px}
+.ons--oefen .oef-rondplus .oef-ic{width:18px;height:18px;stroke-width:1.5}
+.ons--oefen .oef-kaart--admin .oef-dl{gap:3px;margin-top:6px;font-size:11px;line-height:16px}
+.ons--oefen .oef-kaart--admin .oef-dl div{grid-template-columns:154px 1fr;gap:0}
+.ons--oefen .oef-kaart--admin .oef-dl dt{color:#555}
+.ons--oefen .oef-kaart--admin .oef-dl dd{font-weight:700;color:#222}
+.ons--oefen .oef-kaart--admin .oef-dl dd.is-oranje{color:#E8851A}
+.ons--oefen .oef-kaart--admin .oef-dl--onder div{grid-template-columns:1fr;margin:4px 0 10px}
+.ons--oefen .oef-kaart--admin .oef-dl--onder div:last-child{margin-bottom:0}
+.ons--oefen .oef-kaart--admin .oef-nepkeuze{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 8px;border-color:#BDBDBD;border-radius:3px;font-size:11px;color:#333}
+.ons--oefen .oef-kaart--zt .oef-kaart__titel{color:var(--ons-kaarttitel)}
+.ons--oefen .oef-kaart--zt .oef-zin{font-size:11px;line-height:16px;font-weight:600;margin:4px 0 0}
+.ons--oefen .oef-kaart--admin .oef-contacten li{font-size:12px}
+.ons--oefen .oef-laden{display:block;width:20px;height:20px;margin:6px 0 0;border:2.5px solid #222;border-top-color:transparent;border-radius:50%;transform:rotate(-30deg)}
+.ons--oefen .oef-kaart--bruin .oef-kaart__titel{color:#5B3B12}
+/* lege staat met kat in de plantenpot */
+.ons--oefen .oef-leegstaat{gap:0;padding:48px 10px 30px;font-size:14px;color:#555}
+.ons--oefen .oef-plant{width:230px;margin-bottom:6px}
+.ons--oefen .oef-leegstaat__kop{margin:6px 0 4px!important;font-size:18px;line-height:26px;font-weight:600;color:#333}
+/* documenten (23) */
+.ons--oefen .ons__titel{font-size:20px;line-height:28px;font-weight:600;color:#333}
+.ons--oefen .ons__kopregel{margin:4px 0 12px}
+.ons--oefen .oef-knop--paars{background:#3F41A8}
+.ons--oefen .oef-knop--groot{min-height:32px;padding:0 14px;border-radius:6px;font-size:13px}
+.ons--oefen .oef-tabs{border-bottom:1px solid #D6D6D6;margin:0 0 10px}
+.ons--oefen .oef-tab{min-height:34px;padding:0 10px;font-size:14px;color:#555}
+.ons--oefen .oef-tab.is-actief{color:#3F41A8;box-shadow:inset 0 -2px 0 #3F41A8}
+.ons--oefen .oef-veldlabel{margin:0 0 2px;font-size:11px;color:#333}
+.ons--oefen .oef-docfilter{gap:12px;margin-top:8px}
+.ons--oefen .oef-docfilter .oef-zoekveld{height:32px;border-radius:4px;border-color:#BDBDBD}
+.ons--oefen .oef-docfilter .ons__nep-select{min-height:32px;line-height:30px;border-color:#BDBDBD;font-size:13px}
+.ons--oefen .oef-zoekveld input{font-size:13px}
+/* Meer info klapt als paneel over de pagina uit (17) */
+.ons--oefen .oef-kop{position:relative;z-index:3}
+.ons--oefen .oef-kop.is-open{border-radius:8px 8px 0 0;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.ons--oefen .oef-kop.is-open .oef-meerinfo{position:absolute;left:0;right:0;top:100%;background:#fff;border-radius:0 0 8px 8px;box-shadow:0 8px 14px rgba(0,0,0,.12);grid-template-columns:318px minmax(0,1fr);font-size:11px;line-height:16px;border-top-color:#E0E0E0}
+.ons--oefen .oef-kop.is-open .oef-meer{border-color:#8F95C7;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.ons--oefen .oef-meerinfo__links,.ons--oefen .oef-meerinfo__rechts{padding:13px 15px 14px}
+.ons--oefen .oef-meerinfo__links{gap:0}
+.ons--oefen .oef-meerinfo__kop{font-size:14px;line-height:20px;font-weight:600;color:#444}
+.ons--oefen .oef-meerinfo__links .oef-meerinfo__kop+.oef-link{margin:10px 0 14px}
+.ons--oefen .oef-meerinfo .oef-link{font-size:11px;color:#3F41A8}
+.ons--oefen .oef-meerinfo__lijst{grid-template-columns:163px max-content;gap:8px 0;margin-top:8px}
+.ons--oefen .oef-meerinfo__lijst dt{font-weight:600;color:#333}
+.ons--oefen .oef-meerinfo__lijst dd{color:#666}
+.ons--oefen .oef-meerinfo__onder{padding:9px 15px;gap:8px;background:#F3F4F8;border-top:1px solid #E0E0E0;border-radius:0 0 8px 8px}
+.ons--oefen .oef-meerinfo__onder .oef-knop{min-height:28px;padding:0 10px;border-radius:6px;font-size:11px}
+.ons--oefen .oef-meerinfo__onder .oef-knop--wit{border-color:#C9C9C9;color:#333}
+/* vragenlijsten (12, 12b, 12c) */
+.ons--oefen .oef-tabel{min-width:0;margin-top:22px;border-color:#DCDCDC;border-radius:6px;font-size:14px}
+.ons--oefen .oef-tabel th{height:44px;padding:0 15px;font-weight:400;color:#333;background:#F1F2F4;border-bottom-color:#DCDCDC;white-space:nowrap}
+.ons--oefen .oef-tabel td{height:51px;padding:0 15px;color:#333;border-bottom-color:#DCDCDC}
+.ons--oefen .oef-tabel .oef-link{color:#4346B7}
+.ons--oefen .oef-sorteer{width:14px;height:14px;margin-left:10px;color:#555;stroke-width:1.6}
+.ons--oefen .oef-status{padding:2px 7px;background:#FFE0B3;color:#7A4A00;font-size:9px;line-height:12px}
+.ons--oefen .oef-zoekveld{height:32px;max-width:470px;border-radius:6px;border-color:#CFCFCF;padding:0 10px;gap:8px}
+.ons--oefen .oef-zoekveld .oef-ic{width:14px;height:14px;color:#666}
+.ons--oefen .oef-zoekveld input{min-height:30px}
+.ons--oefen .oef-veldlabel{margin-top:10px}
+.ons--oefen .oef-kruimel{min-height:24px;margin:0 0 6px;padding:0 6px;font-size:11px;color:#444}
+.ons--oefen .oef-kruimel .oef-ic{width:13px;height:13px}
+.ons--oefen .oef-vl__titel{margin:6px 0 0;font-size:17px;line-height:24px;font-weight:700;color:#222}
+.ons--oefen .oef-vl__meta{margin:0 0 10px!important;padding-bottom:9px!important;border-bottom:1px solid #C8C9E6;font-size:11px;color:#444}
+.ons--oefen .oef-stappen{gap:7px;font-size:11px;color:#555}
+.ons--oefen .oef-stappen .is-nu{color:#F2A900}
+.ons--oefen .oef-stappen i{width:22px;background:#AAA}
+.ons--oefen .oef-vl__status .oef-knop--rand,.ons--oefen .oef-vl__rechts .oef-knop{min-height:32px;padding:0 15px;font-size:12px;border-color:#1F9DEB;color:#1F9DEB}
+.ons--oefen .oef-vl__rechts .oef-knop--blauw{background:#1F9DEB;color:#fff;padding:0 22px}
+.ons--oefen .oef-vl__score{margin:14px 0!important;font-size:11px;color:#333}
+.ons--oefen .oef-vl__score+.ons__kaart{padding:24px 18px 8px}
+.ons--oefen .oef-domein{margin:0 0 12px;font-size:14px;font-weight:600;color:#222}
+.ons--oefen .oef-vl__sectie summary{gap:10px;min-height:32px;padding:0 6px;background:#F5F7FA;color:#1F9DEB;font-size:13px;font-weight:500;list-style:none}
+.ons--oefen .oef-vl__sectie summary::-webkit-details-marker{display:none}
+.ons--oefen .oef-vl__onderwerp{flex:1}
+.ons--oefen .oef-vl__pijl{width:11px;height:11px;color:#1F9DEB}
+.ons--oefen .oef-vl__ster{width:15px;height:15px;color:#1F9DEB;fill:#1F9DEB}
+.ons--oefen .oef-score{padding:5px 4px;border-color:#CFCFCF;font-size:9px;line-height:12px}
+.ons--oefen .oef-vraag{margin:12px 16px 4px!important;font-size:11px;color:#222}
+.ons--oefen .oef-antwoord{margin:0 25px 12px!important;font-size:11px;color:#333}
+.ons--oefen .oef-vl__blok{margin-top:16px;padding:0 0 2px;border-color:#D6D6D6;background:#FAFAFA}
+/* vensters */
+.ons--oefen .oef-dimmer{padding:184px 16px 16px;background:rgba(0,0,0,.33);z-index:7}
+.ons--oefen .oef-venster{border-radius:8px}
+.ons--oefen .oef-venster--wit{width:min(100%,972px);min-height:424px}
+.ons--oefen .oef-venster__kop{padding:12px 16px 4px}
+.ons--oefen .oef-venster__kop h3{font-size:15px;font-weight:600;color:#333}
+.ons--oefen .oef-sluit .oef-ic{width:16px;height:16px}
+.ons--oefen .oef-zoekveld--paars{max-width:none;height:30px;border-color:#7B7FCB;border-radius:6px}
+.ons--oefen .oef-vlkeuzes{grid-template-columns:repeat(3,minmax(0,292px));gap:0 26px;margin-top:10px}
+.ons--oefen .oef-vlkeuze{gap:6px;padding:4px 0 18px;border-bottom-color:#AAA}
+.ons--oefen .oef-vlkeuze__titel{font-size:15px;color:#3F41A8;font-weight:600}
+.ons--oefen .oef-vlkeuze__tekst{font-size:10px;line-height:14px;color:#444}
+/* plan (13, 13a, 13b, 13e) */
+.ons--oefen .oef-inhoud>.oef-tabs{margin-bottom:6px}
+.ons--oefen .ons__kopregel--lijn{margin:0 0 12px;padding:0 4px 4px;border-bottom:1px solid #9C9C9C}
+.ons--oefen .ons__knop{min-height:30px;padding:0 22px;font-size:11px;font-weight:600}
+.ons--oefen .ons__knop--blauw{background:#1FA7F0}
+.ons--oefen .ons__knop--groen{background:#3E9853;padding:0 28px}
+.ons--oefen .ons__knop--rand{border-color:#1FA7F0;color:#1FA7F0}
+.ons--oefen .ons__knop.oef-knop--rood{border-color:#E0605A;color:#E0605A}
+.ons--oefen .oef-concept{margin:0;padding:12px 16px 14px;border-left:6px solid #F7BE00;border-radius:4px 8px 8px 4px;font-size:11px;line-height:15px;color:#222}
+.ons--oefen .ons__concept-kop{margin-bottom:12px!important;font-size:10px;font-weight:700;color:#1a7ab6}
+.ons--oefen .ons__concept-knoppen{gap:6px}
+.ons--oefen .oef-concept .oef-icoonknop{width:28px;height:28px;color:#1a7ab6}
+.ons--oefen .oef-concept .ons__knop{min-width:97px;justify-content:center}
+.ons--oefen .oef-rechtslink{margin:10px 0 0!important}
+.ons--oefen .oef-rechtslink .oef-blink,.ons--oefen .oef-rechtslink--onder .oef-blink{font-size:10px;line-height:15px;color:#1a7ab6;min-height:15px}
+.ons--oefen .oef-rechtslink--ruim{margin-bottom:28px!important}
+.ons--oefen .oef-rechtslink--onder{display:grid;justify-items:end;margin:8px 0 0}
+.ons--oefen .oef-ovz{margin:0 -4px;padding:8px 4px 4px;background:#EEF0F3;border-radius:4px}
+.ons--oefen .oef-ovz__kop{padding:0 4px 4px}
+.ons--oefen .oef-ovz__kop .oef-knop{min-height:34px;padding:0 12px;border-radius:4px;font-size:14px;font-weight:500}
+.ons--oefen .oef-ovz__kop .oef-knop--wit{border-color:#D2D2D2;color:#3F41A8}
+.ons--oefen .oef-ovz__kop .oef-knop--paars{background:#4447B5}
+.ons--oefen .oef-ovz__juridisch{margin:0 0 16px;padding:12px 10px;font-size:13px;color:#1a7ab6;border-radius:6px}
+.ons--oefen .oef-ons-ovzkaart{margin:0;padding:16px 16px 14px;border-radius:6px}
+.ons--oefen .oef-ons-ovzrij{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.ons--oefen .oef-ons-kaarticons .oef-icoonknop{width:24px;height:24px;color:#1a7ab6}
+.ons--oefen .oef-ons-rood{padding:1px 5px;border:0;border-radius:2px;background:#F26D5B;color:#fff;font-size:11px;line-height:16px}
+.ons--oefen .oef-ons-wzd{padding:1px 4px;background:#173F5F;font-size:11px;line-height:16px}
+.ons--oefen .oef-ons-meta{margin-top:8px!important;font-size:9px;line-height:12px;color:#555}
+.ons--oefen .oef-ons-ovzleeg{margin:22px 0 0;padding:16px 8px;border-block-color:#D6D6D6;font-size:11px;color:#333}
+.ons--oefen .oef-ons-ovzkaart .oef-ons-acties{margin-top:16px;justify-content:space-between}
+.ons--oefen .oef-ons-ovzkaart .oef-knop{min-height:30px;min-width:0;padding:0 16px;font-size:11px;font-weight:500}
+.ons--oefen .oef-ons-ovzkaart .oef-knop--rand{border-color:#1FA7F0;color:#1a7ab6}
+.ons--oefen .oef-ons-ovzkaart .oef-knop--rood{border-color:#E0605A;color:#E0605A;border-radius:999px;padding:0 26px}
+.ons--oefen .oef-domein{margin:6px 0 6px}
+.ons--oefen .oef-plan{grid-template-columns:213px minmax(0,1fr);padding:10px 20px 18px;border-radius:6px}
+.ons--oefen .oef-plan__onderwerp{padding:6px 0 0 0;font-size:11px;color:#333}
+.ons--oefen .oef-plan__rechts{gap:8px;padding:0;border-left-color:#CFCFCF}
+.ons--oefen .oef-plan__doel{grid-template-columns:1fr 1fr;gap:0;padding:0;border-bottom-color:#CFCFCF}
+.ons--oefen .oef-plan__doel>div{padding:6px 8px 10px}
+.ons--oefen .oef-plan__doel>div+div{border-left:1px solid #CFCFCF}
+.ons--oefen .oef-plan__doel--leeg{display:grid}
+.ons--oefen .oef-plan__doel--leeg>div:first-child{display:flex;justify-content:space-between;align-items:flex-start}
+.ons--oefen .oef-plan__doel--leeg .ons__knop{min-width:97px;justify-content:center}
+.ons--oefen .oef-icoonknop--rood{width:24px;height:24px;color:#dd3226}
+.ons--oefen .oef-plan__kader{margin:0 8px;padding:12px 12px 14px;border-color:#B5B5B5;border-radius:4px;background:#EDEDED;font-size:11px;line-height:16px}
+.ons--oefen .oef-plan__kader .oef-vraag{margin:0 0 6px!important}
+.ons--oefen .oef-plan__kader>p:nth-child(2){margin:0 0 6px!important}
+.ons--oefen .oef-plan__kader .oef-plan__in{margin-left:16px!important}
+.ons--oefen .oef-plan__kader .oef-vl__blok{margin:14px 0 0;padding:10px 16px;border:0;background:#F7F7F7}
+.ons--oefen .oef-plan__kader .oef-vl__blok .oef-vraag{margin:0 0 4px!important}
+.ons--oefen .oef-plan__kader .oef-vl__blok .oef-antwoord{margin:0 0 0 8px!important}
+.ons--oefen .oef-plan__rechts>.oef-knop--klein{min-height:20px;padding:0 8px;margin:6px 0 0 8px;font-size:9px;border-color:#1FA7F0;color:#1a7ab6}
+.ons--oefen .oef-plan__rechts>.oef-knop--klein .oef-ic{width:10px;height:10px}
+.ons--oefen .oef-plan__rechts::before{content:"";display:block;margin-top:-8px}
+.ons--oefen .oef-plan__kader+.oef-knop--klein{border-top:0}
+/* episode (10b) en onvrijwillige zorg bekijken (13f), opnames op 120 procent */
+.ons--oefen .oef-ons-episode{padding:16px 10px 20px}
+.ons--oefen .oef-ons-grid3{grid-template-columns:repeat(3,minmax(0,118px)) ;gap:16px 0;grid-template-columns:repeat(3,minmax(0,237px))}
+.ons--oefen .oef-ons-grid3 dt{margin:0 0 6px;font-size:9px;line-height:12px;color:#555}
+.ons--oefen .oef-ons-grid3 dd{font-size:11px;line-height:15px;color:#222}
+.ons--oefen .oef-ons-grid3 dd .oef-knop{min-height:20px;padding:0 9px;font-size:9px;border-color:#1FA7F0;color:#1a7ab6}
+.ons--oefen .oef-ons-episode~.oef-tabs .oef-tab.is-actief,.ons--oefen .oef-ons-ovzkop~.oef-tabs .oef-tab.is-actief{background:#EEF0FB}
+.ons--oefen .ons__kopregel .ons__titel+.oef-knop--rand{min-height:24px;padding:0 12px;font-size:11px;border-color:#1FA7F0;color:#1a7ab6}
+.ons--oefen .oef-ons-ovzkop .oef-status{display:inline-flex;align-items:center;padding:1px 6px;border:1px solid #BDBDBD;border-radius:3px;background:#F1F1F1;color:#444;font-size:9px}
+.ons--oefen .oef-ons-ovzkop .oef-ons-rood{background:#FFE5E2;border:1px solid #F3A39A;color:#B3261E;font-size:9px}
+.ons--oefen .oef-ons-ovzkop .oef-knop{min-height:28px;padding:0 12px;border-radius:4px;font-size:12px;font-weight:500}
+.ons--oefen .oef-ons-ovzkop .oef-knop--wit{border-color:#CFCFCF;color:#3F41A8}
+.ons--oefen .oef-ons-ovzkop .oef-knop--rood{color:#B3261E;border-color:#CFCFCF}
+.ons--oefen .oef-ons-ovzkop .oef-knop--paars{background:#3F41A8}
+.ons--oefen .oef-ons-waarschuwing{margin:16px 0 14px;padding:10px 14px;font-size:12px;border-radius:4px}
+.ons--oefen .oef-ons-waarschuwing .oef-link{font-size:10px}
+.ons--oefen .oef-ons-situatie{margin:16px 12px;font-size:11px}
+.ons--oefen .oef-ons-situatie dt{font-size:9px}
+/* rapportages (14, 14a, 18, 19, 19b, 19c, 19d) */
+.ons--oefen .oef-rapkaart{gap:10px;padding:10px 16px 16px;border-radius:8px}
+.ons--oefen .oef-rtabs{gap:4px;margin:0 0 2px}
+.ons--oefen .oef-rtab{width:30px;height:30px;color:#1a7ab6}
+.ons--oefen .oef-rtab .oef-ic{width:16px;height:16px}
+.ons--oefen .oef-rtab.is-actief{box-shadow:inset 0 -2px 0 #1a7ab6}
+.ons--oefen .oef-rplus{width:20px;height:20px;background:#1FA7F0}
+.ons--oefen .oef-rplus .oef-ic{width:13px;height:13px;stroke-width:2.4}
+.ons--oefen .oef-rapkaart .ons__kopregel{margin:4px 0 8px}
+.ons--oefen .ons__titel--klein{font-size:15px;line-height:22px;font-weight:600}
+.ons--oefen .oef-ster{font-size:10px;color:#666}
+.ons--oefen .oef-ster .oef-ic{width:12px;height:12px}
+.ons--oefen .oef-opslaan{min-height:28px;padding:0 18px}
+.ons--oefen .oef-rapkaart .ons__knop:disabled{background:#E5E7EB;color:#fff}
+.ons--oefen .oef-tekstvak{border-color:#C9C9C9;font-size:12px}
+.ons--oefen .oef-tekstvak--groot{min-height:126px}
+.ons--oefen .ons__schakel{gap:6px;font-size:9px;margin-top:8px}
+.ons--oefen .ons__uitleg{font-size:9px;margin:4px 0 22px!important}
+.ons--oefen .ons__links{gap:6px;max-width:none}
+.ons--oefen .ons__links .ons__veld{grid-template-columns:96px minmax(0,1fr);gap:4px}
+.ons--oefen .ons__links .ons__lbl{font-size:10px}
+.ons--oefen .ons__nep-select,.ons--oefen .ons__select{min-height:30px;line-height:28px;padding:0 30px 0 6px;border-color:#C9C9C9;font-size:10px}
+.ons--oefen .oef-rapfilter{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) auto;gap:12px}
+.ons--oefen .oef-rapfilter>.oef-knop{justify-self:end}
+.ons--oefen .oef-rapfilter .oef-zoekveld{height:26px;border-radius:999px}
+.ons--oefen .oef-rapfilter .oef-zoekveld input{font-size:10px;min-height:24px}
+.ons--oefen .oef-rapfilter .ons__select,.ons--oefen .oef-rapfilter .ons__nep-select{min-height:26px;line-height:24px}
+.ons--oefen .oef-rapfilter .oef-knop{min-height:26px;padding:0 8px;font-size:10px;border-radius:4px;color:#3F41A8;border-color:#CFCFCF}
+.ons--oefen .oef-rapdatum{font-size:10px;gap:6px}
+.ons--oefen .oef-klein-invoer{width:76px;min-height:22px;font-size:9px}
+.ons--oefen .oef-rap{grid-template-columns:30px 98px minmax(0,1fr) auto;gap:8px;padding:18px 4px 20px;font-size:12px;line-height:16px;border-top-color:#E6E6E6}
+.ons--oefen .oef-rap__ic{width:16px;height:16px;margin-top:2px}
+.ons--oefen .oef-rap__wie{font-size:11px;line-height:15px;color:#333}
+.ons--oefen .oef-rap__iconen{gap:6px;color:#C4C4C4}
+.ons--oefen .oef-rap__iconen .oef-ic{width:13px;height:13px}
+.ons--oefen .oef-rap__iconen{gap:10px}
+.ons--oefen .oef-venster__kop--blauw{padding:10px 14px;background:#1FA7F0}
+.ons--oefen .oef-venster__kop--blauw h3{font-size:13px;color:#fff}
+.ons--oefen .oef-typen{gap:6px 4px;padding:16px 16px 26px}
+.ons--oefen .oef-type{gap:4px;min-height:64px;font-size:10px;color:#333}
+.ons--oefen .oef-type__ic .oef-ic{width:18px;height:18px}
+.ons--oefen .oef-dimmer:has(.oef-venster:not(.oef-venster--wit)){padding-top:172px}
+.ons--oefen .oef-rap__iconen{flex-wrap:nowrap;align-items:flex-start}
+.ons--oefen .oef-rap__iconen>span{display:flex;gap:10px}
+.ons--oefen .oef-rap__iconen .oef-icoonknop{width:16px;height:16px;min-width:16px;min-height:16px;padding:0}
+.ons--oefen .oef-rap__tekst textarea{max-width:660px;min-height:80px}
+.ons--oefen .oef-rap__tekst .oef-ons-acties{max-width:660px;margin-top:10px}
+.ons--oefen .oef-rap__tekst .oef-ons-acties .oef-knop{min-height:26px;min-width:100px;justify-content:center;font-size:11px}
+.ons--oefen .oef-ons-bloeddruk{margin-top:14px;font-size:11px}
+.ons--oefen .oef-ons-bloeddruk>em{font-size:10px;margin-bottom:2px}
+.ons--oefen .oef-ons-metingrij{margin-bottom:8px;gap:8px}
+.ons--oefen .oef-ons-metingrij>.oef-ons-veld{grid-template-columns:100px 117px;gap:0}
+.ons--oefen .oef-ons-metingrij input{min-height:24px;height:24px;border-radius:2px;border-color:#BDBDBD}
+.ons--oefen .oef-ons-metingrij em,.ons--oefen .oef-ons-bloeddruk .oef-ons-veld>span{font-size:9px}
+.ons--oefen .oef-ons-bloeddruk>.oef-ons-veld{grid-template-columns:100px minmax(0,1fr);gap:0;margin-bottom:12px}
+.ons--oefen .oef-ons-bloeddruk>.oef-ons-veld:has(select){grid-template-columns:100px minmax(0,456px)}
+.ons--oefen .oef-ons-bloeddruk{padding-left:0}
+.ons--oefen .oef-ons-bloeddruk .oef-tekstvak{min-height:141px}
+.ons--oefen .oef-ons-bloeddruk #oef-ons-starttijd{width:64px;min-height:24px;height:24px;padding:2px 4px;font-size:9px}
+.ons--oefen .oef-ons-bloeddruk select{min-height:30px;padding:2px 6px;font-size:10px;border-color:#C9C9C9;border-radius:3px}
+/* agenda van de cliënt (15, 15b) */
+.ons--oefen .oef-agbalk{gap:12px;margin:0 0 14px}
+.ons--oefen .oef-week{min-width:250px;gap:4px}
+.ons--oefen .oef-week .oef-icoonknop{width:24px;height:24px;color:#555}
+.ons--oefen .oef-week__tekst{font-size:13px;font-weight:600;color:#555}
+.ons--oefen .oef-agfilter{min-height:30px;padding:3px 8px;gap:6px;border-color:#CFCFCF}
+.ons--oefen .oef-chip{padding:1px 6px;border-radius:3px;background:#CDEBFB;font-size:10px;line-height:14px;color:#0B4366}
+.ons--oefen .oef-agbalk>.oef-knop,.ons--oefen .oef-menuwrap>.oef-knop{min-height:30px;padding:0 14px;border-radius:4px;font-size:12px}
+.ons--oefen .oef-agbalk>.oef-knop--wit{color:#3F41A8;border-color:#CFCFCF}
+.ons--oefen .oef-knop--donkerpaars{background:#3F41A8}
+.ons--oefen .oef-dropdown{top:calc(100% + 2px);padding:4px;min-width:96px;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.ons--oefen .oef-dropdown button{min-height:30px;padding:0 6px;font-size:12px;color:#333}
+.ons--oefen .oef-dag{margin:0 0 6px;background:none;box-shadow:none}
+.ons--oefen .oef-dag h4{padding:6px 0 4px;background:none;font-size:13px;font-weight:600;color:#444}
+.ons--oefen .oef-dag ul{border-radius:6px;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.ons--oefen .oef-agitem{grid-template-columns:22px 108px minmax(0,1fr) auto;gap:4px;min-height:42px;padding:4px 12px;font-size:9px;line-height:12px;color:#444;border-top-color:#E6E6E6}
+.ons--oefen .oef-agitem:first-child{border-top:0}
+.ons--oefen .oef-agitem__wat{font-size:10px;color:#222}
+.ons--oefen .oef-agitem__wat small{font-size:9px;padding-left:22px}
+.ons--oefen .oef-agitem__ic{width:13px;height:13px;border-radius:2px;background:#9E9E9E}
+.ons--oefen .oef-agitem__vink input{width:12px;height:12px}
+.ons--oefen .oef-agitem__acties .oef-icoonknop{width:22px;height:22px}
+.ons--oefen .oef-agitem__acties .oef-ic{width:13px;height:13px}
+.ons--oefen .oef-agitem{font-size:11px;line-height:14px;grid-template-columns:24px 104px minmax(0,1fr) auto}
+.ons--oefen .oef-agitem__wat{font-size:12px}
+.ons--oefen .oef-agitem__wat small{font-size:11px;padding-left:0;margin-left:-104px}
+.ons--oefen .oef-agitem__ic{width:15px;height:15px}
+.ons--oefen .oef-agitem__ic--groen{background:#1EB58F}
+.ons--oefen .oef-chip{font-size:11px;line-height:16px;padding:1px 6px}
+.ons--oefen .oef-dag h4{padding:10px 0 6px}
+.ons--oefen .oef-agitem__acties .oef-icoonknop{color:#9E9E9E}
+@media (max-width:600px){.ons--oefen .oef-agitem__wat small{margin-left:0}}
+/* klinimetrie (16) en Omaha (12d tot en met 12h), opnames op 120 procent */
+.ons--oefen .ons__kopregel.oef-ons-kliniekop{margin:34px 0 18px}
+.ons--oefen .oef-ons-kliniekop .ons__titel{font-size:24px;line-height:30px}
+.ons--oefen .oef-ons-kliniekop .oef-knop--blauw{min-height:24px;padding:0 12px;font-size:10px;background:#1FA7F0}
+.ons--oefen .oef-ons-kliniekop~.oef-tabs .oef-tab{min-height:28px;font-size:11px}
+.ons--oefen .oef-ons-geenmetingen{margin:30px 0;padding:12px;font-size:12px;border-color:#9A9BA5}
+.ons--oefen .oef-ons-wizardtab{padding:10px 12px;min-height:36px;font-size:10px}
+.ons--oefen .oef-ons-vraag{font-size:20px;min-width:40px}
+.ons--oefen .oef-ons-omaha{padding:14px 12px}
+.ons--oefen .oef-ons-omaha legend,.ons--oefen .oef-ons-omaha h4{font-size:11px}
+.ons--oefen .oef-ons-radio{font-size:10px;min-height:16px;line-height:14px}
+.ons--oefen .oef-ons-radio input{width:11px;height:11px}
+.ons--oefen .oef-ons-omaha .oef-ons-veld{font-size:11px}
+.ons--oefen .oef-ons-omaha .oef-ons-veld>span{font-weight:600;color:#555}
+.ons--oefen .oef-ons-omaha fieldset{margin-bottom:16px}
+.ons--oefen .oef-ons-gebied{font-size:11px;padding:12px 16px;min-height:44px}
+.ons--oefen .oef-ons-lijst,.ons--oefen .oef-ons-scores{font-size:11px}
+/* ---------- modules buiten het dossier (31 tot en met 50) ---------- */
+.ons--oefen .oef-pil__pijl{width:14px;height:14px;stroke-width:2.2}
+.ons--oefen .oef-badge{display:inline-grid;place-items:center;min-width:14px;height:14px;margin-left:5px;padding:0 3px;border-radius:7px;background:#CFE8FB;color:#0B4366;font-size:9px;font-weight:600;line-height:1}
+.ons--oefen .oef-badge--oranje{background:#FFE0B3;color:#7A4A00}
+.ons--oefen .oef-modmenu .ons__groep:first-child{margin-top:10px}
+.ons--oefen .oef-modmenu ul:first-child{margin-top:6px}
+.ons--oefen .oef-modinhoud{padding:20px 16px}
+.ons--oefen .oef-modvol{flex:1;min-width:0}
+/* modulekiezer (02) */
+.ons--oefen .oef-modules{top:48px;border-radius:0 0 8px 8px;box-shadow:0 10px 20px rgba(0,0,0,.16)}
+.ons--oefen .oef-modules__kop{position:relative;justify-content:center;background:#FFF4DE}
+.ons--oefen .oef-modules__test{flex:none!important;padding:0;height:30px;background:none;color:#5C3A00;font-size:11px}
+.ons--oefen .oef-modules__kop .oef-sluit{position:absolute;right:6px;top:-3px}
+.ons--oefen .oef-modules__lijf{grid-template-columns:255px repeat(4,219px);min-height:512px}
+.ons--oefen .oef-modules__kolom{padding:26px 26px 20px}
+.ons--oefen .oef-modules__kolom.is-eerste{background:#F4F4FD}
+.ons--oefen .oef-modules__kolom h3{margin:0 0 10px;font-size:13px;font-weight:600;color:#333}
+.ons--oefen .oef-modules__kolom ul{gap:19px}
+.ons--oefen .oef-module{gap:13px;min-height:36px;padding:0;font-size:13px;color:#333}
+.ons--oefen .oef-module__ic{width:36px;height:36px;border-radius:8px}
+.ons--oefen .oef-module__ic .oef-ic{width:18px;height:18px;stroke-width:1.8}
+.ons--oefen .oef-module__extern{width:12px;height:12px;margin-left:-6px;color:#555}
+/* medewerkerportaal (32) */
+.ons--oefen.oef-mod--portaal .oef-balk{background:transparent}
+.ons--oefen.oef-mod--portaal{background:radial-gradient(circle at -230px 330px,#FFA21C 0 560px,transparent 561px) 0 0/100% 243px no-repeat,linear-gradient(#FFCC7D,#FFCC7D) 0 0/100% 243px no-repeat,#F5F5F5}
+.ons--oefen .oef-mp{position:relative;max-width:1024px;margin:0 auto;padding:22px 16px 30px}
+.ons--oefen .oef-mp__krul{position:absolute;right:-232px;top:6px;width:170px}
+.ons--oefen .oef-mp__groet{margin:0;font-size:22px;line-height:28px;font-weight:700;color:#3B2A0E}
+.ons--oefen .oef-mp__kop p{margin-top:4px;font-size:13px;color:#3B2A0E}
+.ons--oefen .oef-mp__raster{display:grid;grid-template-columns:minmax(0,782px) 186px;gap:24px;margin-top:20px}
+.ons--oefen .oef-mp__hoofd{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;align-items:start}
+.ons--oefen .oef-mp__kaart{min-height:176px;padding:12px 16px 16px;border-radius:8px;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.ons--oefen .oef-mp__kaartkop{display:flex;justify-content:space-between;align-items:center}
+.ons--oefen .oef-mp__kaartkop h4{margin:0;font-size:16px;line-height:22px;font-weight:600;color:#4346B7}
+.ons--oefen .oef-mp__kaartkop h4.is-grijs{color:#444}
+.ons--oefen .oef-mp__kaartkop .oef-icoonknop{width:26px;height:26px;color:#555}
+.ons--oefen .oef-mp-datum{display:flex;justify-content:space-between;align-items:center;margin:12px 0 0;font-size:14px;color:#555}
+.ons--oefen .oef-mp-datum .oef-icoonknop{width:26px;height:26px;color:#555}
+.ons--oefen .oef-mp__leeg{margin:26px 0 22px!important;text-align:center;font-size:13px;color:#333}
+.ons--oefen .oef-mp__leeg--klein{margin:16px 0 12px!important;font-size:12px}
+.ons--oefen .oef-mp__knop{width:100%;min-height:32px;border:1px solid #CFCFCF;border-radius:4px;background:#fff;color:#3F41A8;font-size:13px;font-weight:600}
+.ons--oefen .oef-mp__tabs{margin:12px 0 18px}
+.ons--oefen .oef-mp__tabs .oef-tab{min-height:30px;font-size:13px}
+.ons--oefen .oef-mp__uren{display:grid;grid-template-columns:1fr 1fr;margin:0;text-align:center}
+.ons--oefen .oef-mp__uren dt{font-size:14px;color:#555}
+.ons--oefen .oef-mp__uren dt .oef-ic{width:13px;height:13px;color:#999}
+.ons--oefen .oef-mp__uren dd{margin:6px 0 0;font-size:20px;font-weight:700;color:#6B6FCF}
+.ons--oefen .oef-mp__berichten{grid-column:1/-1;display:flex;align-items:stretch;justify-content:space-between;min-height:47px;margin-top:0;border-radius:6px;background:#2E3192;color:#fff}
+.ons--oefen .oef-mp__berichten h4{margin:0;padding:0 16px;align-self:center;font-size:16px;font-weight:600}
+.ons--oefen .oef-mp__balkknoppen{display:flex}
+.ons--oefen .oef-mp__balkknop{display:inline-flex;align-items:center;gap:5px;padding:0 16px;border:0;border-left:1px solid rgba(255,255,255,.35);background:none;color:#fff;font-size:11px;font-weight:600}
+.ons--oefen .oef-mp__balkknop .oef-ic{width:12px;height:12px}
+.ons--oefen .oef-mp__balkzoek .oef-ic{width:18px;height:18px;stroke-width:2.4}
+.ons--oefen .oef-mp__bericht{grid-column:1/-1;display:flex;gap:24px;margin-top:-4px;padding:20px 24px;border-radius:8px;background:#fff;font-size:12px;line-height:16px}
+.ons--oefen .oef-mp__bericht h4{margin:6px 0 12px;font-size:14px;font-weight:600;color:#333}
+.ons--oefen .oef-mp__bericht p+p{margin-top:12px}
+.ons--oefen .oef-mp__avatar{display:grid;place-items:end center;flex:none;width:66px;height:66px;border-radius:50%;background:#D6EEFB;box-shadow:0 0 0 4px #fff,0 0 0 5px #DDD;overflow:hidden;color:#2D9CDB}
+.ons--oefen .oef-mp__avatar .oef-ic{width:48px;height:48px}
+.ons--oefen .oef-mp__meta{display:flex;gap:12px;align-items:center;color:#999;font-size:11px}
+.ons--oefen .oef-mp__meta .oef-ic{width:12px;height:12px}
+.ons--oefen .oef-mp__meta .oef-link{color:#1a7ab6;font-weight:600}
+.ons--oefen .oef-mp__links{display:grid;gap:14px;align-content:start}
+.ons--oefen .oef-mp__link{min-height:48px;padding:0 16px;border:1px solid #DDD;border-radius:4px;background:#fff;text-align:left;font-size:14px;font-weight:600;color:#3F41A8}
+/* notities (31) */
+.ons--oefen .oef-notities{display:grid;justify-items:center;max-width:560px;margin:0 auto;padding:40px 16px;text-align:center;font-size:13px;line-height:19px;color:#333}
+.ons--oefen .oef-notities__beeld{width:240px;margin-bottom:24px}
+.ons--oefen .oef-notities h3{margin:0 0 12px;font-size:20px;font-weight:600}
+.ons--oefen .oef-notities p+p{margin-top:16px}
+.ons--oefen .oef-notities .oef-knoppen{gap:8px;margin-top:16px}
+.ons--oefen .oef-notities .oef-knop{min-height:32px;padding:0 12px;border-radius:4px;font-size:12px}
+.ons--oefen .oef-notities .oef-knop--wit{border-color:#CFCFCF;color:#333}
+/* groepszorg (34) */
+.ons--oefen .oef-gz__tabs{display:flex;align-items:center;gap:4px;height:48px;padding:0 36px;background:#fff;border-bottom:1px solid #E0E0E0}
+.ons--oefen .oef-gz__tab{height:100%;padding:0 12px;border:0;background:none;font-size:11px;color:#333}
+.ons--oefen .oef-gz__tab.is-actief{color:#1A98D5;box-shadow:inset 0 -2px 0 #1A98D5}
+.ons--oefen .oef-gz__client{flex:0 1 192px;margin-left:auto;min-height:26px!important;line-height:24px!important;font-size:11px}
+.ons--oefen .oef-gz__lijf{padding:30px 20px}
+.ons--oefen .oef-gz__kop{display:flex;justify-content:space-between;align-items:center}
+.ons--oefen .oef-gz__kop h3{margin:0;font-size:20px;font-weight:600;color:#333}
+.ons--oefen .oef-gz__kop p{font-size:12px;color:#555}
+.ons--oefen .oef-gz__toevoegen{min-height:30px;padding:0 14px;border:0;border-radius:999px;background:#1EB3E6;color:#fff;font-size:11px;font-weight:600}
+.ons--oefen .oef-gz__zoek{display:block;max-width:242px;margin:18px 0 22px;min-height:30px!important;line-height:28px!important}
+.ons--oefen .oef-gz__kaart{background:#fff;border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.ons--oefen .oef-gz__subtabs{display:flex;gap:4px;padding:6px 8px 0;background:#F5F5F5}
+.ons--oefen .oef-gz__subtab{min-height:28px;padding:0 10px;border:0;background:none;font-size:11px;color:#333}
+.ons--oefen .oef-gz__subtab.is-actief{background:#fff;color:#1A98D5;font-weight:600}
+.ons--oefen .oef-gz__tabel{width:100%;border-collapse:collapse;font-size:11px}
+.ons--oefen .oef-gz__tabel th{height:34px;padding:0 28px;text-align:left;font-weight:600;color:#333;border-bottom:1px solid #DDD}
+.ons--oefen .oef-gz__tabel th:first-child,.ons--oefen .oef-gz__tabel td:first-child{width:48%}
+.ons--oefen .oef-gz__tabel td{height:36px;padding:0 28px;border-bottom:1px solid #E6E6E6}
+.ons--oefen .oef-gz__tabel tr:nth-child(even) td{background:#F7F7F7}
+.ons--oefen .oef-gz__tabel td:last-child{text-align:right;padding-right:14px}
+.ons--oefen .oef-gz__tabel .oef-link{color:#1A98D5}
+.ons--oefen .oef-gz__bekijk{display:inline-flex;align-items:center;gap:3px;min-height:22px;padding:0 8px;border:1px solid #1EB3E6;border-radius:999px;background:#fff;color:#1A98D5;font-size:10px}
+.ons--oefen .oef-gz__bekijk .oef-ic{width:10px;height:10px}
+.ons--oefen .oef-gz__pagina{padding:10px;text-align:center;font-size:10px;color:#555}
+.ons--oefen .oef-gz__pagina b{color:#1A98D5;font-weight:400;text-decoration:underline}
+/* ons client (35) */
+.ons--oefen .oef-oc__titel{margin:16px 0 14px;font-size:22px;color:#555}
+.ons--oefen .oef-oc__boven{display:grid;grid-template-columns:minmax(0,487px) minmax(0,1fr);gap:20px}
+.ons--oefen .oef-oc__welkom{position:relative;display:flex;align-items:flex-end;min-height:146px;padding:16px;border-radius:8px;background:#E4E2FB;overflow:hidden}
+.ons--oefen .oef-oc__welkom p{display:grid;gap:4px;font-size:13px;color:#2E3192}
+.ons--oefen .oef-oc__welkom span{color:#333}
+.ons--oefen .oef-oc__vrouw{position:absolute;right:50px;top:8px;width:120px}
+.ons--oefen .oef-oc__tegels{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.ons--oefen .oef-oc__tegel{display:flex;justify-content:space-between;min-height:63px;padding:10px 12px 10px 16px;border-radius:6px;background:#E8E7FA}
+.ons--oefen .oef-oc__tegel p{display:grid;gap:6px;font-size:9px;line-height:11px;color:#2E3192}
+.ons--oefen .oef-oc__tegel b{font-size:14px;line-height:16px}
+.ons--oefen .oef-oc__tegelic{display:grid;place-items:center;width:24px;height:24px;border-radius:4px;background:#fff;color:#5F63AA}
+.ons--oefen .oef-oc__tegelic .oef-ic{width:14px;height:14px}
+.ons--oefen .oef-oc__kaart{margin-top:20px;padding:14px 16px;border-radius:8px;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.ons--oefen .oef-oc__kaartkop{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.ons--oefen .oef-oc__kaartkop h4{margin:0;font-size:16px;font-weight:600;color:#555}
+.ons--oefen .oef-oc__zoek{flex:0 1 260px;height:32px}
+.ons--oefen .oef-oc__lijst{margin-top:14px;border:1px solid #DDD;border-radius:4px}
+.ons--oefen .oef-oc__lijstkop{height:52px;padding:0 12px;display:flex;align-items:center;background:#F3F3F3;border-bottom:1px solid #DDD;font-size:13px;color:#666}
+.ons--oefen .oef-oc__lijst ul{list-style:none;margin:0;padding:0}
+.ons--oefen .oef-oc__lijst li+li{border-top:1px solid #DDD}
+.ons--oefen .oef-oc__client{display:flex;align-items:center;gap:12px;width:100%;min-height:51px;padding:0 16px;border:0;background:#fff;color:#2E3192;font-size:13px;font-weight:600;text-align:left}
+.ons--oefen .oef-oc__avatar{width:16px;height:16px;border-radius:50%;background:var(--k);filter:blur(2px)}
+.ons--oefen .oef-oc__boom{list-style:none;margin:14px 0 0;padding:0 0 0 12px;font-size:13px;color:#333}
+.ons--oefen .oef-oc__boom .oef-ic{width:10px;height:10px}
+.ons--oefen .oef-oc__dicht{transform:rotate(-90deg);margin-left:24px}
+.ons--oefen .oef-oc .oef-twee{gap:20px}
+/* agenda week (41) */
+.ons--oefen .oef-modinhoud--agenda{padding:0}
+.ons--oefen .oef-ag{display:grid;grid-template-columns:177px minmax(0,1fr);min-height:745px}
+.ons--oefen .oef-ag__lijst{background:#fff;border-right:1px solid #DDD;border-left:1px solid #DDD}
+.ons--oefen .oef-ag__lijstkop{display:flex;justify-content:space-between;align-items:center;padding:8px 8px 8px 10px}
+.ons--oefen .oef-ag__lijstkop h3{margin:0;font-size:16px;font-weight:600;color:#333}
+.ons--oefen .oef-ag__lijstkop .oef-vierkantplus{width:26px;height:26px}
+.ons--oefen .oef-ag__persoon,.ons--oefen .oef-ag__wie{display:flex;align-items:center;gap:14px;font-size:11px;color:#333}
+.ons--oefen .oef-ag__persoon{min-height:48px;padding:0 16px 0 20px;border-left:5px solid transparent;border-bottom:1px solid #DDD}
+.ons--oefen .oef-ag__persoon.is-actief{border-left-color:#8E91D9;background:#F0EFFC}
+.ons--oefen .oef-ag__persoon .oef-ic,.ons--oefen .oef-ag__wie .oef-ic{width:16px;height:16px;color:#6064B5}
+.ons--oefen .oef-ag__persoon small,.ons--oefen .oef-ag__wie small{display:block;color:#666;font-size:11px}
+.ons--oefen .oef-ag__hoofd{min-width:0;background:#F5F6FF}
+.ons--oefen .oef-ag__wie{padding:14px 14px 4px;font-size:14px;font-weight:600}
+.ons--oefen .oef-ag__wie .oef-ic{width:36px;height:36px;padding:10px;border-radius:50%;background:#E4E5F7}
+.ons--oefen .oef-ag__wie small{font-weight:400}
+.ons--oefen .oef-ag__balk{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:6px 12px 10px}
+.ons--oefen .oef-ag__knop{display:inline-flex;align-items:center;gap:4px;min-height:32px;min-width:32px;justify-content:center;padding:0 10px;border:1px solid #C9CAE8;border-radius:4px;background:#fff;color:#3F41A8;font-size:14px;font-weight:600}
+.ons--oefen .oef-ag__knop .oef-ic{width:14px;height:14px}
+.ons--oefen .oef-ag__pijlen{display:flex}
+.ons--oefen .oef-ag__pijlen .oef-ag__knop{padding:0 8px}
+.ons--oefen .oef-ag__pijlen .oef-ag__knop+.oef-ag__knop{border-left:0}
+.ons--oefen .oef-ag__periode{margin:0 12px 0 10px;font-size:14px;color:#777}
+.ons--oefen .oef-ag__periode b{color:#333}
+.ons--oefen .oef-ag__rechts{display:flex;gap:8px;margin-left:auto}
+.ons--oefen .oef-ag__toevoegen{display:flex}
+.ons--oefen .oef-ag__primair{min-height:32px;padding:0 12px;border:0;border-radius:4px 0 0 4px;background:#3F41A8;color:#fff;font-size:14px;font-weight:600}
+.ons--oefen .oef-ag__caret{border-radius:0 4px 4px 0;border-left:1px solid rgba(255,255,255,.4);padding:0 8px}
+.ons--oefen .oef-ag__caret .oef-ic{width:14px;height:14px}
+.ons--oefen .oef-ag__raster{background:#fff;font-size:11px;color:#555}
+.ons--oefen .oef-ag__rij{display:grid;grid-template-columns:52px 138fr 246fr 138fr 138fr 138fr 138fr 138fr}
+.ons--oefen .oef-ag__rij>span{position:relative;min-height:45.5px;border-left:1px solid #E6E6E6;border-top:1px solid #E6E6E6;background:linear-gradient(transparent 50%,#F4F4F4 50%,#F4F4F4 calc(50% + 1px),transparent calc(50% + 1px))}
+.ons--oefen .oef-ag__rij>span:first-child{border-left:0;padding:0 6px;background:none;font-size:11px;color:#555;transform:translateY(-8px)}
+.ons--oefen .oef-ag__dagen>span{min-height:38px;display:grid;place-items:center;border:0;background:#F5F6FF;color:#555;font-size:11px}
+.ons--oefen .oef-ag__dagen>span.is-vandaag{color:#D41E78;box-shadow:inset 0 -2px 0 #D41E78}
+.ons--oefen .oef-ag__heledag>span{min-height:24px;background:none}
+.ons--oefen .oef-ag__heledag>span:first-child{transform:none;font-size:9px;padding-top:4px}
+.ons--oefen .oef-ag__nu{position:absolute;left:0;right:0;top:4px;height:1px;background:#E85F93}
+.ons--oefen .oef-ag__nu::before{content:"";position:absolute;left:-4px;top:-4px;width:9px;height:9px;border-radius:50%;background:#E85F93}
+/* uitnodigingen, registraties, open registraties (40, 42, 44) */
+.ons--oefen .oef-mpag{max-width:362px*0;max-width:none;width:min(100%,362px + 362px);margin:0 auto}
+.ons--oefen .oef-modinhoud--uitnodigingen .oef-mpag,.ons--oefen .oef-modinhoud--registraties .oef-mpag,.ons--oefen .oef-modinhoud--open .oef-mpag{width:min(100%,724px);margin:0 auto}
+.ons--oefen .oef-segment{display:inline-flex;border:1px solid #C9CAE8;border-radius:4px;overflow:hidden;background:#fff}
+.ons--oefen .oef-segment button{min-height:32px;padding:0 9px;border:0;border-left:1px solid #C9CAE8;background:#fff;color:#3F41A8;font-size:12px;font-weight:500}
+.ons--oefen .oef-segment button:first-child{border-left:0}
+.ons--oefen .oef-segment button.is-actief{background:#EFEFFB;box-shadow:inset 0 0 0 1px #6064B5}
+.ons--oefen .oef-reg__balk{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:12px}
+.ons--oefen .oef-reg__datum{display:flex;align-items:center;gap:4px;height:32px;padding:0 6px;border:1px solid #C9CAE8;border-radius:4px;background:#fff}
+.ons--oefen .oef-reg__datum input{width:150px;border:0;font:inherit;font-size:12px;color:#333;background:none}
+.ons--oefen .oef-reg__datum .oef-ic{width:16px;height:16px;color:#555}
+.ons--oefen .oef-reg__filters{min-height:32px;font-size:12px;border-color:#C9CAE8!important;color:#3F41A8!important}
+.ons--oefen .oef-reg__tegels{display:flex;gap:12px;margin:18px 0}
+.ons--oefen .oef-reg__tegels p{display:grid;justify-items:center;min-width:92px;padding:12px 14px;border:1px solid #DDD;border-radius:6px;background:#fff;font-size:9px;color:#333}
+.ons--oefen .oef-reg__tegels b{font-size:14px;color:#2E3192}
+.ons--oefen .oef-reg__kaart{margin-bottom:16px;padding:12px 16px 14px;border-radius:6px;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.08);font-size:12px;line-height:17px}
+.ons--oefen .oef-reg__kop{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.ons--oefen .oef-reg__kop .oef-icoonknop{margin-left:auto;width:24px;height:24px;color:#333}
+.ons--oefen .oef-reg__ongeldig{display:inline-flex;align-items:center;gap:3px;padding:1px 6px;border:1px solid #F3A39A;border-radius:3px;background:#FFE5E2;color:#B3261E;font-size:9px}
+.ons--oefen .oef-reg__ongeldig .oef-ic{width:10px;height:10px}
+.ons--oefen .oef-reg__tijd{color:#777;font-size:10px}
+.ons--oefen .oef-reg__fout{display:flex;align-items:center;gap:4px;margin-top:6px!important;color:#B3261E;font-size:10px}
+.ons--oefen .oef-reg__fout .oef-ic{width:11px;height:11px;color:#dd3226}
+/* werkstaat (43) */
+.ons--oefen .oef-modinhoud--werkstaat{padding:16px}
+.ons--oefen .oef-ws{width:min(100%,780px);margin:0 auto}
+.ons--oefen .oef-ws__tabs{display:flex;gap:2px}
+.ons--oefen .oef-ws__tab{min-height:20px;padding:0 18px;border:0;background:var(--k);color:#fff;font-size:10px;letter-spacing:.2em;text-transform:uppercase;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 100%,0 100%)}
+.ons--oefen .oef-ws__dag{display:flex;justify-content:center;align-items:center;gap:8px;min-height:22px;background:#E8475A;color:#fff;font-size:10px}
+.ons--oefen .oef-ws__pijl{padding:0 4px;border:0;background:none;color:#fff;font-size:10px}
+.ons--oefen .oef-ws__tabel{width:100%;border-collapse:collapse;background:#fff;font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:#555}
+.ons--oefen .oef-ws__tabel th{height:18px;padding:0 10px;text-align:left;font-weight:600;background:#FDECEE}
+.ons--oefen .oef-ws__tabel th:first-child{width:52%}
+.ons--oefen .oef-ws__tabel td{height:30px;border-bottom:1px solid #EEE}
+.ons--oefen .oef-ws__totaal{padding:8px 26px;background:#fff;text-align:right;font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:#555}
+.ons--oefen .oef-ws__totaal b{font-size:12px;color:#333;margin:0 2px}
+/* vakantieuren (45) */
+.ons--oefen .oef-modinhoud--vakantieuren{padding:16px 80px}
+.ons--oefen .oef-vu__jaren{display:flex;justify-content:center;gap:40px;margin-bottom:24px}
+.ons--oefen .oef-vu__jaren button{min-height:30px;padding:0 26px;border:1px solid transparent;border-radius:4px;background:none;color:#333;font-size:13px}
+.ons--oefen .oef-vu__jaren button.is-actief{border-color:#999;background:#fff;color:#4346B7}
+.ons--oefen .oef-vu__tegels{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.ons--oefen .oef-vu__tegels p{display:grid;justify-items:center;padding:12px;border-radius:2px;background:#4B4D6A;color:#fff;font-size:12px}
+.ons--oefen .oef-vu__tegels b{font-size:26px;line-height:34px}
+.ons--oefen .oef-vu__onder{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:16px;margin-top:16px}
+.ons--oefen .oef-vu__tabel{width:100%;border-collapse:collapse;background:#EAF3FC;font-size:9px;color:#777;align-self:start;height:206px}
+.ons--oefen .oef-vu__tabel th{height:16px;background:#DADADA;font-weight:400;letter-spacing:.05em;text-transform:uppercase}
+.ons--oefen .oef-vu__kaart{padding:8px;background:#fff}
+.ons--oefen .oef-vu__grafiek{width:100%;height:auto;font-size:8px;fill:#555}
+/* planning (50) */
+.ons--oefen .oef-modinhoud--planning{padding:16px 80px}
+.ons--oefen .oef-pl__balk{position:relative;display:flex;justify-content:center;align-items:center;gap:16px;margin-bottom:20px;font-size:13px;color:#333}
+.ons--oefen .oef-pl__pijl{display:grid;place-items:center;width:22px;height:22px;padding:0;border:1px solid #CCC;border-radius:50%;background:#fff;color:#555}
+.ons--oefen .oef-pl__pijl .oef-ic{width:12px;height:12px}
+.ons--oefen .oef-pl__schakel{position:absolute;right:0;display:flex;align-items:center;gap:8px}
+.ons--oefen .oef-pl__kaart{display:grid;place-items:center;min-height:200px;background:#fff;font-size:22px;color:#333}
+/* afspraak toevoegen (46) */
+.ons--oefen .oef-dimmer:has(.oef-afs){position:fixed;padding:16px;align-items:center;z-index:var(--z-melding,100)}
+.ons--oefen .oef-afs{display:flex;flex-direction:column;width:min(100%,1036px);max-height:calc(100dvh - 32px);overflow:hidden;border-radius:6px;background:#F5F5F5}
+.ons--oefen .oef-afs .oef-venster__kop{background:#fff;padding:10px 16px}
+.ons--oefen .oef-afs .oef-venster__kop h3{font-size:22px;color:#333}
+.ons--oefen .oef-afs__lijf{display:grid;grid-template-columns:minmax(0,488px) minmax(0,1fr);gap:16px;padding:16px;overflow:auto;align-items:start}
+.ons--oefen .oef-afs__kaart{padding:14px 16px;border-radius:6px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.ons--oefen .oef-afs__kaart h4{margin:0 0 14px;font-size:18px;font-weight:600;color:#333}
+.ons--oefen .oef-afs__kop{display:flex;justify-content:space-between;align-items:center}
+.ons--oefen .oef-afs__kop .oef-knop{min-height:32px;border-color:#C9CAE8;color:#3F41A8;font-size:12px}
+.ons--oefen .oef-afs__genodigden h5{margin:14px 0 10px;font-size:14px;color:#333}
+.ons--oefen .oef-afs__persoon{display:flex;align-items:center;gap:12px;font-size:12px}
+.ons--oefen .oef-afs__persoon>.oef-ic{width:28px;height:28px;padding:7px;border-radius:50%;background:#E4E5F7;color:#6064B5}
+.ons--oefen .oef-afs__persoon span{flex:1}
+.ons--oefen .oef-afs__persoon small{display:block;color:#666;font-size:10px}
+.ons--oefen .oef-afs__veld{display:grid;gap:3px;margin-bottom:12px;font-size:10px;color:#333;max-width:340px}
+.ons--oefen .oef-afs__veld input,.ons--oefen .oef-afs__veld select{height:28px;padding:0 6px;border:1px solid #BDBDBD;border-radius:4px;background:#fff;font:inherit;font-size:11px}
+.ons--oefen .oef-afs__veld .oef-tekstvak{min-height:56px}
+.ons--oefen .oef-afs__veld:has(textarea){max-width:none}
+.ons--oefen .oef-afs__twee{display:flex;align-items:center;gap:12px}
+.ons--oefen .oef-afs__twee .oef-afs__veld{flex:0 1 140px}
+.ons--oefen .oef-afs__streep{padding-top:4px;color:#555}
+.ons--oefen .oef-afs__min{display:flex;align-items:center;height:28px;border:1px solid #BDBDBD;border-radius:4px;background:#fff}
+.ons--oefen .oef-afs__min input{width:40px;height:26px;border:0}
+.ons--oefen .oef-afs__min em{padding:0 6px;font-style:normal;color:#777}
+.ons--oefen .oef-afs__stap{width:28px;height:26px;border:0;border-left:1px solid #BDBDBD;background:#fff;color:#333}
+.ons--oefen .oef-afs__herhaling{display:grid;gap:3px;margin:8px 0 16px!important;font-size:11px}
+.ons--oefen .oef-afs__herhaling span{font-size:10px}
+.ons--oefen .oef-afs__prive{font-size:11px}
+.ons--oefen .oef-afs .oef-ons-voeter{background:#fff;padding:10px 16px}
+.ons--oefen .oef-afs .oef-ons-voeter .oef-knop{min-height:32px;font-size:12px;border-radius:4px}
+@media (max-width:820px){
+  .ons--oefen .oef-mp__raster,.ons--oefen .oef-mp__hoofd,.ons--oefen .oef-oc__boven,.ons--oefen .oef-afs__lijf,.ons--oefen .oef-vu__onder{grid-template-columns:minmax(0,1fr)}
+  .ons--oefen .oef-mp__krul{display:none}
+  .ons--oefen .oef-mp__links{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .ons--oefen .oef-ag{grid-template-columns:minmax(0,1fr)}
+  .ons--oefen .oef-ag__lijst{border:0;border-bottom:1px solid #DDD}
+  .ons--oefen .oef-modinhoud--vakantieuren,.ons--oefen .oef-modinhoud--planning{padding:16px}
+  .ons--oefen .oef-modules__lijf{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:600px){
+  .ons--oefen .oef-mp__berichten{flex-wrap:wrap}
+  .ons--oefen .oef-mp__berichten h4{padding:12px 16px}
+  .ons--oefen .oef-mp__balkknoppen{flex-wrap:wrap;width:100%}
+  .ons--oefen .oef-mp__balkknop{min-height:44px;flex:1 1 auto;border-top:1px solid rgba(255,255,255,.35)}
+  .ons--oefen .oef-mp__bericht{flex-direction:column;gap:12px;padding:16px}
+  .ons--oefen .oef-mp__links{grid-template-columns:minmax(0,1fr)}
+  .ons--oefen .oef-oc__tegels{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .ons--oefen .oef-oc__vrouw{right:8px;width:90px}
+  .ons--oefen .oef-gz__tabs{flex-wrap:wrap;height:auto;padding:4px 8px}
+  .ons--oefen .oef-gz__tab{min-height:44px}
+  .ons--oefen .oef-gz__client{flex-basis:100%;margin:4px 0}
+  .ons--oefen .oef-gz__kop{flex-wrap:wrap;gap:10px}
+  .ons--oefen .oef-gz__tabel th,.ons--oefen .oef-gz__tabel td{padding:0 8px}
+  .ons--oefen .oef-gz__tabel th:first-child,.ons--oefen .oef-gz__tabel td:first-child{width:auto}
+  .ons--oefen .oef-ag__balk{gap:6px}
+  .ons--oefen .oef-ag__periode{flex-basis:100%;margin:0}
+  .ons--oefen .oef-ag__rechts{margin-left:0}
+  .ons--oefen .oef-ag__rij{grid-template-columns:38px repeat(7,minmax(0,1fr))}
+  .ons--oefen .oef-ag__dagen>span{font-size:9px;text-align:center}
+  .ons--oefen .oef-ag__rij>span:first-child{padding:0 2px;font-size:9px}
+  .ons--oefen .oef-ws__tab{padding:0 8px;letter-spacing:.05em}
+  .ons--oefen .oef-ws__tabel th{padding:0 3px;font-size:7px;letter-spacing:0}
+  .ons--oefen .oef-vu__jaren{gap:8px}
+  .ons--oefen .oef-vu__tegels{grid-template-columns:minmax(0,1fr)}
+  .ons--oefen .oef-pl__balk{flex-wrap:wrap}
+  .ons--oefen .oef-pl__schakel{position:static;flex-basis:100%;justify-content:center}
+  .ons--oefen .oef-afs__twee{flex-wrap:wrap}
+  .ons--oefen .oef-modules__lijf{grid-template-columns:minmax(0,1fr)}
+  .ons--oefen .oef-reg__datum input{width:120px}
+}
+@media (min-width:1100px){.ons--oefen .oef-module{white-space:nowrap;overflow-wrap:normal}}
+.ons--oefen .oef-afs__veld input,.ons--oefen .oef-afs__veld select{min-height:0;height:30px}
+.ons--oefen .oef-afs__min input{min-height:0;height:26px}
+.ons--oefen .oef-afs__veld select{appearance:auto}
+.ons--oefen .oef-vu,.ons--oefen .oef-pl{width:min(100%,993px);margin:0 auto}
+.ons--oefen .oef-modinhoud--vakantieuren,.ons--oefen .oef-modinhoud--planning{padding:16px}
+.ons--oefen .oef-oc__lijst ul{max-height:256px;overflow-y:auto}
+.ons--oefen .oef-ws__tab{min-height:22px;font-size:10px}
+.ons--oefen .oef-ws__dag{min-height:24px}
+.ons--oefen .oef-reg__datum input{min-height:0;height:28px;padding:0 4px;border:0;border-radius:0;box-shadow:none}
+/* Smalle schermen: de 1-op-1-maten hierboven gelden voor laptop en groter. */
+@media (max-width:1100px){
+  .ons--oefen .oef-start{grid-template-columns:180px minmax(0,1fr);gap:20px 24px;padding:28px 20px}
+  .ons--oefen .oef-start__kaarten{grid-column:1/-1;grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+  .ons--oefen .oef-meerinfo,.ons--oefen .oef-kop.is-open .oef-meerinfo{grid-template-columns:minmax(0,1fr) minmax(0,2fr)}
+}
+@media (max-width:820px){
+  .ons--oefen .ons__lijf{grid-template-columns:150px minmax(0,1fr)}
+  .ons--oefen .oef-plan{grid-template-columns:minmax(0,1fr);padding:12px}
+  .ons--oefen .oef-plan__rechts{border-left:0}
+  .ons--oefen .oef-rapfilter{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .ons--oefen .oef-rapfilter>.oef-knop{justify-self:start}
+  .ons--oefen .oef-vlkeuzes{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ons--oefen .oef-oc .oef-twee{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:700px){
+  .ons--oefen .oef-ons-grid3{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:600px){
+  .ons--oefen .ons__lijf,.ons--oefen.is-ingeklapt .ons__lijf{grid-template-columns:minmax(0,1fr)}
+  .ons--oefen .oef-menu{padding:4px 6px}
+  .ons--oefen .oef-menu .ons__menu-item,.ons--oefen .oef-menu__terug,.ons--oefen .oef-menu__inklappen{min-height:44px;margin:0}
+  .ons--oefen .oef-menu ul{margin:0}
+  .ons--oefen .oef-menu ul li+li{margin-top:0}
+  .ons--oefen .oef-inhoud{padding:10px 8px 60px}
+  .ons--oefen .oef-start{grid-template-columns:minmax(0,1fr);padding:16px 12px;gap:16px}
+  .ons--oefen .oef-start__kaarten{grid-template-columns:minmax(0,1fr)}
+  .ons--oefen .oef-start__zoek{height:36px;border-radius:18px}
+  .ons--oefen .oef-start__zoek input{min-height:34px;font-size:14px}
+  .ons--oefen .oef-blink{min-height:32px}
+  .ons--oefen .oef-kop.is-open .oef-meerinfo{position:static;grid-template-columns:minmax(0,1fr)}
+  .ons--oefen .oef-rapfilter{grid-template-columns:minmax(0,1fr)}
+  .ons--oefen .oef-rap{grid-template-columns:22px minmax(0,1fr)}
+  .ons--oefen .oef-agitem{grid-template-columns:24px 70px minmax(0,1fr)}
+  .ons--oefen .oef-vlkeuzes{grid-template-columns:minmax(0,1fr)}
+  .ons--oefen .oef-dimmer{padding:56px 8px 8px}
+  .ons--oefen .oef-ons-bloeddruk>.oef-ons-veld,.ons--oefen .oef-ons-bloeddruk>.oef-ons-veld:has(select){grid-template-columns:80px minmax(0,1fr)}
+  .ons--oefen .oef-ons-metingrij>.oef-ons-veld{grid-template-columns:80px minmax(0,1fr)}
+  .ons--oefen .oef-ons-metingrij input{min-height:44px;height:44px}
+  .ons--oefen .oef-concept{flex-direction:column;align-items:flex-start}
+  .ons--oefen .ons__concept-knoppen{flex-wrap:wrap}
+  .ons--oefen .oef-ons-ovzkaart .oef-ons-acties{flex-wrap:wrap;justify-content:flex-start}
+  .ons--oefen .oef-ovz__kop{flex-wrap:wrap}
+  .ons--oefen .oef-ag__toevoegen,.ons--oefen .oef-ag__rechts{flex-wrap:wrap}
+  .ons--oefen .oef-gz__lijf{padding:16px 8px}
+}
+@media (max-width:600px){.ons--oefen .oef-menu .ons__nedap{display:none}}
+.ons--oefen .oef-rtab.is-soep{color:#E8B400}
+.ons--oefen .oef-rtab.is-soep.is-actief{box-shadow:inset 0 -2px 0 #E8B400}
+.ons--oefen .oef-rtab.is-bloeddruk{color:#D53B79}
+.ons--oefen .oef-rtab.is-bloeddruk.is-actief{box-shadow:inset 0 -2px 0 #D53B79}
+.ons--oefen .oef-soep__rij{grid-template-columns:99px minmax(0,1fr)}
+.ons--oefen .oef-soep__rij label,.ons--oefen .oef-soep__rij .ons__lbl{font-size:10px}
+.ons--oefen .oef-soep__rij .ons__nep-select{max-width:550px}
+@media (max-width:600px){.ons--oefen .oef-soep__rij{grid-template-columns:minmax(0,1fr)}}
+/* Eigen schil, los van de gedeelde .ons-regels in styles.css */
+.ons--oefen .ons__lijf{background:none;min-height:0}
+.ons--oefen .oef-menu{height:auto;align-self:stretch}
+.ons--oefen .ons__logo{position:relative;flex:none;border-radius:50%;background:#3B3631}
+.ons--oefen .ons__logo::after{content:"";position:absolute;left:6px;right:6px;top:12px;height:5px;border-radius:0 0 8px 8px;background:#FFB01F}
+@media (min-width:1300px){.ons--oefen .ons__lijf{min-height:745px}.ons--oefen .oef-menu{align-self:start;height:745px}}
+@media (max-width:600px){.ons.ons--oefen .oef-menu{display:flex;height:auto}}
+/* Vastzetten tegen wijzigingen in de gedeelde .ons-basis (styles.css) */
+.ons--oefen .oef-balkknop svg{fill:none;stroke:#2B2118;stroke-width:1.7;stroke-linejoin:round;stroke-linecap:round}
+.ons--oefen .ons__rechts{gap:6px}
+.ons--oefen .oef-balkzoek{display:block;padding:0;gap:0;color:#4A3B26}
+.ons--oefen .oef-menu ul{display:block;gap:0}
+.ons--oefen .oef-menu .ons__groep{margin:0 0 14px!important}
+.ons--oefen .oef-menu ul+.ons__groep{margin-top:0!important}
+.ons--oefen .oef-menu .ons__menu-item,.ons--oefen .oef-menu__terug,.ons--oefen .oef-menu__inklappen{height:auto}
+.ons--oefen .oef-menu__inklappen{margin-top:auto!important;margin-bottom:0!important}
+.ons--oefen .oef-menu .ons__nedap{margin:8px -10px 0!important}
+.ons--oefen .oef-menu__terug .ons__icoon{width:16px;height:16px;margin-right:8px;stroke-width:1.4}
+.ons--oefen .ons__gegevens{display:block}
+.ons--oefen .oef-mini td{white-space:nowrap}
+.ons--oefen .oef-mini td:last-child{white-space:normal}
+@media (max-width:600px){.ons--oefen .oef-menu .ons__groep{display:none}.ons--oefen .oef-menu__inklappen{margin-top:0!important}}
+.ons--oefen .oef-ons-radio{font-size:12px;line-height:16px;min-height:18px}
+.ons--oefen .oef-ons-radio input{width:12px;height:12px}
+.ons--oefen .oef-ons-wizardtab{font-size:11px}
+.ons--oefen .oef-ons-omaha legend,.ons--oefen .oef-ons-omaha h4{font-size:12px}
+.ons--oefen .oef-ons-venster--meting{width:min(100%,400px)}
+.ons--oefen .oef-ons-venster--meting .oef-venster__kop h3{font-size:17px}
+.ons--oefen .oef-ons-venster--meting h4{font-size:13px;margin-top:6px}
+.ons--oefen .oef-ons-venster--meting .oef-ons-instrument{min-height:22px;padding:2px 16px;font-size:12px;color:#3F41A8}
+.ons--oefen .oef-ons-venster--meting .oef-zoekveld{height:28px;max-width:none}
+@media (max-width:600px){.ons--oefen .oef-ons-venster--meting .oef-ons-instrument{min-height:32px}.ons--oefen .oef-ons-radio{min-height:32px}}

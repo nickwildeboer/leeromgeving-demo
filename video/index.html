@@ -20,8 +20,8 @@
   Met ?fmt=16x9 verdwijnt de bediening en staat het beeld op 1920 x 1080.
 -->
 <style>
-@font-face{font-family:"Bricolage Grotesque";font-weight:200 800;font-style:normal;font-display:swap;src:url(/assets/bricolage-latin.woff2) format("woff2")}
-@font-face{font-family:"Figtree";font-weight:300 900;font-style:normal;font-display:swap;src:url(/assets/figtree-latin.woff2) format("woff2")}
+@font-face{font-family:"Fraunces";font-weight:600;font-style:normal;font-display:swap;src:url(/assets/fraunces-latin.woff2) format("woff2")}
+@font-face{font-family:"Instrument Sans";font-weight:400 600;font-style:normal;font-display:swap;src:url(/assets/instrument-sans-latin.woff2) format("woff2")}
 :root{
   /* vier kleuren van de klant, standaard die van Ons Op Maat */
   --org-primair:#14493B; --org-op-primair:#fff; --org-accent:#F7C948; --org-op-accent:#12211C; --org-focus:#C8622A; --org-grond:#F5F2EB; --org-tekst:#12211C;
@@ -33,8 +33,8 @@
   --org-zachttekst:color-mix(in srgb,var(--org-tekst) 72%,var(--org-grond));
   --lijn:color-mix(in srgb,var(--org-tekst) 14%,var(--org-grond));
   --e-bar:#2F3E4E; --e-line:#D5DCE4; --e-soft:#66727F; --e-fill:#E9EDF1;
-  --display:"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif;
-  --body:"Figtree","Helvetica Neue",Arial,sans-serif;
+  --display:"Fraunces",Georgia,serif;
+  --body:"Instrument Sans",system-ui,sans-serif;
   --page:#E7E3D9;
 }
 *{box-sizing:border-box}
@@ -50,7 +50,7 @@ body{background:var(--page);color:var(--org-tekst);font-family:var(--body);-webk
 /* bouwstenen */
 .scene{position:absolute;inset:0;opacity:0}
 .abs{position:absolute}
-.h{font-family:var(--display);font-weight:700;letter-spacing:-.025em;line-height:1.06;margin:0}
+.h{font-family:var(--display);font-weight:600;font-variation-settings:'SOFT' 100;letter-spacing:-.015em;line-height:1.06;margin:0}
 .eyebrow{font:600 34px/1 var(--body);color:var(--org-zachttekst);letter-spacing:.01em}
 .golf{display:block;overflow:visible}
 .golf path{fill:none;stroke:var(--org-accent);stroke-linecap:round;stroke-width:9}
@@ -160,14 +160,6 @@ body:not(.speelt) .cc{opacity:0!important}
 @media (max-width:520px){.startknop{gap:8px;min-height:48px;height:48px;padding:8px 14px;font-size:15px;white-space:nowrap}}
 .startknop svg{width:22px;height:22px;fill:currentColor}
 .speelt .startknop{display:none}
-.demomelding,.transcript{margin:12px 0 0;color:var(--org-tekst);font-size:14px;line-height:1.55}
-.demomelding{padding:12px 16px;border-left:4px solid var(--org-tekst);background:var(--org-grond);border-radius:8px}
-.transcript{padding:12px 16px;background:var(--org-grond);border:1px solid var(--lijn);border-radius:12px}
-.transcript summary{cursor:pointer;min-height:44px;display:flex;align-items:center;color:var(--org-tekst);font-weight:700}
-.transcript h2{margin:18px 0 8px;font-size:1.05rem;color:var(--org-tekst)}
-.transcript p,.transcript li{margin:0 0 8px}
-.transcript ol{padding-left:24px}
-.render .demomelding,.render .transcript{display:none!important}
 </style>
 </head>
 <body>
@@ -313,41 +305,6 @@ body:not(.speelt) .cc{opacity:0!important}
     <button type="button" id="geluid" aria-pressed="true">Geluid</button>
   </div>
   <audio id="snd" data-src="/video/welkomstvideo.mp3" preload="none"></audio>
-  <p class="demomelding">Dit is een voorbeeld met fictieve gegevens. De getoonde schermen zijn nagebouwd, er is geen echte bron gekoppeld en de video toont geen bewijs van bekwaamheid.</p>
-  <details class="transcript">
-    <summary>Lees de tekst en beeldbeschrijving van de video</summary>
-    <h2>Beeld in de video</h2>
-    <ol>
-      <li>De titel toont “Leren bij <span class="orgnaam">De Wilgenhof</span>”.</li>
-      <li>Een abstracte medewerker staat naast een nagebouwd cliëntenoverzicht. De regels bevatten geen leesbare cliëntgegevens.</li>
-      <li>Vijf onderdelen verschijnen: Rondleiding, Dienst starten, Tijdens je dienst, Werkafspraken en Apps.</li>
-      <li>Een nagebouwd scherm toont het menu-item Overdracht en de vraag waar je leest wat de vroege dienst heeft overgedragen. “In de overdracht” is als antwoord aangevinkt.</li>
-      <li>Een voortgangsoverzicht toont vinkjes bij Rondleiding en Dienst starten en de tekst “2 van 5 delen af”. Er staat dat de opleider de voortgang ziet.</li>
-      <li>Een zoekveld toont “Hoe meld ik een val?” met het resultaat “Een val melden in de MIC”, onder Algemene werkafspraken. De regel vermeldt dat dit op 6 oktober 2026 is gecontroleerd.</li>
-      <li>Het slotbeeld toont “Welkom in het team” en “Begin met de rondleiding”.</li>
-    </ol>
-    <h2>Gesproken tekst</h2>
-    <ol>
-      <li>0:00. Hoi, welkom bij <span class="orgnaam">De Wilgenhof</span>. Fijn dat je er bent.</li>
-      <li>0:08. Je bent nieuw in het team.</li>
-      <li>0:12. Vandaag leer je hoe je werkt in het ECD, Nedap ONS.</li>
-      <li>0:20. Je leert hier hoe wij het bij <span class="orgnaam">De Wilgenhof</span> doen.</li>
-      <li>0:25. Hoe je je dienst start, hoe je rapporteert en wat we met elkaar hebben afgesproken.</li>
-      <li>0:35. Elk onderdeel begint met een situatie uit je dienst.</li>
-      <li>0:40. Daarna probeer je het zelf, in een nagebouwd scherm.</li>
-      <li>0:45. Aan het eind beantwoord je een korte vraag.</li>
-      <li>0:49. Zo weet je of je het goed doet.</li>
-      <li>0:53. Je werkt in je eigen tempo.</li>
-      <li>0:56. Wat je af hebt, krijgt een vinkje.</li>
-      <li>1:00. Je opleider ziet hoe ver je bent.</li>
-      <li>1:05. Twijfel je later hoe iets ook alweer moet?</li>
-      <li>1:08. Kom dan hier terug.</li>
-      <li>1:11. Alles blijft voor je klaarstaan.</li>
-      <li>1:14. En verandert er iets, dan wordt het hier bijgewerkt.</li>
-      <li>1:20. Begin met de rondleiding.</li>
-      <li>1:23. Veel plezier, en welkom in het team.</li>
-    </ol>
-  </details>
 </div>
 
 <script>

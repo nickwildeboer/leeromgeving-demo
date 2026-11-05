@@ -92,7 +92,7 @@ const TEKENINGEN = {
   ons: `
     <rect x="18" y="20" width="204" height="122" rx="10" fill="#F5F5F5" stroke="${T}" stroke-opacity=".15" stroke-width="2"/>
     <rect x="18" y="20" width="204" height="18" rx="10" fill="#FFCC7D"/><rect x="18" y="30" width="204" height="8" fill="#FFCC7D"/>
-    <rect x="28" y="24" width="26" height="10" rx="4" fill="#507AFF"/>
+    <rect x="28" y="24" width="26" height="10" rx="4" fill="#3667ff"/>
     <rect x="18" y="38" width="46" height="104" fill="${W}"/>
     ${[0, 1, 2, 3, 4].map((i) => `<rect x="26" y="${48 + i * 14}" width="30" height="5" rx="2.5" fill="${i === 3 ? '#4346B7' : T}" opacity="${i === 3 ? 1 : 0.2}"/>`).join('')}
     <rect x="74" y="46" width="138" height="20" rx="5" fill="${W}"/><circle cx="84" cy="56" r="6" fill="#F5F4FF" stroke="#797CD1"/>

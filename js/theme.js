@@ -2,15 +2,26 @@
 // Een optionele kleur die leeg blijft, rekenen we uit de vier verplichte.
 
 export const STANDAARD = {
-  // Merkstrategie Ons Op Maat (6 oktober 2026): dennengroen, zorggroen, terracotta als enige knopkleur, salie, daglicht, inkt en rood.
-  paneel: '#1B4A3C',
-  merk: '#1E6E58',
-  actie: '#B9471F',
-  zacht: '#E3EFE6',
-  grond: '#FAF6EE',
-  tekst: '#1B1A17',
-  vlak2: '#F2E1D5',
-  signaal: '#A4261B',
+  // Huisstijl Ons Op Maat versie 1 (4 november 2026), zie middelen/huisstijl/ in de kennisbank.
+  paneel: '#0B4A43',
+  merk: '#0E6B60',
+  actie: '#0E6B60',
+  zacht: '#D7EEE7',
+  grond: '#FBF8F3',
+  tekst: '#14302B',
+  vlak2: '#F2EBDF',
+  signaal: '#B3261E',
+};
+
+// De tinten die het merkboek zelf vastlegt. Alleen zonder eigen huisstijl van een klant.
+const MERKBOEK = {
+  tekstZacht: '#4F625C',
+  actieOpPaneel: '#7FD8BE',
+  actieDiep: '#0B4A43',
+  paneelDiep: '#0B4A43',
+  knopOpPaneel: '#5CC8B2',
+  opKnopOpPaneel: '#0F1F1C',
+  lijn: '#E4DCCF',
 };
 
 export const VERPLICHT = ['paneel', 'merk', 'actie', 'zacht'];
@@ -111,6 +122,10 @@ export function bereken(invoer = {}) {
     paneelDiep: meng(k.paneel, '#000000', 0.28),
     lijn: meng(k.grond, tekst, 0.14),
   };
+  // De hoofdknop op het paneel: de actiekleur als die daar genoeg opvalt, anders de lichtere tint.
+  afgeleid.knopOpPaneel = contrast(k.actie, k.paneel) >= 3 ? k.actie : afgeleid.actieOpPaneel;
+  afgeleid.opKnopOpPaneel = tekstOp(afgeleid.knopOpPaneel, tekst);
+  if (!Object.values(invoer).some(isHex)) Object.assign(afgeleid, MERKBOEK);
   const waarschuwingen = [];
   const check = (naam, voor, achter, wat) => {
     const c = contrast(voor, achter);
@@ -148,5 +163,7 @@ export function cssVariabelen(kleuren) {
     '--actie-diep': kleuren.actieDiep,
     '--op-merk': kleuren.opMerk,
     '--lijn': kleuren.lijn,
+    '--merk-op-donker': kleuren.knopOpPaneel,
+    '--op-merk-op-donker': kleuren.opKnopOpPaneel,
   };
 }

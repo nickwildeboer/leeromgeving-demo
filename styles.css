@@ -1,19 +1,21 @@
 /* Leeromgeving Ons Op Maat. Zelfde vormtaal als onsopmaat.nl: het opleiderspaneel.
    Alle kleuren komen uit variabelen, zodat de huisstijl van een klant alles overneemt. */
-@font-face{font-family:"Bricolage Grotesque";font-style:normal;font-weight:200 800;font-display:swap;src:url('/assets/bricolage-latin.woff2') format('woff2')}
-@font-face{font-family:"Figtree";font-style:normal;font-weight:300 900;font-display:swap;src:url('/assets/figtree-latin.woff2') format('woff2')}
+@font-face{font-family:"Fraunces";font-style:normal;font-weight:600;font-display:swap;src:url('/assets/fraunces-latin.woff2') format('woff2')}
+@font-face{font-family:"Instrument Sans";font-style:normal;font-weight:400 600;font-display:swap;src:url('/assets/instrument-sans-latin.woff2') format('woff2')}
 
 :root{
-  /* Merkstrategie 6 oktober 2026. theme.js zet deze waarden per klant opnieuw. */
-  --paneel:#1B4A3C;--paneel-diep:#14352B;--merk:#1E6E58;--merk-tekst:#1E6E58;--actie:#B9471F;--actie-diep:#9E3C1A;--actie-op-paneel:#DCA38F;--zacht:#E3EFE6;
-  --grond:#FAF6EE;--tekst:#1B1A17;--tekst-zacht:#4D5551;--vlak2:#F2E1D5;--signaal:#A4261B;--signaal-tekst:#A4261B;
-  --op-paneel:#FFFFFF;--op-actie:#FFFFFF;--op-merk:#FFFFFF;--lijn:#D9D4C8;
+  /* Huisstijl Ons Op Maat versie 1 (4 november 2026). theme.js zet deze waarden per klant opnieuw. */
+  --paneel:#0B4A43;--paneel-diep:#0B4A43;--merk:#0E6B60;--merk-tekst:#0E6B60;--actie:#0E6B60;--actie-diep:#0B4A43;--actie-op-paneel:#7FD8BE;--zacht:#D7EEE7;
+  --grond:#FBF8F3;--tekst:#14302B;--tekst-zacht:#4F625C;--vlak2:#F2EBDF;--signaal:#B3261E;--signaal-tekst:#B3261E;
+  --op-paneel:#FFFFFF;--op-actie:#FFFFFF;--op-merk:#FFFFFF;--lijn:#E4DCCF;
+  /* vaste merkkleuren: mint en abrikoos als vorm, de lichte zorggroen voor een knop op donker */
+  --mint:#7FD8BE;--abrikoos:#F4A26B;--abrikoos-diep:#A84E25;--merk-op-donker:#5CC8B2;--op-merk-op-donker:#0F1F1C;
   --wit:#FFFFFF;
-  --kop:"Bricolage Grotesque","Figtree","Helvetica Neue",Arial,sans-serif;
-  --body:"Figtree","Helvetica Neue",Arial,sans-serif;
+  --kop:"Fraunces",Georgia,serif;
+  --body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --r-groot:28px;--r:20px;--r-klein:12px;--max:1180px;
-  --schaduw:0 24px 48px -24px rgba(10,43,35,.28);
-  --schaduw-hoog:0 32px 64px -28px rgba(10,43,35,.38);
+  --schaduw:0 4px 12px rgba(20,48,43,.08),0 16px 32px -12px rgba(20,48,43,.14);
+  --schaduw-hoog:0 8px 20px rgba(20,48,43,.1),0 28px 48px -16px rgba(20,48,43,.2);
   --ease:cubic-bezier(.22,1,.36,1);
   /* beweging: kort voor feedback, normaal voor wisselingen, rustig voor een groot moment */
   --t-snel:.15s;--t-normaal:.25s;--t-rustig:.5s;
@@ -26,7 +28,7 @@
 *,*::before,*::after{box-sizing:border-box}
 html{scroll-padding-top:100px;-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--grond);color:var(--tekst);font:400 1.125rem/1.6 var(--body);-webkit-font-smoothing:antialiased}
-h1,h2,h3{font-family:var(--kop);font-weight:650;letter-spacing:-.02em;line-height:1.12;margin:0 0 .5em;overflow-wrap:break-word;hyphens:auto;text-wrap:balance}
+h1,h2,h3{font-family:var(--kop);font-weight:600;font-variation-settings:'SOFT' 100;letter-spacing:-.015em;line-height:1.12;margin:0 0 .5em;overflow-wrap:break-word;hyphens:auto;text-wrap:balance}
 h1{font-size:clamp(2rem,4.2vw,3.2rem)}
 h2{font-size:clamp(1.35rem,2.2vw,1.7rem)}
 h3{font-size:1.2rem}
@@ -89,15 +91,11 @@ main:focus{outline:none}
 .org-logo img{max-height:40px;max-width:170px;width:auto;object-fit:contain}
 .logo-wilg{width:36px;height:36px}
 
-.oom{display:inline-flex;align-items:baseline;gap:.28em;font:700 1.2rem/1 var(--kop);letter-spacing:-.04em;white-space:nowrap;color:#fff}
-.oom__b{position:relative;color:var(--actie-op-paneel)}
-.oom__b svg{position:absolute;left:-2%;right:-2%;bottom:-.34em;width:104%;height:.32em;overflow:visible}
-.oom__b path{fill:none;stroke:var(--actie);stroke-linecap:round;stroke-width:6}
 
 /* ---------- panelen ---------- */
 .paneel{padding:20px 20px 0}
-.paneel__in{position:relative;overflow:hidden;width:min(100%,var(--max));margin:0 auto;padding:clamp(32px,5vw,64px);border-radius:var(--r-groot);background:linear-gradient(140deg,var(--paneel),var(--paneel-diep));color:var(--op-paneel)}
-.paneel__in::after{content:"";position:absolute;right:-8%;bottom:-38%;width:62%;aspect-ratio:1;border-radius:50%;border:56px solid currentColor;opacity:.05;pointer-events:none}
+.paneel__in{position:relative;overflow:hidden;width:min(100%,var(--max));margin:0 auto;padding:clamp(32px,5vw,64px);border-radius:var(--r-groot);background:var(--paneel);color:var(--op-paneel)}
+.paneel__in::after{content:"";position:absolute;right:-7%;bottom:-24%;width:min(36%,380px);aspect-ratio:1;color:var(--actie-op-paneel);background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-8 -8 116 116'%3E%3Cpath d='M36,0 H64 Q71,0 71,7 V29 H93 Q100,29 100,36 V64 Q100,71 93,71 H71 V93 Q71,100 64,100 H36 Q29,100 29,93 V71 H7 Q0,71 0,64 V36 Q0,29 7,29 H29 V7 Q29,0 36,0 Z' fill='none' stroke='%237FD8BE' stroke-width='13.5' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-8 -8 116 116'%3E%3Cpath d='M36,0 H64 Q71,0 71,7 V29 H93 Q100,29 100,36 V64 Q100,71 93,71 H71 V93 Q71,100 64,100 H36 Q29,100 29,93 V71 H7 Q0,71 0,64 V36 Q0,29 7,29 H29 V7 Q29,0 36,0 Z' fill='none' stroke='%237FD8BE' stroke-width='13.5' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;opacity:.5;pointer-events:none}
 .paneel__in>*{position:relative;z-index:1}
 .paneel--groot .paneel__in{min-height:min(72vh,680px);display:flex;align-items:center}
 .paneel .lead{color:inherit;opacity:.92}
@@ -107,11 +105,10 @@ main:focus{outline:none}
 
 /* ---------- inloggen ---------- */
 .inlog{display:grid;grid-template-columns:1.05fr 1fr;min-height:100vh;min-height:100dvh;gap:20px;padding:20px}
-.inlog__paneel{position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;gap:40px;padding:clamp(32px,5vw,64px);border-radius:var(--r-groot);background:linear-gradient(150deg,var(--paneel),var(--paneel-diep));color:var(--op-paneel)}
-.inlog__paneel::after{content:"";position:absolute;right:-20%;bottom:-24%;width:80%;aspect-ratio:1;border-radius:50%;border:70px solid currentColor;opacity:.05}
+.inlog__paneel{position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;gap:40px;padding:clamp(32px,5vw,64px);border-radius:var(--r-groot);background:var(--paneel);color:var(--op-paneel)}
+.inlog__paneel::after{content:"";position:absolute;right:-14%;bottom:-10%;width:62%;aspect-ratio:1;color:var(--actie-op-paneel);background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-8 -8 116 116'%3E%3Cpath d='M36,0 H64 Q71,0 71,7 V29 H93 Q100,29 100,36 V64 Q100,71 93,71 H71 V93 Q71,100 64,100 H36 Q29,100 29,93 V71 H7 Q0,71 0,64 V36 Q0,29 7,29 H29 V7 Q29,0 36,0 Z' fill='none' stroke='%237FD8BE' stroke-width='13.5' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-8 -8 116 116'%3E%3Cpath d='M36,0 H64 Q71,0 71,7 V29 H93 Q100,29 100,36 V64 Q100,71 93,71 H71 V93 Q71,100 64,100 H36 Q29,100 29,93 V71 H7 Q0,71 0,64 V36 Q0,29 7,29 H29 V7 Q29,0 36,0 Z' fill='none' stroke='%237FD8BE' stroke-width='13.5' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;opacity:.5;pointer-events:none}
 .inlog__paneel h1{font-size:clamp(2.4rem,5vw,4rem);margin-bottom:.35em}
 .inlog__gemaakt{font-size:.9rem;opacity:.85;margin:0;display:flex;gap:.5em;align-items:baseline}
-.inlog__gemaakt .oom{font-size:1rem}
 .inlog__werk{display:flex;align-items:center;justify-content:center;padding:clamp(8px,3vw,40px)}
 .inlog__kaart{width:min(100%,500px)}
 .inlog__form{display:grid;gap:8px}
@@ -146,7 +143,7 @@ input[type="email"]:focus,input[type="text"]:focus,select:focus{border-color:var
 .video__speler[style*=height]{aspect-ratio:auto}
 
 /* ---------- overzicht ---------- */
-.overzicht-kop{display:grid!important;grid-template-columns:1.5fr 1fr;gap:clamp(28px,4vw,56px);align-items:end}
+.overzicht-kop{display:grid!important;grid-template-columns:minmax(0,1fr);gap:clamp(28px,4vw,56px);align-items:end}
 .voortgang{margin:6px 0 26px;max-width:460px}
 .voortgang__balk{height:12px;border-radius:999px;background:color-mix(in srgb,var(--op-paneel) 18%,transparent);overflow:hidden}
 .voortgang__balk span{display:block;height:100%;min-width:12px;border-radius:999px;background:var(--actie-op-paneel);transition:width var(--t-rustig) var(--ease)}
@@ -157,6 +154,10 @@ input[type="email"]:focus,input[type="text"]:focus,select:focus{border-color:var
 .tip__label{display:flex;align-items:center;gap:8px;font-weight:600;font-size:.9rem;color:var(--tekst-zacht);margin-bottom:.6em}
 .tip__label svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .overzicht{display:grid;gap:28px;padding-top:36px;padding-bottom:56px}
+.modulelijst{display:grid;gap:20px}
+/* De hoofdknop op het donkere paneel: de lichte accentkleur met donkere tekst, zodat hij opvalt. */
+.paneel .btn--actie{background:var(--actie-op-paneel);color:var(--paneel);box-shadow:none}
+.paneel .btn--actie:hover{background:color-mix(in srgb,var(--actie-op-paneel) 82%,var(--wit))}
 .deel{padding:clamp(22px,3vw,34px);border-radius:var(--r-groot);background:var(--wit);border:1px solid var(--lijn)}
 .deel:nth-child(even){background:var(--zacht);border-color:transparent}
 .deel__kop{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:16px}
@@ -239,102 +240,141 @@ input[type="email"]:focus,input[type="text"]:focus,select:focus{border-color:var
 .ecd__rij{display:grid;grid-template-columns:1fr minmax(180px,240px) 28px;gap:14px;align-items:center;padding:10px;border-radius:8px;background:#fff;border:1px solid #E3E7EB}
 .ecd__rij label{font-weight:600}
 .ecd__rij select{min-height:44px}
-/* Oefenschermen in Nedap ONS Dossier, nagebouwd naar schermafdrukken uit de testomgeving (6 oktober 2026).
+/* Oefenschermen in Nedap ONS Dossier, één op één nagebouwd naar de schermafdrukken uit de testomgeving
+   (kennisbank, middelen/ons-schermen, opnames van 1512 bij 793). Maten in px zoals Nedap ONS ze toont.
    Vaste kleuren van Nedap ONS, de huisstijl van de klant geldt hier niet. */
-.ons{--ons-balk:#FFCC7D;--ons-zoek:#FED595;--ons-app:#315ED6;--ons-paars:#4346B7;--ons-paars-zacht:#F5F4FF;--ons-initialen:#5F63AA;--ons-blauw:#0079C2;--ons-groen:#267D3D;
-  --ons-grond:#F5F5F5;--ons-tekst:#212121;--ons-zacht:#707070;--ons-lijn:#E2E2E2;--ons-veld:#CCCCCC;
+.ons{--ons-balk:#FFCC7D;--ons-zoek:#FDD693;--ons-app:#376bf2;--ons-app-admin:#407698;--ons-paars:#4346B7;--ons-paars-knop:#4145B0;--ons-paars-zacht:#F5F4FF;--ons-initialen:#6465b8;
+  --ons-blauw:#0079c3;--ons-blauw-tekst:#0874b2;--ons-groen:#39834e;--ons-rood:#dd3226;--ons-geel:#FFBE07;--ons-petrol:#165A80;
+  --ons-grond:#F5F5F5;--ons-tekst:#212121;--ons-zacht:#555;--ons-lijn:#E2E2E2;--ons-veld:#C9C9C9;
   position:relative;margin:20px 0;border:1px solid var(--ons-lijn);border-radius:10px;overflow:hidden;background:var(--ons-grond);color:var(--ons-tekst);
-  font:400 .9rem/1.45 "IBM Plex Sans","Segoe UI",system-ui,-apple-system,Arial,sans-serif;letter-spacing:0}
+  font:400 13px/1.4 "IBM Plex Sans","Segoe UI",system-ui,-apple-system,Arial,sans-serif;letter-spacing:0;text-align:left}
 .ons p{margin:0}
-.ons__balk{display:flex;align-items:center;gap:12px;padding:7px 12px;background:var(--ons-balk)}
-.ons__logo{width:22px;height:22px;border-radius:50%;background:#3A2A1E;position:relative;flex:none}
-.ons__logo::after{content:"";position:absolute;left:5px;right:5px;top:10px;height:5px;border-radius:0 0 8px 8px;background:#FFA516}
-.ons__app{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:8px;background:var(--ons-app);color:#fff;font-weight:600;font-size:.8rem}
-.ons__raster{width:12px;height:12px;background:radial-gradient(circle,#fff 1.2px,transparent 1.6px) 0 0/4px 4px}
-.ons__zoek{flex:1;max-width:380px;margin:0 auto;padding:6px 12px 6px 32px;border-radius:6px;background:var(--ons-zoek) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' stroke='%23333' stroke-width='2'%3E%3Ccircle cx='6' cy='6' r='4.5'/%3E%3Cpath d='M9.5 9.5 13 13'/%3E%3C/svg%3E") no-repeat 11px 50%;color:#4A3B26;font-size:.82rem}
-.ons__rechts{display:flex;align-items:center;gap:14px}
-.ons__rechts svg{width:18px;height:18px;fill:none;stroke:#222;stroke-width:1.6;stroke-linejoin:round}
+.ons svg{flex:none}
+/* Bovenbalk: 48 hoog, pil van de module, zoekveld precies in het midden. */
+.ons__balk{position:relative;display:flex;align-items:center;gap:13px;height:48px;padding:0 10px 0 12px;background:var(--ons-balk)}
+.ons__logo{width:22px;height:22px}
+.ons__app{display:inline-flex;align-items:center;gap:14px;height:33px;padding:0 13px 0 14px;border-radius:10px;background:var(--ons-app);color:#fff;font-weight:600;font-size:12.5px;line-height:1;white-space:nowrap}
+.ons__app--admin{background:var(--ons-app-admin)}
+.ons__raster{width:14px;height:14px;background:radial-gradient(circle,#fff 1.45px,transparent 1.85px) -.5px -.5px/5px 5px}
+.ons__zoek{position:absolute;left:50%;top:7.5px;transform:translateX(-50%);display:flex;align-items:center;gap:9px;width:min(497px,calc(100% - 400px));height:33px;padding:0 13px;border-radius:8px;background:var(--ons-zoek);color:#5A4421;font-size:13.5px;white-space:nowrap;overflow:hidden}
+.ons__zoek-icoon{width:19px;height:19px;fill:none;stroke:#2B2B2B;stroke-width:2.3;stroke-linecap:round}
+.ons__rechts{display:flex;align-items:center;gap:19px;margin-left:auto}
+.ons__balk-icoon{width:21px;height:21px;fill:none;stroke:#2B2B2B;stroke-width:1.7;stroke-linejoin:round;stroke-linecap:round}
 .ons__bel{position:relative;display:flex}
-.ons__bel::after{content:"";position:absolute;top:-1px;right:-2px;width:6px;height:6px;border-radius:50%;background:#F0453A}
-.ons__avatar{width:24px;height:24px;border-radius:50%;background:#7ACB2F;box-shadow:inset 0 0 0 3px #fff}
-.ons__lijf{display:grid;grid-template-columns:168px 1fr}
-.ons__menu{background:#fff;padding:12px 6px 8px;font-size:.8rem;display:flex;flex-direction:column}
-.ons__menu ul{list-style:none;margin:0 0 8px;padding:0}
-.ons__icoon{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;margin-right:8px;opacity:.8}
-.ons__terug{padding:4px 8px 10px;color:var(--ons-tekst)}
-.ons__groep{padding:4px 8px;font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:#6B6B6B}
-.ons__menu-item,.ons__inklappen{display:flex;align-items:center;padding:6px 8px;border-radius:6px;color:var(--ons-tekst)}
-.ons__menu-item.is-actief{background:var(--ons-paars-zacht);color:var(--ons-paars)}
-.ons__inklappen{margin-top:auto}
-.ons__nedap{margin-top:8px;padding-top:8px;border-top:1px solid var(--ons-lijn);text-align:center;color:#737373;font-weight:600;letter-spacing:.04em}
-.ons__inhoud{padding:14px 18px 22px;min-width:0}
-.ons__kruimel{font-size:.78rem;color:#555;margin-bottom:10px!important}
-.ons__client{display:flex;gap:12px;align-items:center;padding:12px 16px;margin-bottom:12px;border-radius:12px;background:#fff}
-.ons__initialen{display:grid;place-items:center;flex:none;width:42px;height:42px;border-radius:50%;background:var(--ons-paars-zacht);color:var(--ons-initialen);font-weight:700;font-size:1rem}
+.ons__bel::after{content:"";position:absolute;top:-3px;right:-3px;width:7px;height:7px;border-radius:50%;background:#E5443A}
+.ons__avatar{width:28px;height:28px}
+/* Menu links: 193 breed, regels van 33 hoog om de 36 pixels. */
+.ons__lijf{display:grid;grid-template-columns:193px minmax(0,1fr)}
+/* Het scherm is minstens zo hoog als Nedap ONS op 793 pixels. De vrije oefenomgeving (ons--oefen) regelt dit zelf. */
+.ons:not(.ons--oefen)>.ons__lijf{min-height:745px;background:linear-gradient(to right,#fff 193px,transparent 193px)}
+.ons:not(.ons--oefen) .ons__menu{align-self:start;height:745px}
+.ons__menu{display:flex;flex-direction:column;padding:12px 10px 0;background:#fff;font-size:12px;line-height:1.2}
+.ons__menu ul{list-style:none;margin:0;padding:0;display:grid;gap:3px}
+.ons__icoon{width:16px;height:16px;margin-right:9px;fill:none;stroke:currentColor;stroke-width:1.35;stroke-linecap:round;stroke-linejoin:round}
+.ons__terug{display:flex;align-items:center;height:33px;padding:0 10px;color:#3A3A3A}
+.ons__terug .ons__icoon{width:14px;height:14px;margin-right:11px;stroke-width:1.6}
+.ons .ons__groep{margin:16px 0 14px}
+.ons__groep{padding:0 3px;font-size:9.5px;line-height:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:#757575}
+.ons .ons__menu ul+.ons__groep{margin-top:15px}
+.ons__menu-item,.ons__inklappen{display:flex;align-items:center;height:33px;padding:0 8px;border-radius:6px;color:#333}
+.ons__menu-item .ons__icoon{color:#5A5A5A}
+.ons__menu-item.is-actief{background:var(--ons-paars-zacht);color:#3B3A8C;font-weight:500}
+.ons__menu-item.is-actief .ons__icoon{color:#3B3A8C}
+.ons .ons__inklappen{margin-top:auto;margin-bottom:9px}
+.ons__inklappen{font-size:12px}
+.ons .ons__nedap{margin:0 -10px}
+.ons__nedap{display:grid;place-items:center;height:33px;border-top:1px solid #EBEBEB;color:#C9C9C9}
+.ons__nedap-logo{width:74px;height:16px}
+/* Inhoud: een kolom van 991 breed in het midden, zoals Nedap ONS op 1512 pixels. */
+.ons__inhoud{min-width:0;padding:20px 16px 28px}
+.ons__kolom{max-width:991px;margin:0 auto}
+.ons .ons__kruimel{margin:4px 0 19px 8px}
+.ons__kruimel{display:flex;align-items:center;gap:7px;font-size:11px;line-height:16px;color:#444}
+.ons__kruimel .ons__icoon{width:12px;height:12px;margin:0;stroke-width:1.8}
+/* Cliëntkop */
+.ons__client{display:flex;gap:8px;align-items:center;min-height:64px;padding:8px 28px 8px 16px;margin-bottom:14px;border-radius:10px;background:#fff}
+.ons__initialen{display:grid;place-items:center;flex:none;width:40px;height:40px;border-radius:50%;background:var(--ons-paars-zacht);color:var(--ons-initialen);font-weight:700;font-size:15px;letter-spacing:.02em}
 .ons__client-tekst{flex:1;min-width:0}
-.ons__naam{color:var(--ons-paars);font-weight:600;font-size:1.02rem}
-.ons__label{display:inline-block;vertical-align:2px;margin-left:4px;padding:1px 6px;border:1px solid #F2B45A;border-radius:4px;background:#FFE1B5;color:#5C3A00;font-size:.72rem;font-weight:500}
-.ons__gegevens{color:var(--ons-zacht);font-size:.74rem}
-.ons__gegevens u{color:var(--ons-paars)}
-.ons__meer{color:#555;font-size:.85rem;white-space:nowrap}
+.ons .ons__naam{margin-bottom:3px}
+.ons__naam{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px}
+.ons__naam-tekst{margin-right:1px;color:var(--ons-paars);font-weight:600;font-size:15.5px;line-height:22px}
+.ons__label{display:inline-flex;align-items:center;gap:4px;height:19px;padding:0 5px;border:1px solid #EAB660;border-radius:3px;background:#FCDDA3;color:#5F3F0B;font-size:11px;font-weight:500;line-height:1;white-space:nowrap}
+.ons__label--blauw{border-color:#87C4E8;background:#CBE9FA;color:#0D4A70}
+.ons__label-icoon{width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ons__gegevens{display:flex;flex-wrap:wrap;align-items:center;row-gap:2px;color:#555;font-size:10.5px;line-height:16px}
+.ons__gegevens i{display:inline-block;width:1px;height:11px;margin:0 6px;background:#8A8A8A}
+.ons__bsn{letter-spacing:2px}
+.ons__oog{width:13px;height:13px;margin-left:3px;fill:none;stroke:#555;stroke-width:1.8}
+.ons__gegevens u{color:var(--ons-paars);text-underline-offset:2px}
+.ons__meer{display:inline-flex;align-items:center;gap:7px;color:#555;font-size:13px;white-space:nowrap}
+.ons__meer-icoon{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2}
+/* Knoppen van Nedap ONS */
 .ons__kopregel{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:4px 0 10px}
-.ons__kopregel--lijn{border-bottom:1px solid #989898;padding:0 14px 6px}
-.ons__titel{margin:0;font-family:inherit;font-size:1.3rem;font-weight:700;line-height:1.2;letter-spacing:0;color:var(--ons-tekst)}
-.ons__knop{display:inline-flex;align-items:center;gap:6px;min-height:34px;padding:0 20px;border-radius:999px;border:1px solid transparent;font-family:inherit;font-size:.8rem;font-weight:600;line-height:1;color:#fff;cursor:pointer;white-space:nowrap}
-.ons__knop--blauw{background:var(--ons-blauw)}
+.ons__kopregel--lijn{border-bottom:1px solid #A9A9A9;padding:0 12px 6px}
+.ons__titel{margin:0;font-family:inherit;font-size:20px;font-weight:700;line-height:1.2;letter-spacing:0;color:var(--ons-tekst)}
+.ons__titel--klein{font-size:17px}
+.ons__knop{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:29px;padding:0 18px;border-radius:15px;border:1px solid transparent;font-family:inherit;font-size:11.5px;font-weight:500;line-height:1;color:#fff;cursor:pointer;white-space:nowrap}
+.ons__knop-icoon{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.ons__knop--blauw,.ons__knop--lucht{background:var(--ons-blauw)}
 .ons__knop--groen{background:var(--ons-groen)}
-.ons__knop--rand{background:#fff;border-color:var(--ons-blauw);color:var(--ons-blauw)}
-.ons__knop:disabled{background:#EAECF0;color:#fff;cursor:default}
+.ons__knop--rand,.ons__knop--blauwrand{background:#fff;border-color:var(--ons-blauw);color:var(--ons-blauw-tekst)}
+.ons__knop--rood{background:#fff;border-color:var(--ons-rood);color:var(--ons-rood)}
+.ons__knop--paars{background:var(--ons-paars-knop);border-color:var(--ons-paars-knop);color:#fff}
+.ons__knop--paarsrand{min-height:26px;padding:0 9px;border-radius:4px;background:#fff;border-color:#C5C5E8;color:var(--ons-paars);font-size:10.5px;font-weight:600}
+.ons__knop--hoekig{min-height:33px;padding:0 12px;border-radius:4px;background:#fff;border-color:#CFCFCF;color:var(--ons-paars);font-size:13.5px;font-weight:600}
+.ons__knop--hoekig.ons__knop--paars{background:#4044A8;border-color:#4044A8;color:#fff}
+.ons__knop--groot{min-height:34px;padding:0 13px;border-radius:4px;font-size:13.5px}
+.ons__knop:disabled{background:#E3E5EA;border-color:#E3E5EA;color:#fff;cursor:default}
 .ons__knop.is-uit{opacity:1;border-style:dashed}
-.ons__kaart{margin-bottom:12px;padding:16px 20px;border-radius:8px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+.ons__kaart{margin-bottom:13px;padding:15px;border-radius:8px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+/* Formulieren */
 .ons__formulier{display:grid;gap:12px}
 .ons__rij2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
 .ons__rij3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
 .ons__rij2>div{display:grid;gap:12px;align-content:start}
 .ons__veld{display:grid;gap:4px;min-width:0}
-.ons__veld label,.ons__lbl{font-size:.8rem;color:#333}
-.ons__lbl b{color:#E0473C;font-weight:400}
-.ons__invoer{display:flex;align-items:center;min-height:32px;padding:4px 8px;border:1px solid #9B9B9B;border-radius:3px;background:#fff;font-size:.8rem}
-.ons__invoer.is-leeg{color:#707070}
+.ons__veld label,.ons__lbl{font-size:11px;font-style:italic;color:#444}
+.ons__lbl b{color:#dd3226;font-weight:400}
+.ons__invoer{display:flex;align-items:center;min-height:30px;padding:4px 9px;border:1px solid var(--ons-veld);border-radius:4px;background:#fff;font-size:12.5px}
+.ons__invoer.is-leeg{color:#757575}
 .ons__invoer--kort{width:142px}
 .ons__titelveld{display:flex;align-items:center;gap:12px}
-.ons__ster{font-size:.75rem;color:#333;white-space:nowrap}
-.ons__ster span{color:#BFBFBF;font-size:1rem}
+.ons__ster{font-size:11px;color:#666;white-space:nowrap}
+.ons__ster span{color:#BFBFBF;font-size:14px}
 .ons__datum{justify-content:space-between}
 .ons__datum::after{content:"";width:12px;height:12px;border:1.5px solid #666;border-top-width:3px;border-radius:2px}
 .ons__tekstvak{align-items:flex-start;min-height:110px}
 .ons__regel{display:flex;align-items:center;gap:10px}
-.ons__select,.ons__nep-select{flex:1;min-width:0;min-height:44px;padding:0 44px 0 10px;border:1px solid var(--ons-veld);border-radius:4px;color:var(--ons-tekst);font-family:inherit;font-size:.8rem;font-weight:400;line-height:1.2;appearance:none;-webkit-appearance:none;
+.ons__select,.ons__nep-select{flex:1;min-width:0;min-height:44px;padding:0 44px 0 9px;border:1px solid var(--ons-veld);border-radius:4px;color:var(--ons-tekst);font-family:inherit;font-size:11.5px;font-weight:400;line-height:1.2;appearance:none;-webkit-appearance:none;
   background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%23999' stroke-width='2'%3E%3Cpath d='m1 1 5 5 5-5'/%3E%3C/svg%3E") no-repeat right 14px center;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%23999' stroke-width='2'%3E%3Cpath d='m1 1 5 5 5-5'/%3E%3C/svg%3E"),linear-gradient(#CCC,#CCC);background-size:12px 8px,1px 22px;background-position:right 14px center,right 38px center;background-repeat:no-repeat}
-.ons__nep-select{display:block;line-height:42px;color:#707070;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%23999' stroke-width='2'%3E%3Cpath d='m1 1 5 5 5-5'/%3E%3C/svg%3E"),linear-gradient(#CCC,#CCC);background-size:12px 8px,1px 20px;background-position:right 11px center,right 31px center;background-repeat:no-repeat}
+.ons__nep-select{display:flex;align-items:center;min-height:31px;color:#757575;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ons__select{min-height:36px}
 .ons__select:focus-visible{outline:none;border-color:#2684FF;box-shadow:0 0 0 1px #2684FF}
-.ons__tabs{display:flex;gap:4px;margin:6px 0 10px;border-bottom:1px solid #D0D0D0;font-size:.9rem}
-.ons__tabs span{padding:6px 14px;color:#666}
+.ons__tabs{display:flex;gap:4px;margin:6px 0 10px;border-bottom:1px solid #DADADA;font-size:14px}
+.ons__tabs span{padding:6px 13px;color:#555}
 .ons__tabs .is-actief{color:var(--ons-paars);box-shadow:inset 0 -2px 0 var(--ons-paars)}
-.ons__concept{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border-left:6px solid #FFBE00;font-size:.75rem}
-.ons__concept-kop{margin-bottom:10px!important;color:#066AA6;font-weight:600}
-.ons__concept-knoppen{display:flex;gap:8px}
+.ons__concept{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:16px 12px 16px 12px;border-left:8px solid var(--ons-geel);border-radius:4px;font-size:10px;line-height:13px}
+.ons__concept-kop{margin-bottom:11px!important;color:var(--ons-blauw-tekst);font-size:10.5px;font-weight:700}
+.ons__concept-knoppen{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
 .ons__rapportage{display:grid;gap:12px}
 .ons__rtabs{display:flex;align-items:flex-end;gap:14px;margin:-4px 0 4px}
 .ons__rtabs span{width:14px;height:17px;border:1.5px solid #066AA6;border-radius:2px;box-shadow:inset 0 3px 0 #fff,inset 0 4px 0 #066AA6;padding-bottom:4px}
 .ons__rtabs .is-actief{box-shadow:inset 0 3px 0 #fff,inset 0 4px 0 #066AA6,0 7px 0 -5px #066AA6}
 .ons__rtabs .is-soep{border-color:#E8B400;box-shadow:none}
 .ons__rtabs .ons__plus{margin-left:auto;display:grid;place-items:center;width:22px;height:22px;border:0;border-radius:50%;background:var(--ons-blauw);color:#fff;font-size:1rem;line-height:1;box-shadow:none;padding:0}
-.ons__titel--klein{font-size:1.1rem}
 .ons__kop-rechts{display:flex;align-items:center;gap:16px}
-.ons__ster{color:#666}
-.ons__tekstvak--groot{min-height:120px;border-color:#C9C9C9;border-radius:4px;font-size:.85rem;padding:10px}
-.ons__schakel{display:flex;align-items:center;gap:6px;font-size:.72rem}
-.ons__toggle{width:26px;height:14px;border-radius:999px;background:#4346B7;position:relative}
+.ons__tekstvak--groot{min-height:134px;border-color:#C8C8C8;border-radius:5px;font-size:13px;padding:9px 12px}
+.ons__schakel{display:flex;align-items:center;gap:6px;font-size:10.5px}
+.ons__toggle{flex:none;width:26px;height:14px;border-radius:999px;background:#464CBE;position:relative}
 .ons__toggle::after{content:"";position:absolute;right:2px;top:2px;width:10px;height:10px;border-radius:50%;background:#fff}
-.ons__info{display:grid;place-items:center;width:11px;height:11px;border-radius:50%;background:#6E6FC6;color:#fff;font-size:.5rem;font-weight:700}
-.ons__uitleg{font-size:.7rem;font-style:italic;color:#555;margin-bottom:8px!important}
-.ons__links{display:grid;gap:8px;max-width:820px}
-.ons__links .ons__veld{grid-template-columns:minmax(90px,30%) 1fr;align-items:center;gap:10px}
-.ons__links .ons__veld label,.ons__links .ons__lbl{font-style:italic;font-size:.75rem}
-.ons__melding{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:6px;background:#333;color:#fff;font-size:.8rem;white-space:nowrap}
-.ons__melding span{display:grid;place-items:center;width:16px;height:16px;border-radius:50%;background:#2EBD59;font-size:.65rem}
+.ons__info{display:grid;place-items:center;width:11px;height:11px;border-radius:50%;background:#6E6FC6;color:#fff;font-size:8px;font-weight:700}
+.ons__uitleg{font-size:10.5px;font-style:italic;color:#444;margin-bottom:8px!important}
+.ons__links{display:grid;gap:8px;max-width:884px}
+.ons__links .ons__veld{grid-template-columns:110px minmax(0,786px);align-items:center;gap:0}
+.ons__links .ons__veld label,.ons__links .ons__lbl{font-style:italic;font-size:11px}
+.ons__melding{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:6px;background:#333;color:#fff;font-size:12.5px;white-space:nowrap;z-index:4}
+.ons__melding span{display:grid;place-items:center;width:16px;height:16px;border-radius:50%;background:#2EBD59;font-size:10px}
 .ecd__check svg{width:24px;height:24px;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
 .ecd__check.is-goed svg{stroke:var(--merk-tekst)}
 .ecd__check.is-fout svg{stroke:var(--signaal-tekst)}
@@ -468,7 +508,7 @@ input[type="email"]:focus,input[type="text"]:focus,select:focus{border-color:var
 .logoveld label.btn{cursor:pointer}
 
 .preview{border-radius:var(--r);overflow:hidden;border:1px solid var(--lijn);background:var(--grond);color:var(--tekst);font-size:.95rem}
-.preview__paneel{padding:22px;background:linear-gradient(140deg,var(--paneel),var(--paneel-diep));color:var(--op-paneel)}
+.preview__paneel{padding:22px;background:var(--paneel);color:var(--op-paneel)}
 .preview__logo{margin-bottom:16px}
 .preview__logo .org-logo{font-size:1.05rem}
 .preview__logo .logo-wilg{width:30px;height:30px}
@@ -504,9 +544,6 @@ input[type="email"]:focus,input[type="text"]:focus,select:focus{border-color:var
 .voet__in{width:min(100%,calc(var(--max) + 56px));margin:0 auto;padding:22px 28px 0;border-top:1px solid var(--lijn);display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px 28px}
 .voet p{margin:0}
 .voet__gemaakt{display:flex;align-items:baseline;gap:.5em}
-.voet .oom{color:var(--tekst);font-size:1rem}
-.voet .oom__a{color:var(--tekst)}
-.voet .oom__b{color:var(--merk-tekst)}
 .voet .linkknop{margin-left:6px}
 body[data-rol="gast"] .voet{display:none}
 
@@ -555,15 +592,6 @@ body[data-rol="gast"] .voet{display:none}
   .module__pijl{display:none}
   .ecd__rij{grid-template-columns:1fr 28px}
   .ecd__rij select{grid-column:1}
-  .ons__lijf{grid-template-columns:1fr}
-  .ons__menu,.ons__zoek,.ons__meer{display:none}
-  .ons__inhoud{padding:12px 10px 56px}
-  .ons__rij2,.ons__rij3{grid-template-columns:1fr;gap:12px}
-  .ons__links .ons__veld{grid-template-columns:1fr}
-  .ons__kopregel{flex-wrap:wrap}
-  .ons__kop-rechts .ons__ster{display:none}
-  .ons__kaart{padding:14px 12px}
-  .ons__melding{white-space:normal}
   .ecd__check{grid-row:1/3;grid-column:2}
   .feiten div{grid-template-columns:1fr;gap:0}
   .kleurveld{grid-template-columns:52px 1fr}
@@ -607,7 +635,7 @@ body[data-rol="gast"] .voet{display:none}
 .badges__deel{font-size:.85rem;color:var(--tekst-zacht)}
 .badges__item.is-nog .badges__naam{color:var(--tekst-zacht)}
 
-.cert-kaart{display:grid;grid-template-columns:auto 1fr auto;gap:18px 24px;align-items:center;margin-bottom:26px;padding:22px 24px;border-radius:var(--r);background:linear-gradient(140deg,var(--paneel),var(--paneel-diep));color:var(--op-paneel)}
+.cert-kaart{display:grid;grid-template-columns:auto 1fr auto;gap:18px 24px;align-items:center;margin-bottom:26px;padding:22px 24px;border-radius:var(--r);background:var(--paneel);color:var(--op-paneel)}
 .cert-kaart h2{font-size:1.3rem;margin-bottom:.25em}
 .cert-kaart p{margin:0;opacity:.9;font-size:1rem}
 .cert-kaart__badges{display:flex}
@@ -641,7 +669,7 @@ body[data-rol="gast"] .voet{display:none}
 .cert-nog{margin:28px 0 56px}
 .certificaat{container-type:inline-size;position:relative;display:grid;grid-template-rows:auto 1fr auto;aspect-ratio:297/210;overflow:hidden;border-radius:var(--r);background:var(--wit);color:var(--tekst);box-shadow:var(--schaduw-hoog);-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .certificaat::after{content:"";position:absolute;inset:2.4cqi;top:calc(11cqi + 2.4cqi);border:1.5px solid color-mix(in srgb,var(--merk) 35%,transparent);border-radius:1.2cqi;pointer-events:none}
-.certificaat__kop{display:flex;align-items:center;justify-content:space-between;gap:3cqi;height:11cqi;padding:0 5cqi;background:linear-gradient(140deg,var(--paneel),var(--paneel-diep));color:var(--op-paneel)}
+.certificaat__kop{display:flex;align-items:center;justify-content:space-between;gap:3cqi;height:11cqi;padding:0 5cqi;background:var(--paneel);color:var(--op-paneel)}
 .certificaat__logo .org-logo{font-size:max(1rem,2.2cqi)}
 .certificaat__logo .logo-wilg{width:max(30px,4.2cqi);height:max(30px,4.2cqi)}
 .certificaat__logo img{max-height:max(34px,6cqi)}
@@ -660,9 +688,6 @@ body[data-rol="gast"] .voet{display:none}
 .certificaat__feiten dt{font-size:max(.75rem,1.05cqi);color:var(--tekst-zacht);letter-spacing:.06em;text-transform:uppercase}
 .certificaat__feiten dd{margin:0;font-weight:650;font-size:max(.9rem,1.5cqi)}
 .certificaat__gemaakt{display:flex;align-items:baseline;gap:.5em;margin:0;font-size:max(.75rem,1.1cqi);color:var(--tekst-zacht)}
-.certificaat__gemaakt .oom{font-size:max(.85rem,1.3cqi);color:var(--tekst)}
-.certificaat__gemaakt .oom__a{color:var(--tekst)}
-.certificaat__gemaakt .oom__b{color:var(--merk-tekst)}
 
 @media (max-width:700px){
   .cert-kaart{grid-template-columns:1fr}
@@ -750,7 +775,7 @@ body[data-presentatie=\"1\"] .maat-balk{flex-wrap:wrap}
 @media print{
   @page{size:A4 landscape;margin:0}
   html,body{background:#fff!important}
-  body:has(.certificaat) .balk,body:has(.certificaat) .voet,body:has(.certificaat) .naar-inhoud,body:has(.certificaat) .melding,body:has(.certificaat) .cert-acties,body:has(.certificaat) .demo-melding,body:has(.certificaat) .maat-terug{display:none!important}
+  body:has(.certificaat) .balk,body:has(.certificaat) .voet,body:has(.certificaat) .naar-inhoud,body:has(.certificaat) .melding,body:has(.certificaat) .cert-acties,body:has(.certificaat) .maat-terug{display:none!important}
   body:has(.certificaat) #app{min-height:0;display:block}
   body:has(.certificaat) .cert-pagina{width:auto;max-width:none;margin:0;padding:0}
   .certificaat{width:297mm;height:209.5mm;aspect-ratio:auto;border-radius:0;box-shadow:none;break-inside:avoid;page-break-inside:avoid}
@@ -773,23 +798,301 @@ body[data-presentatie=\"1\"] .maat-balk{flex-wrap:wrap}
 .doorklik__zeg{font-size:1.05rem}
 .doorklik__hint{display:flex;gap:8px;align-items:flex-start;margin:12px 0 0;color:var(--tekst-zacht);font-size:.95rem}
 .doorklik__hint svg{flex:none;width:20px;height:20px;margin-top:2px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+/* Samen doorklikken in Nedap ONS: elk scherm volgt zijn schermafdruk. Het scherm krijgt de volle breedte van de pagina. */
+.wrap.smal.casus:has(.ons){max-width:calc(var(--max) + 56px)}
+.casus:has(.ons) .werkpaneel>:is(h2,p,.variant,.knoppen,.doorklik__hint,.doorklik__fout){max-width:860px}
 .ons--doorklik{margin:18px 0 0}
 .ons--doorklik .ons__menu button.ons__menu-item{width:100%;border:0;background:none;font:inherit;text-align:left;cursor:pointer}
+.ons--doorklik .ons__menu button.ons__menu-item.is-actief{background:var(--ons-paars-zacht)}
+:where(.ons) :where(button.dk-el){appearance:none;margin:0;padding:0;border:0;background:none;font:inherit;color:inherit;text-align:inherit;cursor:pointer}
 .dk-stil{cursor:default}
-.dk-knoppen{display:flex;flex-wrap:wrap;gap:8px}
-.dk-kaart__kop{margin-bottom:8px!important;color:var(--ons-paars);font-weight:600;font-size:.98rem}
-.dk-regels{list-style:none;margin:0;padding:0;display:grid;gap:2px;font-size:.82rem;color:var(--ons-tekst)}
+.dk-knoppen{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.dk-twee{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:17px;align-items:start}
+.dk-kolom{min-width:0}
+/* Kaarten van Overzicht */
+.dk-ovz{padding:10px 15px 16px}
+.dk-ovz__kop{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+.dk-kaarttitel{margin:0;font-family:inherit;font-size:15px;line-height:22px;font-weight:600;letter-spacing:0;color:var(--ons-paars)}
+.dk-kaarttitel--grijs{color:#3A3A3A}
+.dk-kaarttitel--adm{color:var(--ons-petrol);font-size:15.5px}
+.dk-ovz__tekst{padding-left:4px;font-size:13px;line-height:20px;color:#333}
+.dk-ovz__tekst+.dk-ovz__tekst{margin-top:6px!important}
+.dk-ovz--zwart .dk-ovz__tekst{padding-left:0;color:#111}
+.dk-ovz--ruim .dk-ovz__tekst{margin-top:14px!important}
+.dk-ovz__sub{margin:10px 0 8px!important;color:var(--ons-paars);font-size:13px;line-height:20px;font-weight:600}
+.dk-ovz__sub--zwart{margin-top:0!important;color:#333}
+.dk-ovz__regel{color:inherit}
+.dk-ovz__waarschuwingen{list-style:none;margin:0;padding:0 0 0 19px;display:grid;gap:6px}
+.dk-ovz__waarschuwingen li{display:flex;align-items:center;gap:8px}
+.dk-ovz__let{width:13px;height:13px;fill:none;stroke:#EE7B3B;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.dk-ovz__waarschuwing{font-size:13px;line-height:20px;font-weight:600;color:#333}
+.dk-episodes{display:grid;grid-template-columns:minmax(84px,auto) minmax(57px,auto) minmax(0,1fr);background:#F3F4F6;font-size:13px;line-height:20px;color:#444}
+.dk-episodes>*{padding:8px 12px 8px 0;border-top:1px solid #E1E2E5}
+.dk-episodes>:nth-child(3n+1){padding-left:13px}
+.dk-episodes__kop{padding-top:5px!important;padding-bottom:5px!important;border-top:0!important}
+.dk-episodes__link{color:var(--ons-paars)}
+.dk-vierkant{display:grid;place-items:center;width:25px;height:25px;border:1px solid #8E8E8E!important;border-radius:3px!important;background:#fff;color:#333}
+.dk-vierkant svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2}
+.dk-rondplus{display:flex;color:var(--ons-petrol)}
+.dk-rondplus svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.4}
+/* Rapportages: tabs, filters en de lijst (14), het formulier (19b, 19c) */
+.dk-rkaart{padding:6px 15px 15px}
+.dk-rkop{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.dk-rtabs{display:flex;gap:10px}
+.dk-rtab{display:grid;place-items:center;width:20px;height:31px;color:#2A8BCB}
+.dk-rtab svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round}
+.dk-rtab.is-actief{box-shadow:inset 0 -2px 0 #2A8BCB}
+.dk-rtab--roze{color:#E2337A}.dk-rtab--roze.is-actief{box-shadow:inset 0 -2px 0 #E2337A}
+.dk-rtab--geel{color:#E8B400}
+.dk-blauwplus{display:grid;place-items:center;width:22px;height:22px;border-radius:50%!important;background:var(--ons-blauw)!important;color:#fff!important}
+.dk-blauwplus svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.6}
+.dk-rfilters{display:grid;grid-template-columns:minmax(0,254px) minmax(0,254px) minmax(0,254px) auto;gap:16px;align-items:center}
+.dk-rfilters>.ons__knop{justify-self:end}
+.dk-rzoek{display:flex;align-items:center;gap:6px;height:30px;padding:0 10px;border:1px solid #BDBDBD;border-radius:15px;color:#808080;font-size:11px}
+.dk-rzoek svg{width:13px;height:13px;fill:none;stroke:#999;stroke-width:2}
+.dk-rfilters .ons__nep-select{min-height:30px;color:#333;font-size:10px}
+.dk-rdatum{display:flex;align-items:center;gap:4px;margin:9px 0 6px;font-size:11px;color:#333}
+.dk-datumveld{display:inline-flex;align-items:center;width:76px;white-space:nowrap;height:24px;padding:0 5px;border:1px solid #CFCFCF;border-radius:3px;color:#BDBDBD;font-size:9px}
+.dk-vinkje{flex:none;display:inline-block;width:11px;height:11px;margin:0 5px 0 16px;border:1px solid #8F8F8F;border-radius:2px;background:#fff}
+.dk-ritems{display:grid}
+.dk-ritem{display:grid;grid-template-columns:22px 100px minmax(0,1fr) auto;gap:0 10px;align-items:start;padding:20px 0 22px 4px;border-bottom:1px solid #D9D9D9;font-size:12px;line-height:15px;color:#0D0D0D}
+.dk-ritem:last-child{border-bottom:0}
+.dk-ritem__icoon{padding-top:7px}
+.dk-type__icoon{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round}
+.dk-ritem__tekst{display:grid;gap:6px}
+.dk-ritem__waarde{font-weight:700}
+.dk-ritem__acties{display:flex;gap:11px;color:#CCD1D6}
+.dk-ritem__acties svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.6}
+.dk-ritem__acties .is-ster{color:#F5B400}
+.dk-kleur-t{color:#1FB2B5}.dk-kleur-r{color:#E2337A}.dk-kleur-g{color:#EDB400}.dk-kleur-b{color:#2A8BCB}
+.dk-rform{padding-bottom:16px}
+.dk-rform__kop{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:17px}
+.dk-rform__titel{margin:0;font-family:inherit;font-size:17px;line-height:22px;font-weight:700;letter-spacing:0;color:#222}
+.dk-rform__rechts{display:flex;align-items:center;gap:17px}
+.dk-ster{display:inline-flex;align-items:center;gap:5px;color:#666;font-size:11px;white-space:nowrap}
+.dk-ster svg{width:13px;height:13px;color:#C4C4C4}
+.dk-ster.is-aan svg{color:#F5B400}
+.dk-tekstvak{display:block;min-height:134px;padding:9px 10px;border:1px solid #C8C8C8;border-radius:5px;background:#fff;font-size:13px;line-height:18px;color:#222;white-space:pre-wrap}
+.dk-tekstvak.is-leeg{color:#757575}
+.dk-tekstvak--klein{min-height:72px}
+.dk-schakel{display:flex;align-items:center;gap:6px;margin:15px 0 0!important;font-size:10.5px}
+.dk-uitleg{margin:15px 0 40px!important;font-size:10.5px;font-style:italic;color:#444}
+.dk-rrijen{display:grid;gap:9px;max-width:884px}
+.dk-rrij{display:grid;grid-template-columns:110px minmax(0,1fr);align-items:center}
+.dk-rrij__lbl,.dk-mrij__lbl{white-space:nowrap}
+.dk-rrij__lbl{font-size:11px;font-style:italic;color:#333}
+.dk-chips{gap:5px;color:#333}
+.dk-chip{display:inline-flex;align-items:center;gap:4px;height:21px;padding:0 6px;border-radius:3px;background:#C3E2F5;color:#1B4F70;font-size:11px;font-weight:500}
+.dk-chip__icoon{width:11px;height:11px;margin:0;fill:none;stroke:currentColor;stroke-width:1.8}
+.dk-rform+.dk-rkaart{margin-top:24px}
+.dk-mgroep{margin:0 0 4px!important;font-size:11px;font-style:italic}
+.dk-meting{display:grid;gap:8px;margin-bottom:14px}
+.dk-mrij{display:grid;grid-template-columns:100px auto 1fr;gap:10px;align-items:center}
+.dk-mrij--groot{grid-template-columns:100px minmax(0,1fr)}
+.dk-mrij__lbl{font-size:11px;font-style:italic;color:#333}
+.dk-mrij__eenheid{font-size:11px;font-style:italic;color:#333}
+.dk-invoer{display:flex;align-items:center;min-height:24px;padding:2px 8px;border:1px solid #C8C8C8;border-radius:3px;background:#fff;font-size:12px;color:#222}
+.dk-invoer.is-leeg{color:#BDBDBD}
+.dk-invoer--kort{width:114px}
+.dk-invoer--tijd{width:48px;font-size:10px}
+.dk-invoer.is-leeg.dk-invoer--tijd::before{content:"HH:MM"}
+.dk-invoer--breed{min-height:32px;padding:4px 10px;font-size:12.5px}
+.dk-tekstvak--meting{min-height:134px}
+/* Vensters (18 en 12b): het hele scherm wordt donker, het venster staat erboven. */
+.ons--venster::before{content:"";position:absolute;inset:0;z-index:2;background:rgba(0,0,0,.5);pointer-events:none}
+.ons--venster .ons__lijf{min-height:745px}
+.ons--venster .ons__inhoud{position:relative}
+.dk-venster{--w:649px;position:absolute;z-index:3;top:116px;left:max(calc(50% - 96.5px),calc(min(var(--w),100% - 32px) / 2 + 16px));transform:translateX(-50%);width:min(var(--w),calc(100% - 32px));overflow:hidden;border-radius:2px;background:#fff;box-shadow:0 8px 30px rgba(0,0,0,.3)}
+.dk-venster__kop{display:flex;justify-content:space-between;align-items:center;height:46px;padding:0 17px;font-size:15px;font-weight:700}
+.dk-venster__kop svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.4}
+.dk-venster--blauw .dk-venster__kop{background:var(--ons-blauw);color:#fff}
+.dk-typen{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;padding:13px 16px 34px}
+.dk-type{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:9px;min-height:77px;padding:11px 4px 0;color:#222;font-size:11px;line-height:1.2;text-align:center!important;border-radius:4px}
+.dk-type .dk-type__icoon{width:21px;height:21px;stroke-width:1.2}
+.dk-venster--wit{--w:973px;top:88px;border-radius:8px;padding:0 16px 24px}
+.dk-venster--wit .dk-venster__kop{height:44px;padding:0;color:#333;font-size:15.5px;font-weight:600}
+.dk-venster--wit .dk-venster__kop svg{color:#333;width:13px;height:13px}
+.dk-venster__zoek{display:flex;align-items:center;gap:9px;height:32px;margin:5px 0 12px;padding:0 11px;border:1px solid #9C9CD8;border-radius:4px;color:#555;font-size:13px}
+.dk-venster__zoek svg{width:13px;height:13px;fill:none;stroke:#555;stroke-width:2.2}
+.dk-vkeuzes{display:grid;grid-template-columns:repeat(3,minmax(0,293px));gap:16px 25px;min-height:300px;align-content:start}
+.dk-vkeuze{display:grid;gap:9px;align-content:start;padding:9px 0 17px;border-bottom:1px solid #8F8F8F!important;text-align:left}
+.dk-vkeuze__titel{color:var(--ons-paars);font-size:15px;line-height:20px;font-weight:700}
+.dk-vkeuze__uitleg{min-height:13px;color:#444;font-size:10.5px;line-height:16px}
+.dk-venster--smal{--w:560px}
+.dk-venster--smal .dk-tekstvak{margin-bottom:16px}
+.dk-veldlabel{margin:0 0 5px!important;font-size:10.5px;color:#444}
+.dk-veldlabel b{color:var(--ons-rood);font-weight:400}
+.dk-venster__knoppen{display:flex;justify-content:flex-end;gap:8px}
+/* Vragenlijsten (12, 12c) */
+.dk-paginakop,.dk-vkop{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 0 11px}
+.dk-paginatitel{margin:0;font-family:inherit;font-size:18.5px;line-height:26px;font-weight:700;letter-spacing:0;color:#222}
+.dk-tabs{display:flex;flex-wrap:wrap;margin:0 0 14px;border-bottom:1px solid #D4D4D4;font-size:14px}
+.dk-tab{display:inline-flex;align-items:center;min-height:36px;padding:0 13px;color:#555;white-space:nowrap}
+.dk-tab.is-actief{color:var(--ons-paars);box-shadow:inset 0 -2px 0 var(--ons-paars)}
+.dk-zoekveld{display:flex;align-items:center;gap:9px;max-width:472px;height:32px;margin-bottom:26px;padding:0 11px;border:1px solid var(--ons-veld);border-radius:4px;background:#fff;color:#666;font-size:13.5px}
+.dk-zoekveld svg{width:13px;height:13px;fill:none;stroke:#555;stroke-width:2.2}
+.dk-vtabel{border:1px solid var(--ons-veld);border-radius:4px;background:#fff;overflow:hidden}
+.dk-vtabel__rij{display:grid;grid-template-columns:13fr 22fr 19fr 18fr 17fr 9fr;align-items:center;min-height:52px;padding:0 12px;border-top:1px solid #DADADA;font-size:13.5px;color:#222}
+.dk-vtabel__rij--kop{min-height:42px;border-top:0;background:#F7F7F7;font-weight:500;color:#333}
+.dk-vtabel__kop{display:inline-flex;align-items:center;gap:12px}
+.dk-sorteer{width:16px;height:16px;fill:none;stroke:#444;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.dk-vtabel__titel{color:var(--ons-paars);text-decoration:underline;text-underline-offset:2px}
+.dk-status{display:inline-flex;align-items:center;height:17px;padding:0 6px;border:1px solid #EAB660;border-radius:3px;background:#FCDDA3;color:#6A4710;font-size:9.5px}
+.dk-status--actueel{border-color:#86C68E;background:#D9F0DC;color:#1F5A2A}
+.dk-status--gearchiveerd{border-color:#BDBDBD;background:#EEE;color:#444}
+.dk-vkop{margin-top:4px}
+.dk-vtitel{margin:0;font-family:inherit;font-size:16px;line-height:22px;font-weight:700;letter-spacing:0;color:#222}
+.dk-statusbalk{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding-top:9px;border-top:2px solid #C8CCDA;margin-bottom:22px}
+.dk-stappen,.dk-statusbalk__rechts{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.dk-stappen>.ons__knop{margin-left:3px}
+.dk-stap{font-size:11px;color:#444}
+.dk-stap.is-nu{color:#F2A60C;font-weight:600}
+.dk-stap__lijn{width:19px;height:1px;background:#BDBDBD}
+.dk-vsecties{padding:12px 12px 14px}
+.dk-vsectie+.dk-vsectie{margin-top:10px}
+.dk-vsectie__kop{display:flex;align-items:center;gap:10px;min-height:26px;padding:0 6px;background:#F6F7F9;color:#1A9BDB;font-size:12.5px}
+.dk-vsectie__kop span{font-size:9px}
+.dk-vsectie__antwoord{padding:8px 16px 4px;font-size:11px;color:#222}
+.dk-vvraag{padding:10px 4px 12px;border-bottom:1px solid #E4E4E4}
+.dk-vvraag:last-child{border-bottom:0}
+.dk-vvraag__lbl{margin-bottom:6px!important;font-size:10.5px;font-weight:600;color:#222}
+.dk-vkop--knop{margin-bottom:14px}
+/* Plan (13, 13b, 13c) */
+.dk-tabs--plan{margin-bottom:0;border-bottom-color:#E6E6E6}
+.dk-plankop{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 12px 9px;padding:4px 0 6px;border-bottom:1px solid #A9A9A9}
+.dk-plantitel{margin:0;font-family:inherit;font-size:20px;line-height:26px;font-weight:700;letter-spacing:0;color:#222}
+.dk-plan{margin:0 12px 13px}
+.dk-plan--actueel{border-left-color:#4C9A2A}
+.dk-print{display:flex;margin-right:6px;color:#2C9CE8}
+.dk-print svg{width:16px;height:16px;fill:currentColor;stroke:#fff;stroke-width:.6}
+.dk-rechtslink{margin:0 20px 13px 0!important;color:var(--ons-blauw-tekst);font-size:10.5px;text-align:right}
+.dk-ovzblok{margin:26px 12px 0;padding-top:2px;background:#F1F5F8}
+.dk-ovzblok__kop{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:0 0 3px;margin-bottom:9px;border-bottom:1px solid #6E7BAE}
+.dk-ovzblok .dk-knoppen{gap:6px}
+.dk-ovzblok .ons__knop--hoekig{font-weight:500}
+.dk-juridisch{padding:12px 8px;color:#137bac;font-size:14px;font-weight:600}
+.dk-domein{margin:14px 0 6px!important;font-size:13.5px;font-weight:600;color:#111}
+.dk-doelen{padding:0 12px;overflow:hidden}
+.dk-doelregel{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:30px;padding:0 30px;margin:0 -12px;border-top:1px solid #E1E1E1;background:#F3F3F3}
+.dk-doelregel:first-child{border-top:0}
+.dk-doelregel__link{color:#1A8FD4;font-size:11px;text-align:left}
+.dk-doelregel__leeg{color:#666;font-size:11px}
+.dk-doelregel__pijl{width:13px;height:13px;fill:none;stroke:#444;stroke-width:2}
+.dk-doeldetail{padding:12px 20px}
+.dk-doeldetail__rij{display:grid;grid-template-columns:186px minmax(0,1fr);gap:16px;padding:8px 0;border-top:1px solid #E1E1E1;font-size:11px}
+.dk-doeldetail__rij:first-child{border-top:0}
+.dk-doeldetail__kop{font-weight:600}
+.dk-doeldetail__regels{display:grid;gap:6px;padding:9px 16px;border:1px solid #9E9E9E;border-radius:3px;background:#EEE}
+/* Agenda van de cliënt (15) */
+.dk-agbalk{display:flex;align-items:center;gap:13px;margin-bottom:12px}
+.dk-week{display:flex;align-items:center;justify-content:space-between;gap:12px;flex:0 0 250px;padding:0 8px;font-size:14px;color:#333}
+.dk-week svg{width:14px;height:14px;fill:none;stroke:#444;stroke-width:2}
+.dk-week b{font-weight:600}
+.dk-agfilter{flex:1;min-height:32px}
+.dk-agdag{padding:0 0 3px;margin-bottom:14px}
+.dk-agdag__kop{padding:7px 6px 3px;border-bottom:1px solid #E6E6E6;font-size:13.5px;font-weight:700;color:#333}
+.dk-agitem{display:grid;grid-template-columns:13px 96px minmax(0,1fr) auto;gap:12px;align-items:center;min-height:42px;padding:3px 18px 3px 8px;border-top:1px solid #EFEFEF;font-size:11px}
+.dk-agdag__kop+.dk-agitem{border-top:0}
+.dk-agitem .dk-vinkje{margin:0}
+.dk-agitem__tijd{color:#222;line-height:16px}
+.dk-agitem__wat{display:flex;align-items:center;gap:7px}
+.dk-agitem__icoon{width:15px;height:15px;color:#ADADAD}
+.dk-agitem__titel{font-size:12px;font-weight:700;color:#222}
+.dk-agitem__acties{display:flex;gap:9px;color:#C3C3C3}
+.dk-agitem__acties svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.6}
+/* Klinimetrie (16) */
+.dk-kkop{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:46px 0 22px}
+.dk-ktitel{margin:0;font-family:inherit;font-size:24px;line-height:30px;font-weight:700;letter-spacing:0;color:#333}
+.dk-ktitel span{font-weight:400;color:#555}
+.dk-tabs--klini{gap:13px;border-bottom-color:#DADADA;margin-bottom:37px}
+.dk-tabs--klini .dk-tab{padding:0;font-size:10.5px;min-height:30px}
+.dk-kkop .ons__knop{font-size:10px}
+.dk-tabs--klini .dk-tab.is-actief{color:#333;font-weight:600;box-shadow:inset 0 -2px 0 #4A9BD3}
+.dk-kleeg{display:grid;place-items:center;min-height:65px;padding:10px;border:1px solid #9DA3B6;background:#F2F3F8;color:#333;font-size:13px;text-align:center}
+/* Administratie (20 tot en met 24) */
+.dk-adm{padding:12px 16px 15px}
+.dk-adm .dk-ovz__kop{margin-bottom:7px}
+.dk-adm__leeg{font-size:12.5px;line-height:18px;color:#555}
+.dk-alg{display:grid;grid-template-columns:154px minmax(0,1fr);row-gap:5px;font-size:12.5px;line-height:18px}
+.dk-alg__lbl{font-style:italic;color:#555}
+.dk-alg__waarde{font-weight:600;color:#222;text-align:left}
+.dk-oranje{color:#F28C0F}
+.dk-alg__onder{display:grid;font-size:12.5px;line-height:18px}
+.dk-alg__onder+.dk-alg__onder{margin-top:13px!important}
+.dk-alg__onder .dk-alg__lbl{font-size:11.5px}
+/* Nieuwe episode, geen toegang */
+.dk-epform{padding:18px 20px}
+.dk-koppel{display:inline-flex;align-items:center;gap:6px;justify-self:start;height:24px;padding:0 12px;border:1px solid var(--ons-blauw);border-radius:12px;color:var(--ons-blauw-tekst);font-size:10.5px}
+.dk-toegang{display:grid;justify-items:center;gap:10px;padding:40px 20px;text-align:center;font-size:13px}
+.dk-toegang__slot{width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.8;color:#9DA3B6}
+/* Wat de casus noemt en het scherm nog niet had */
+.dk-kaart__kop{margin-bottom:8px!important;color:var(--ons-paars);font-weight:600;font-size:16px}
+.dk-regels{list-style:none;margin:0;padding:0;display:grid;gap:2px;font-size:14px;color:var(--ons-tekst)}
 .dk-regels li{padding:7px 4px;border-bottom:1px solid var(--ons-lijn)}
 .dk-regels li:last-child{border-bottom:0}
-.dk-regels li:has(.dk-regel){padding:2px 0}
 .dk-regel{display:block;width:100%;padding:6px 4px;border:0;border-radius:4px;background:none;font:inherit;color:var(--ons-paars);text-align:left;text-decoration:underline;cursor:pointer}
-.dk-tab{border:0;background:none;font:inherit;color:inherit;padding:0;cursor:pointer}
-.ons__tabs span:has(.dk-tab){padding:4px 8px}
-.dk-venster{margin:6px 0 12px;border-radius:8px;overflow:hidden;background:#fff;box-shadow:0 10px 30px -10px rgba(0,0,0,.3)}
-.dk-venster__kop{padding:10px 16px;background:var(--ons-app);color:#fff;font-weight:600;font-size:.9rem}
-.dk-venster__opties{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;padding:12px}
 .dk-optie{display:flex;align-items:center;justify-content:center;min-height:44px;padding:8px;border:1px solid var(--ons-lijn);border-radius:6px;background:#fff;color:var(--ons-tekst);font:inherit;font-size:.8rem;text-align:center}
 button.dk-optie{cursor:pointer}
+.dk-koppelvelden{margin-top:13px}
+/* De telefoon gebruikt het eenvoudige venster */
+.dk-venster--tel{position:static;transform:none;width:auto;margin:6px 0 12px;border-radius:8px;box-shadow:0 10px 30px -10px rgba(0,0,0,.3)}
+.dk-venster--tel .dk-venster__kop{height:auto;padding:10px 16px;background:var(--ons-app);color:#fff;font-weight:600;font-size:.9rem}
+.dk-venster__opties{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;padding:12px}
+.ons__tabs span:has(.dk-tab){padding:4px 8px}
+/* Smalle schermen: het scherm herschikt, er schuift niets opzij. */
+@media (max-width:900px){
+  .ons__zoek{display:none}
+  .dk-rfilters{grid-template-columns:1fr 1fr}
+  .dk-vtabel__rij{grid-template-columns:110px minmax(0,1fr)}
+  .dk-vtabel__extra{display:none}
+}
+@media (max-width:600px){
+  .ons__lijf,.ons--venster .ons__lijf{grid-template-columns:1fr;min-height:0}
+  .ons:not(.ons--doorklik) .ons__menu{display:none}
+  .ons:not(.ons--oefen) .ons__menu{height:auto}
+  .ons:not(.ons--oefen)>.ons__lijf{min-height:0;background:none}
+  .ons__balk{gap:10px}
+  .ons__meer{display:none}
+  .ons__client{padding:10px 12px;align-items:flex-start}
+  .ons__inhoud{padding:12px 10px 56px}
+  .ons__rij2,.ons__rij3{grid-template-columns:1fr;gap:12px}
+  .ons__links .ons__veld{grid-template-columns:1fr}
+  .ons__kopregel{flex-wrap:wrap}
+  .ons__kop-rechts .ons__ster{display:none}
+  .ons__select{min-height:44px}
+  .ons__melding{white-space:normal}
+  .dk-twee{grid-template-columns:1fr;gap:0}
+  .dk-rfilters{grid-template-columns:1fr}
+  .dk-rdatum{flex-wrap:wrap}
+  .dk-ritem{grid-template-columns:24px minmax(0,1fr);gap:4px 8px}
+  .dk-ritem__tekst{grid-column:2}
+  .dk-ritem__acties{grid-column:2}
+  .dk-rform__kop,.dk-paginakop,.dk-vkop,.dk-kkop{flex-wrap:wrap}
+  .dk-rform__rechts{flex-wrap:wrap;gap:8px}
+  .dk-rrij,.dk-mrij,.dk-mrij--groot{grid-template-columns:1fr;gap:4px}
+  .dk-mrij{grid-template-columns:auto 1fr}
+  .dk-mrij .dk-mrij__lbl{grid-column:1/-1}
+  .dk-venster,.dk-venster--wit,.dk-venster--smal{position:relative;top:auto;left:auto;transform:none;width:auto;margin:0 0 12px}
+  .ons--venster .ons__kolom>:not(.ons__client):not(.ons__kruimel){display:none}
+  .dk-typen{grid-template-columns:repeat(2,minmax(0,1fr));padding:8px}
+  .dk-vkeuzes{grid-template-columns:1fr;min-height:0}
+  .dk-agbalk{flex-wrap:wrap}
+  .dk-week{flex-basis:100%}
+  .dk-agitem{grid-template-columns:13px minmax(0,1fr);padding-right:8px}
+  .dk-agitem__tijd{grid-column:2}
+  .dk-agitem__wat{grid-column:2}
+  .dk-agitem__acties{display:none}
+  .dk-alg{grid-template-columns:1fr}
+  .dk-alg__lbl{margin-top:4px}
+  .dk-doeldetail__rij{grid-template-columns:1fr;gap:6px}
+  .dk-doelregel{padding:6px 16px}
+  .dk-plankop,.dk-plan,.dk-ovzblok{margin-left:0;margin-right:0}
+  .dk-ovzblok__kop .dk-knoppen{flex-wrap:wrap}
+  .dk-statusbalk{align-items:flex-start}
+  .dk-tab{padding:0 9px}
+  .dk-kkop{margin-top:16px}
+  .ons__concept-knoppen{flex-wrap:wrap}
+}
 /* Het onderdeel waar je op klikt licht op, de rest van het scherm doet niets. */
 .dk-doel{position:relative;z-index:1;box-shadow:0 0 0 3px var(--actie);animation:dk-licht 1.6s var(--ease) infinite}
 .dk-doel:focus-visible{outline:3px solid var(--tekst);outline-offset:3px}
@@ -881,5 +1184,36 @@ button.dk-zelf.ons__knop{border-style:solid}
 .afspraak__bron svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2}
 
 /* Democontext blijft zichtbaar, ook buiten de start. */
-.demo-melding{max-width:var(--max);margin:0 auto;padding:14px 24px;color:var(--tekst);font-size:.875rem}
-.certificaat__demo{max-width:48ch;margin:0 auto 20px;font-size:.875rem;color:var(--tekst)}
+
+/* ---------- huisstijl Ons Op Maat versie 1 (4 november 2026) ---------- */
+.oom-logo{display:inline-flex;align-items:center;vertical-align:middle}
+.oom-logo img{display:block;width:auto;height:22px}
+.oom-logo__donker{display:none!important}
+.balk .oom-logo__licht,.inlog__paneel .oom-logo__licht,.paneel__in .oom-logo__licht{display:none!important}
+.balk .oom-logo__donker,.inlog__paneel .oom-logo__donker,.paneel__in .oom-logo__donker{display:block!important}
+.voet__gemaakt,.inlog__gemaakt{display:flex;flex-wrap:wrap;align-items:center;gap:.6em}
+.balk__merk .oom-logo img{height:24px}
+/* Een hoofdknop op een donker vlak: de lichte zorggroen met donkere tekst, of de klantkleur als die daar genoeg opvalt. */
+.paneel .btn--actie,.inlog__paneel .btn--actie,.cert-kaart .btn--actie{background:var(--merk-op-donker);color:var(--op-merk-op-donker);box-shadow:none}
+.paneel .btn--actie:hover,.inlog__paneel .btn--actie:hover,.cert-kaart .btn--actie:hover{background:var(--merk-op-donker);filter:brightness(1.08)}
+@media (max-width:700px){.paneel__in::after{right:-12%;bottom:-12%;width:34%;opacity:.3}}
+/* Certificaat: papierwit, haarlijnkader, omlijnd kruis met de abrikoos cursor. */
+.certificaat{background:var(--grond);box-shadow:var(--schaduw)}
+.certificaat::after{inset:2.2cqi;border:1px solid var(--lijn);border-radius:2cqi}
+.certificaat__kop{position:relative;z-index:1;height:auto;padding:6cqi 7cqi 0;background:none;color:var(--tekst)}
+.certificaat__kop .oom-logo img{height:max(22px,3.4cqi)}
+.certificaat__org .org-logo{color:var(--tekst-zacht);font-size:max(.85rem,1.5cqi)}
+.certificaat__org .logo-wilg{width:max(24px,3.4cqi);height:max(24px,3.4cqi)}
+.certificaat__body{position:relative;z-index:1;align-items:flex-start;max-width:66cqi;padding:2cqi 7cqi 1cqi;text-align:left}
+.certificaat__soort{margin:0 0 1cqi;color:var(--abrikoos-diep);font-weight:600;font-size:max(.75rem,1.3cqi);letter-spacing:.08em}
+.certificaat__naam{margin:0 0 1.4cqi;font-size:max(2rem,6cqi)}
+.certificaat__wat{color:var(--tekst)}
+.certificaat__badges{justify-content:flex-start}
+.certificaat__voet{position:relative;z-index:1}
+.certificaat__kruis{position:absolute;right:-13cqi;top:15cqi;width:44cqi;height:44cqi;overflow:visible;fill:none;stroke:var(--mint);stroke-width:13.5;stroke-linejoin:round}
+.certificaat__cursor{position:absolute;right:21cqi;top:18cqi;width:6cqi;height:8.6cqi;overflow:visible;fill:var(--abrikoos);stroke:var(--grond);stroke-width:10.6;stroke-linejoin:round;paint-order:stroke}
+@media (max-width:700px){
+  .certificaat__kop{padding:24px 20px 0;flex-wrap:wrap;gap:12px}
+  .certificaat__body{max-width:none;padding:20px 20px 8px}
+  .certificaat__kruis,.certificaat__cursor{display:none}
+}

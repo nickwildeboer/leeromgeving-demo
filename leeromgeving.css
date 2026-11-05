@@ -16,7 +16,6 @@
 .afspraak__label { font-size: 13px; font-weight: 550; color: var(--paneel); }
 .afspraak--compact .afspraak__inhoud { background: var(--wit); border-top: 1px solid var(--lijn); }
 .tegels.tegels--rustig { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-.leer-demo-label { display: inline-block; vertical-align: middle; margin-left: 8px; font-family: var(--font); font-size: 12px; font-weight: 450; color: var(--tekst-zacht); }
 .leer-medewerker { min-width: 150px; max-width: 320px; }
 .leer-medewerker > summary { cursor: pointer; color: var(--merk); font-weight: 600; padding-block: 12px; }
 .leer-medewerker dl { margin: 8px 0; font-size: 14px; }
@@ -42,3 +41,21 @@
   .overzicht .badges__deel{display:block}
   .overzicht .badges__item .badge{width:56px;height:56px}
 }
+
+/* Bij grote tekst schuift de naam in de bovenbalk naar een eigen regel in plaats van buiten beeld. */
+.balk__in{flex-wrap:wrap;row-gap:6px;justify-content:flex-end}
+
+/* Presentatiestand: alleen wat de koper in de vier momenten moet zien. */
+body[data-presentatie="1"] .maat-import,
+body[data-presentatie="1"] .maat-voet,
+body[data-presentatie="1"] .maat-balk .linkknop,
+body[data-presentatie="1"] .maat-uitleg > .maat-status,
+body[data-presentatie="1"] .tabelkop .filter { display: none; }
+
+/* Eén rustige voortgangsbalk in plaats van de stappenrij. */
+.stapbalk { max-width: 520px; margin-top: 18px; }
+.stapbalk p { margin: 0 0 8px; font-size: .95rem; font-weight: 600; opacity: .92; }
+.stapbalk progress { display: block; width: 100%; height: 8px; border: 0; border-radius: 99px; appearance: none; background: color-mix(in srgb, var(--op-paneel) 22%, transparent); overflow: hidden; }
+.stapbalk progress::-webkit-progress-bar { background: color-mix(in srgb, var(--op-paneel) 22%, transparent); border-radius: 99px; }
+.stapbalk progress::-webkit-progress-value { background: var(--actie-op-paneel); border-radius: 99px; }
+.stapbalk progress::-moz-progress-bar { background: var(--actie-op-paneel); }

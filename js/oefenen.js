@@ -13,7 +13,7 @@ const MEDEWERKER = 'Sanne Visser';
 
 export const TEKSTEN = {
   kop: 'Oefenen in Nedap ONS',
-  intro: 'Klik overal rond. Er kan niets kapot. Wat je hier doet, komt niet in een echt dossier.',
+  intro: 'Klik overal rond, er kan niets kapot.',
   opdrachten: [
     { id: 'a', tekst: 'Zoek cliënt J de Vries en open het dossier.' },
     { id: 'b', tekst: 'Lees het zorgplan van J de Vries.', tip: 'Tip: klik bij het concept zorgplan op Wijzigen.' },
@@ -24,11 +24,11 @@ export const TEKSTEN = {
   niet: 'Dit deel zit niet in de oefenomgeving. Kies iets anders.',
   module: 'Deze module zit niet in de oefenomgeving. Je oefent hier in Dossier.',
   type: 'Kies hier SOEP. Een gewone rapportage maak je met het tweede icoon bovenaan.',
-  klaar: 'Opdracht gedaan. Goed bezig.',
-  alles: 'Je hebt alle opdrachten gedaan. Klik gerust nog verder rond.',
+  klaar: 'Opdracht gedaan.',
+  alles: 'Je hebt alle opdrachten gedaan.',
   iceFout: 'Dat klopt nog niet. Kijk bij Persoonlijke contacten in Cliëntnetwerk.',
-  reset: 'Je begint opnieuw. Alles staat weer zoals het was.',
-  doel: 'Het doel staat nu in het zorgplan. Dat blijft alleen in deze oefening.',
+  reset: 'Alles staat weer zoals het was.',
+  doel: 'Het doel staat nu in het zorgplan.',
 };
 const ICE_KEUZES = ['K de Vries', 'P de Vries', MEDEWERKER];
 const ICE_GOED = 'P de Vries';
@@ -121,12 +121,14 @@ const RAPPORTAGETYPEN = [
 ];
 
 const MODULES = [
-  ['Voor mij', [['Medewerkerportaal', '#EE4E9B'], ['Notities', '#4346B7']]],
-  ['Cliënten', [['Dossier', '#507AFF'], ['Kwaliteitsmonitor', '#1EB58F'], ['Groepszorg', '#35B6E0'], ['Toedienlijsten', '#F08A24'], ['Ons Client', '#EC3E9A']]],
-  ['Agenda', [['Agenda', '#D6246E'], ['Planning', '#F06BA8'], ['Rooster', '#9C6CC9'], ['Groepsplanning', '#C5157A'], ['Plannen & Roosteren', '#7A2E8C']]],
-  ['Mijn organisatie', [['Administratie', '#3E6F8E'], ['Werkstaat', '#5BB07E'], ['Smoelenboek', '#1FA59A'], ['Mini Moves', '#9DBFE3'], ['Financieel', '#7E8D99'], ['Ketenverkeer', '#11A889'], ['Capaciteitsmanagement', '#8E57B5'], ['Import', '#1E8C7E']]],
-  ['Beheer', [['Autorisatie', '#8CC63F'], ['Aankondigingen', '#F37B57'], ['Diensten', '#3E6F8E'], ['Podium', '#2BB3C4']]],
+  ['Voor mij', [['Medewerkerportaal', '#F0509A', 'm-portaal'], ['Notities', '#3E40B0', 'm-notitie']]],
+  ['Cliënten', [['Dossier', '#4F7BF7', 'm-dossier'], ['Kwaliteitsmonitor', '#1EB59A', 'm-hart'], ['Groepszorg', '#35B9E6', 'm-groep'], ['Toedienlijsten', '#F39A33', 'm-gum'], ['Ons Client', '#F0409E', 'm-client']]],
+  ['Agenda', [['Agenda', '#D41E78', 'm-agenda'], ['Planning', '#F06BA8', 'm-persoon'], ['Rooster', '#9C6CC9', 'm-rooster'], ['Groepsplanning', '#C5157A', 'm-persoon'], ['Plannen & Roosteren', '#7A2E8C', 'm-persoon']]],
+  ['Mijn organisatie', [['Administratie', '#3E6F8E', 'm-gebouw'], ['Werkstaat', '#5BB07E', 'm-klok'], ['Smoelenboek', '#1FA59A', 'm-badge'], ['Mini Moves', '#9DBFE3', 'm-persoon'], ['Financieel', '#7E8D99', 'm-grafiek'], ['Ketenverkeer', '#11A889', 'm-keten'], ['Capaciteitsmanagement', '#8E57B5', 'm-schuif'], ['Import', '#1E8C7E', 'm-import']]],
+  ['Beheer', [['Autorisatie', '#8CC63F', 'm-schild'], ['Aankondigingen', '#F37B57', 'm-toeter'], ['Diensten', '#3E6F8E', 'm-dienst'], ['Podium', '#2BB3C4', 'm-podium']]],
 ];
+// Modules met een schermafdruk krijgen een eigen scherm (js/ons-schermen.js). De pil in de bovenbalk volgt de bron.
+const MODULE_KLEUR = Object.fromEntries(MODULES.flatMap(([, lijst]) => lijst.map(([naam, kleur]) => [naam, kleur])));
 
 // ---------- iconen (zelfde lijnstijl als de oefenschermen in app.js) ----------
 
@@ -170,6 +172,47 @@ const IC = {
   module: '<path d="M7 5h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2zM9 12l2 2 4-4"/>',
   vink: '<path d="M5 12.5 10 17 19 7"/>',
   waarschuwing: '<path d="M12 4l9 16H3zM12 10v4M12 17v.2"/>',
+  'm-portaal': '<path d="M5 11 12 5l7 6v8H5z"/><path d="M9.5 15a3.5 3.5 0 0 1 5 0M8 12.5a6 6 0 0 1 8 0"/>',
+  'm-notitie': '<path d="M7 7h10v13H7zM10 4h10v13"/><path d="M14 10v6M11 13h6"/>',
+  'm-dossier': '<path d="M7 5h10v15H7z"/><path d="M10 4h4v2h-4zM9.5 14l2 2 3.5-4"/>',
+  'm-hart': '<path d="M12 19s-7-4.4-7-9a3.8 3.8 0 0 1 7-2 3.8 3.8 0 0 1 7 2c0 4.6-7 9-7 9z"/>',
+  'm-groep': '<circle cx="12" cy="8" r="2.5"/><path d="M8 19v-4a4 4 0 0 1 8 0v4M5 12v4M19 12v4"/>',
+  'm-gum': '<path d="M6 15 14 7l4 4-8 8H6zM10 19h9"/>',
+  'm-client': '<circle cx="9" cy="9" r="2.5"/><path d="M5 18c.5-3 2-4.5 4-4.5M15 10l-4 9M14.5 16.5a2 2 0 1 0 4 0 2 2 0 0 0-4 0z"/>',
+  'm-agenda': '<path d="M5 6h14v13H5zM5 10h14M9 4v4M15 4v4"/><path d="M11 13h2v4"/>',
+  'm-persoon': '<circle cx="12" cy="7.5" r="2.5"/><path d="M8 19l1-7h6l1 7M6 12l3-1M18 12l-3-1"/>',
+  'm-rooster': '<path d="M5 5h14v14H5zM5 10h14M5 15h14M10 5v14M15 5v14"/>',
+  'm-gebouw': '<path d="M6 20V6h8v14M14 10h4v10M9 9h2M9 12h2M9 15h2"/>',
+  'm-klok': '<circle cx="12" cy="12" r="7"/><path d="M12 8v4l3 2"/>',
+  'm-badge': '<circle cx="12" cy="10" r="3"/><path d="M7 19c1-3 9-3 10 0M8 4h8"/>',
+  'm-grafiek': '<path d="M7 18v-5M12 18V7M17 18v-8M5 19h14"/>',
+  'm-keten': '<path d="M6 6h7v7H6zM11 11h7v7h-7z"/>',
+  'm-schuif': '<path d="M5 8h14M5 16h14M9 6v4M15 14v4"/>',
+  'm-import': '<ellipse cx="12" cy="7" rx="6" ry="2.5"/><path d="M6 7v9c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5V7M12 10v6M9.5 13.5 12 16l2.5-2.5"/>',
+  'm-schild': '<path d="M12 4 18 6v5c0 4-3 7-6 8-3-1-6-4-6-8V6z"/><path d="M9.5 12l2 2 3-3.5"/>',
+  'm-toeter': '<path d="M5 10v4h3l7 4V6l-7 4zM18 9.5a3.5 3.5 0 0 1 0 5"/>',
+  'm-dienst': '<path d="M7 4h8l3 3v13H7z"/><path d="M10 11h5M10 14h5M10 17h3"/>',
+  'm-podium': '<circle cx="12" cy="12" r="3"/><path d="M5 8c4-4 10-4 14 0M5 16c4 4 10 4 14 0"/>',
+  extern: '<path d="M14 4h6v6M20 4l-8 8M18 14v5H5V6h5"/>',
+  info: '<circle cx="12" cy="12" r="9" fill="currentColor" stroke="none"/><path d="M12 11v5M12 8v.2" stroke="#fff"/>',
+  klok: '<circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/>',
+  kalender: '<path d="M4 6h16v14H4zM4 10h16M8 3v5M16 3v5"/>',
+  filter: '<path d="M4 6h16M7 12h10M10 18h4"/>',
+  meer: '<circle cx="6" cy="12" r="1.3" fill="currentColor"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/><circle cx="18" cy="12" r="1.3" fill="currentColor"/>',
+  persoon: '<circle cx="12" cy="8" r="4" fill="currentColor" stroke="none"/><path d="M4 21c1-5 15-5 16 0z" fill="currentColor" stroke="none"/>',
+  mail: '<path d="M3 6h18v12H3z"/><path d="m3 7 9 6 9-6"/>',
+  archief: '<path d="M4 5h16v4H4zM6 9v10h12V9M10 13h4"/>',
+  sterVol: '<path d="m12 3 2.8 5.8 6.2.9-4.5 4.4 1 6.2L12 17.4l-5.5 2.9 1-6.2L3 9.7l6.2-.9z" fill="currentColor"/>',
+  dashboard: '<path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/>',
+  bericht2: '<path d="M4 5h16v11H8l-4 4z"/><path d="M8 9h8M8 12h5"/>',
+  gebouw: '<path d="M4 20V8l6-3v15M10 9h10v11M13 12h1M17 12h1M13 15h1M17 15h1"/>',
+  instellingen: '<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/>',
+  uitnodiging: '<path d="M4 9l8-5 8 5v11H4z"/><path d="m4 9 8 6 8-6"/>',
+  registratie: '<path d="M4 6h16v14H4zM4 10h16M8 3v5M16 3v5"/><circle cx="16" cy="16" r="3" fill="#fff"/><path d="M16 14.5V16l1 1"/>',
+  zon2: '<path d="M4 6h16v14H4zM4 10h16M8 3v5M16 3v5"/><circle cx="15" cy="15" r="2"/><path d="M15 11.5v1M15 17.5v1M11.5 15h1M17.5 15h1"/>',
+  sorteer: '<path d="M8 5v13M5 8l3-3 3 3M16 19V6M13 16l3 3 3-3"/>',
+  aflopend: '<path d="M12 5v14M7 14l5 5 5-5"/>',
+  driehoek: '<path d="M6 8h12l-6 8z" fill="currentColor" stroke="none"/>',
 };
 const icoon = (naam, klasse = 'oef-ic') => `<svg class="${klasse}" viewBox="0 0 24 24" aria-hidden="true">${IC[naam] || ''}</svg>`;
 
@@ -196,6 +239,7 @@ function nieuweState() {
     rapTab: 'lijst', rapZoek: '', rapSoort: 'alle', metingen: true,
     concept: { tekst: '', s: '', o: '', e: '', p: '' },
     docTab: 'actueel', onsMelding: null, focus: null,
+    module: null, modPagina: null, regTab: 'vandaag', uitnTab: 'inkomend',
     extraDoelen: {}, episodeOpen: false, episodeTab: 'rapportages', omahaStap: null, omahaWoning: false, omahaSymptomen: [],
     ovzOpen: false, ovzMelding: true, ovzTab: 'zorg', klinTab: 'klin', rapEditId: null, rapEditTekst: '', agendaItems: [],
     onsForm: { aanleiding: '', thuiszorg: '', initiatief: '', kenmerk: 'Individu', actueel: 'Actueel', geldig: '2026-10-16', geldigTot: '15-04-2027 (+6 maanden)', besproken: 'is besproken met cliënt/vertegenwoordiger en deze is akkoord',
@@ -266,11 +310,13 @@ export function resetOefenen() {
 
 const client = () => CLIENTEN.find((c) => c.id === S.clientId);
 const rapportagesVan = (c) => { const eigen = S.opgeslagen.rapportages[c.id] || []; return [...eigen, ...c.rapportages.filter(r=>!r.id || !eigen.some(e=>e.id===r.id))]; };
-const aanvullingen = () => ({ S, esc, knop, icoon, kaart, tabs, clientKop, rapLijst, opslaanKnop });
+const aanvullingen = () => ({ S, esc, knop, icoon, kaart, tabs, clientKop, rapLijst, opslaanKnop, PLANT, MEDEWERKER, MODULE_KLEUR });
 const recentEigen = r => { const [d,m,y] = r.datum.split('-').map(Number); const age=Date.now()-new Date(y,m-1,d,...r.tijd.split(':').map(Number)).getTime(); return r.eigen === true && r.auteur === MEDEWERKER && r.id && age>=0 && age<=24*60*60*1000; };
 const vragenlijstenVan = (c) => [
   ...(S.opgeslagen.vragenlijsten[c.id] || []),
-  { titel: 'Mikzo Kompas® (2025.1)', door: MEDEWERKER, aangepast: '06-10-2026', gemaakt: '08-09-2026' },
+  ...(c.id === 'tt'
+    ? [{ titel: 'Mikzo Kompas® (2025.1)', door: MEDEWERKER, aangepast: '06-10-2026', gemaakt: '06-10-2026' }, { titel: 'Mikzo Kompas® (2025.1)', door: MEDEWERKER, aangepast: '08-09-2026', gemaakt: '08-09-2026' }]
+    : [{ titel: 'Mikzo Kompas® (2025.1)', door: MEDEWERKER, aangepast: '06-10-2026', gemaakt: '08-09-2026' }]),
 ];
 
 function klaar(id) {
@@ -307,7 +353,12 @@ function bovenbalk() {
   return `
     <div class="ons__balk oef-balk">
       <span class="ons__logo" aria-hidden="true"></span>
-      ${knop('modules', `${admin ? 'Administratie' : 'Dossier'} <span class="ons__raster" aria-hidden="true"></span>`, { klasse: `ons__app oef-pil${admin ? ' oef-pil--admin' : ''}`, extra: `aria-expanded="${S.venster === 'modules'}" aria-haspopup="true"` })}
+      ${(() => {
+        const mod = S.module ? extraSchermen.modulePil(S) : null;
+        const naam = mod ? mod.naam : admin ? 'Administratie' : 'Dossier';
+        const open = S.venster === 'modules';
+        return knop('modules', `${esc(naam)} ${open ? icoon('omhoog', 'oef-ic oef-pil__pijl') : '<span class="ons__raster" aria-hidden="true"></span>'}`, { klasse: `ons__app oef-pil${admin && !mod ? ' oef-pil--admin' : ''}${open ? ' is-open' : ''}`, extra: `aria-expanded="${open}" aria-haspopup="true"${mod ? ` style="--pil:${mod.kleur}"` : ''}` });
+      })()}
       <form class="ons__zoek oef-balkzoek" data-oefen-form="balkzoek" role="search">
         <label class="sr" for="oef-balkzoek">Zoeken naar cliënten</label>
         <input id="oef-balkzoek" type="search" placeholder="Zoeken naar cliënten..." autocomplete="off">
@@ -379,8 +430,8 @@ function clientKop(c) {
     </div>`;
 }
 
-const kaart = (titel, inhoud, { plus = false, admin = false, rechts = '' } = {}) => `
-  <section class="ons__kaart oef-kaart${admin ? ' oef-kaart--admin' : ''}">
+const kaart = (titel, inhoud, { plus = false, admin = false, rechts = '', klasse = '' } = {}) => `
+  <section class="ons__kaart oef-kaart${admin ? ' oef-kaart--admin' : ''}${klasse ? ` ${klasse}` : ''}">
     <div class="oef-kaart__kop"><h4 class="oef-kaart__titel">${esc(titel)}</h4>${rechts}${plus ? knop('niet', icoon(admin ? 'pluscirkel' : 'plus'), { klasse: admin ? 'oef-rondplus' : 'oef-vierkantplus', label: `${titel} toevoegen` }) : ''}</div>
     ${inhoud}
   </section>`;
@@ -404,7 +455,7 @@ function startscherm() {
         ${knop('mijn', 'Mijn cliënten', { klasse: `oef-start__mijn${S.mijn ? ' is-actief' : ''}`, extra: `aria-pressed="${S.mijn}"` })}
         <fieldset class="oef-start__groep"><legend>Met status</legend>${vink('uit', 'Uit zorg')}${vink('geen', 'Geen actieve zorgopname')}</fieldset>
         <p class="oef-start__groep-kop">Met locatie</p>
-        <ul class="oef-start__boom" aria-hidden="true"><li>${icoon('omlaag')}</li><li>${icoon('pijl')} Dagcentrum A</li><li>${icoon('pijl')} Dagcentrum B</li></ul>
+        <ul class="oef-start__boom" aria-hidden="true"><li>${icoon('omlaag')} Zorggroep</li><li>${icoon('pijl')} Dagcentrum A</li><li>${icoon('pijl')} Dagcentrum B</li></ul>
       </aside>
       <div class="oef-start__midden">
         <h3 class="oef-start__titel" tabindex="-1">Cliënt zoeken</h3>
@@ -426,6 +477,7 @@ function startscherm() {
         </div></section>
         <section class="oef-bkaart"><h4>Laatst bezochte cliënten</h4><div>
           ${S.laatst.map((id) => CLIENTEN.find((c) => c.id === id)).map((c) => knop('client', esc(c.naam), { waarde: c.id, klasse: 'oef-blink' })).join('')}
+          ${Array.from({ length: Math.max(0, 4 - S.laatst.length) }, () => knop('niet', 'Cliënt (afgeschermd)', { klasse: 'oef-blink' })).join('')}
         </div></section>
         <section class="oef-overleg"><div class="oef-overleg__kop"><h4>Mijn overleggen</h4>${knop('niet', icoon('plus'), { klasse: 'oef-vierkantplus', label: 'Overleg toevoegen' })}</div><p>We konden geen overleggen vinden</p></section>
       </div>
@@ -435,7 +487,7 @@ function startscherm() {
 // ---------- dossier ----------
 
 function pOverzicht(c) {
-  const waarsch = c.labels.filter((l) => l !== 'geenzorg');
+  const waarsch = ['besmetting', 'benadering'].filter((l) => c.labels.includes(l));
   return `
     <div class="oef-twee">
       <div class="oef-kolom">
@@ -490,7 +542,7 @@ function pVragenlijsten(c) {
       <section class="ons__kaart oef-kaart">
         <h4 class="oef-domein">${esc(deel.domein)}</h4>
         <details class="oef-vl__sectie" open>
-          <summary>${esc(deel.onderwerp)} <span class="oef-score">SCORE: 1</span></summary>
+          <summary>${icoon('driehoek', 'oef-ic oef-vl__pijl')}<span class="oef-vl__onderwerp">${esc(deel.onderwerp)}</span> <span class="oef-score">SCORE: 1</span>${icoon('ster', 'oef-ic oef-vl__ster')}</summary>
           <p class="oef-vraag">${esc(deel.onderwerp)}</p>
           <p class="oef-antwoord">${esc(deel.antwoord)}</p>
           <div class="oef-vl__blok"><p class="oef-vraag">Ik wil '${esc(deel.onderwerp)}' opnemen in het Plan?</p><p class="oef-antwoord">Ja, opnemen in het Plan</p></div>
@@ -505,7 +557,7 @@ function pVragenlijsten(c) {
     <label class="oef-veldlabel" for="oef-vlzoek">Zoeken</label>
     <div class="oef-zoekveld">${icoon('zoek')}<input id="oef-vlzoek" type="search" placeholder="Zoeken op titel" value="${esc(S.vlZoek)}" data-oefen-invoer="vl-zoek"></div>
     <div class="oef-tabelwrap"><table class="oef-tabel">
-      <thead><tr><th>Status</th><th>Titel</th><th>Gemaakt door</th><th>Aangepast op</th><th>Gemaakt op</th><th>Episodes</th></tr></thead>
+      <thead><tr>${[['Status', 'sorteer'], ['Titel', 'sorteer'], ['Gemaakt door', 'sorteer'], ['Aangepast op', 'aflopend'], ['Gemaakt op', 'sorteer'], ['Episodes', '']].map(([t, ic]) => `<th>${t}${ic ? icoon(ic, 'oef-ic oef-sorteer') : ''}</th>`).join('')}</tr></thead>
       <tbody data-oefen-regio="vl-rijen">${vlRijen(c)}</tbody>
     </table></div>`;
 }
@@ -543,7 +595,7 @@ function pPlan(c) {
               <div class="oef-plan__doel">
                 <div><p class="oef-plan__lbl">Doel</p><p>${esc(x.doel)}</p></div>
                 <div><p class="oef-plan__lbl">Actie</p><p>${esc(x.actie)}</p></div>
-              </div>`).join('') : `<div class="oef-plan__doel oef-plan__doel--leeg">${knop('plan-doel', 'Kies doel', { waarde: i, klasse: 'ons__knop ons__knop--blauw' })}</div>`}
+              </div>`).join('') : `<div class="oef-plan__doel oef-plan__doel--leeg"><div>${knop('plan-doel', 'Kies doel', { waarde: i, klasse: 'ons__knop ons__knop--blauw' })}${knop('niet', icoon('prullenbak'), { klasse: 'oef-icoonknop oef-icoonknop--rood', label: 'Doel verwijderen' })}</div><div></div></div>`}
             <div class="oef-plan__kader">
               <p class="oef-vraag">Mikzo Kompas® (2025.1)</p>
               <p>${esc(d.onderwerp)}</p>
@@ -578,7 +630,7 @@ function pPlan(c) {
     ${S.planTab === 'zorgplan' || c.id === 'tt' ? `
       <div class="ons__kopregel ons__kopregel--lijn"><h3 class="ons__titel" tabindex="-1">Zorgplan</h3>${knop('niet', 'Dagoverzicht', { klasse: 'ons__knop ons__knop--blauw' })}</div>
       ${conceptKaart(`${knop('niet', 'Afronden', { klasse: 'ons__knop ons__knop--groen' })}${knop('plan-wijzig', 'Wijzigen', { klasse: 'ons__knop ons__knop--rand' })}${knop('niet', 'Verwijder', { klasse: 'ons__knop oef-knop--rood' })}`)}
-      <p class="oef-rechtslink">${knop('niet', 'Toon alle zorgplannen (1)', { klasse: 'oef-blink' })}</p>` : ''}
+      <p class="oef-rechtslink oef-rechtslink--ruim">${knop('niet', 'Toon alle zorgplannen (1)', { klasse: 'oef-blink' })}</p>` : ''}
     <div class="oef-ovz" id="oef-ovz-blok" tabindex="-1">
       <div class="ons__kopregel ons__kopregel--lijn oef-ovz__kop"><h3 class="ons__titel">Onvrijwillige zorg</h3>
         <span class="oef-knoppen">${knop('niet', 'Tijdlijn', { klasse: 'oef-knop oef-knop--wit' })}${knop('niet', 'Onvoorziene zorg registreren', { klasse: 'oef-knop oef-knop--wit' })}${knop('niet', 'Nieuwe onvrijwillige zorg', { klasse: 'oef-knop oef-knop--paars' })}</span></div>
@@ -672,7 +724,7 @@ function rapLijst(c, alleenFilters = false) {
 }
 
 function pAgenda(c) {
-  const maandag = new Date(2026, 9, (c.id === 'tt' ? 12 : 5) + 7 * S.week);
+  const maandag = new Date(2026, 9, 5 + 7 * S.week);
   const { nr, jaar } = weekNr(maandag);
   const dagen = Array.from({ length: 7 }, (_, i) => new Date(maandag.getFullYear(), maandag.getMonth(), maandag.getDate() + i));
   const vandaag = new Date(2026, 9, 7);
@@ -723,7 +775,7 @@ function pAdminOverzicht(c) {
           <div class="oef-kaart__kop"><h4 class="oef-kaart__titel">Aangevraagde legitimaties</h4>${knop('niet', icoon('pluscirkel'), { klasse: 'oef-rondplus', label: 'Aangevraagde legitimatie toevoegen' })}</div>${leeg('Er zijn geen aangevraagde zorglegitimaties voor deze cliënt.')}
         </section>
         ${kaart('Zorgtrajecten', leeg('Er zijn geen zorgtrajecten voor deze cliënt.'), a)}
-        ${kaart('Zorgregels', leeg('Er zijn geen zorgregels voor deze cliënt.'), { admin: true, rechts: '<span class="oef-nepkeuze">september 2026 ⌄</span>' })}
+        ${kaart('Zorgregels', leeg('Er zijn geen zorgregels voor deze cliënt.'), { admin: true, rechts: `<span class="oef-nepkeuze">september 2026 ${icoon('omlaag')}</span>` })}
         ${kaart('Cliëntnetwerk', c.ice ? `<p class="oef-zin">Eerste contactpersoon: ${knop('pagina', esc(c.ice), { waarde: 'a-netwerk', klasse: 'oef-link' })}</p>` : leeg('Er zijn geen eerste verantwoordelijken in het cliëntnetwerk van deze cliënt.'), a)}
       </div>
       <div class="oef-kolom">
@@ -731,7 +783,7 @@ function pAdminOverzicht(c) {
         ${kaart('Locaties', leeg('Er zijn geen locaties voor deze cliënt.'), a)}
         ${kaart('Zorgstatus', leeg('Geen actieve zorgopname'), ap)}
         ${kaart('Declaraties en aanvullende diensten', leeg('De cliënt heeft geen declaraties en aanvullende diensten.'), a)}
-        ${kaart('Zorgtechnologie', `<p class="oef-zin">Er zijn geen zorgtechnologieën geregistreerd voor deze cliënt.</p>`, { plus: true })}
+        ${kaart('Zorgtechnologie', `<p class="oef-zin">Er zijn geen zorgtechnologieën geregistreerd voor deze cliënt.</p>`, { plus: true, klasse: 'oef-kaart--zt' })}
       </div>
     </div>`;
 }
@@ -784,15 +836,15 @@ function pNetwerk(c) {
 function pFinancieel(c) {
   const a = { admin: true };
   const ap = { admin: true, plus: true };
-  const jaar = '<span class="oef-nepkeuze">2026 ⌄</span>';
+  const jaar = `<span class="oef-nepkeuze">2026 ${icoon('omlaag')}</span>`;
   return `
     ${clientKop(c)}
     <div class="oef-twee">
       <div class="oef-kolom">
         ${kaart('Verzekeringen', leeg('Er zijn geen verzekeringen voor deze cliënt.'), ap)}
         ${kaart('Uitkeringsgegevens', leeg('De cliënt heeft geen uitkeringen.'), ap)}
-        ${kaart('Factuur- en declaratieoverzicht', leeg('Er zijn geen facturen of declaraties.'), { admin: true, rechts: jaar })}
-        ${kaart('Ongedeclareerde financiële boekingen', leeg('Er zijn geen boekingen.'), { admin: true, rechts: jaar })}
+        ${kaart('Factuur- en declaratieoverzicht', '<span class="oef-laden" role="img" aria-label="Laden"></span>', { admin: true, rechts: jaar, klasse: 'oef-kaart--bruin' })}
+        ${kaart('Ongedeclareerde financiële boekingen', '<span class="oef-laden" role="img" aria-label="Laden"></span>', { admin: true, rechts: jaar, klasse: 'oef-kaart--bruin' })}
       </div>
       <div class="oef-kolom">
         ${kaart('Bankgegevens', leeg('Er zijn geen bankgegevens voor deze cliënt.'), a)}
@@ -804,13 +856,17 @@ function pFinancieel(c) {
     </div>`;
 }
 
-const PLANT = `<svg class="oef-plant" viewBox="0 0 240 210" aria-hidden="true">
-  <path d="M60 40c30-40 110-30 120 20 10 40-10 80-40 90-50 15-100 0-100-50 0-25 5-45 20-60z" fill="#D7EBFA"/>
-  <path d="M120 120c-20-30-30-60-20-90M124 120c5-40 20-70 40-85M116 122c-30-15-50-40-55-70M128 122c25-15 45-30 60-35" stroke="#2E8B6E" stroke-width="10" stroke-linecap="round" fill="none"/>
-  <circle cx="122" cy="112" r="16" fill="#F07A55"/><path d="M110 100l4-10 6 8M134 100l-4-10-6 8" fill="#F07A55"/>
-  <path d="M86 125h72l-8 70H94z" fill="#F7C35E"/><rect x="82" y="118" width="80" height="12" rx="4" fill="#F9D27F"/>
-  <path d="M92 155c10-10 20 10 30 0s20 10 30 0" stroke="#E8487A" stroke-width="5" fill="none"/>
-  <path d="M30 195c5-15 25-20 40-10l-5 10z" fill="#BFC4CC"/><circle cx="62" cy="178" r="9" fill="none" stroke="#E8487A" stroke-width="4"/>
+const PLANT = `<svg class="oef-plant" viewBox="0 0 240 200" aria-hidden="true">
+  <path d="M74 22c34-30 104-22 128 18 20 34 8 78-24 96-36 20-104 18-130-10-24-26-10-76 26-104z" fill="#D6EAFA"/>
+  <path d="M118 104c-10-30-14-58-6-86M126 104c6-30 18-56 36-74M110 106c-22-18-36-40-40-66M134 106c20-18 40-30 62-34M104 108c-26-8-44-20-56-38" stroke="#1E7A5E" stroke-width="9" stroke-linecap="round" fill="none"/>
+  <path d="M140 104c8-26 26-48 46-60M100 104c-14-22-20-44-16-66" stroke="#7FC9A3" stroke-width="7" stroke-linecap="round" fill="none"/>
+  <path d="M100 92l4-16 10 10h16l10-10 4 16c2 10-6 18-22 18s-24-8-22-18z" fill="#F07A55"/>
+  <path d="M110 96c4-4 20-4 24 0-2 8-22 8-24 0z" fill="#fff"/><circle cx="114" cy="90" r="2" fill="#222"/><circle cx="130" cy="90" r="2" fill="#222"/>
+  <path d="M74 104h96l-10 74H84z" fill="#F7C35E"/><rect x="70" y="98" width="104" height="12" rx="4" fill="#F9D27F"/>
+  <path d="M84 140c10-12 20 12 32 0s20 12 32 0s14 10 18 4" stroke="#E8487A" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <path d="M168 150c14 0 20-10 18-24-1-8 4-12 10-10" stroke="#F07A55" stroke-width="9" fill="none" stroke-linecap="round"/><circle cx="198" cy="116" r="6" fill="#fff"/>
+  <path d="M30 172c4-14 22-20 38-12l6 10H30z" fill="#C4C8D0"/><circle cx="58" cy="156" r="9" fill="#F25C6E"/><circle cx="58" cy="156" r="4" fill="#C4C8D0"/>
+  <path d="M30 160l-8-10m0 0-6 2m6-2 2-6" stroke="#F2B53A" stroke-width="3" fill="none" stroke-linecap="round"/>
 </svg>`;
 
 function pDocumenten(c) {
@@ -843,6 +899,9 @@ const PAGINAS = {
   'a-financieel': pFinancieel,
   'a-documenten': pDocumenten,
 };
+
+// Overzicht en de administratiekaarten staan in ONS in een smalle middenkolom.
+const SMAL = new Set(['overzicht', 'vragenlijsten', 'plan', 'rapportages', 'agenda', 'a-overzicht', 'a-algemeen', 'a-netwerk', 'a-financieel']);
 
 // ---------- vensters ----------
 
@@ -877,7 +936,7 @@ function modulekiezer() {
         ${MODULES.map(([groep, lijst], i) => `
           <div class="oef-modules__kolom${i === 0 ? ' is-eerste' : ''}">
             <h3>${esc(groep)}</h3>
-            <ul>${lijst.map(([naam, kleur]) => `<li>${knop('module', `<span class="oef-module__ic" style="--k:${kleur}">${icoon('module')}</span>${esc(naam)}`, { waarde: naam, klasse: 'oef-module' })}</li>`).join('')}</ul>
+            <ul>${lijst.map(([naam, kleur, ic]) => `<li>${knop('module', `<span class="oef-module__ic" style="--k:${kleur}">${icoon(ic)}</span>${esc(naam)}${naam === 'Podium' ? icoon('extern', 'oef-ic oef-module__extern') : ''}`, { waarde: naam, klasse: 'oef-module' })}</li>`).join('')}</ul>
           </div>`).join('')}
       </div>
     </div>`;
@@ -942,17 +1001,17 @@ function render() {
   herstelAchtergrond();
   const c = client();
   const dossier = S.scherm === 'dossier' && c;
-  const venster = S.venster === 'vragenlijst' ? vensterVragenlijst() : S.venster === 'rapportagetype' ? vensterRapportagetype() : ['meting','handeling','afwezigheid'].includes(S.venster) ? vensterAanvulling() : '';
+  const venster = S.venster === 'afspraak' ? extraSchermen.afspraakVenster(aanvullingen()) : S.venster === 'vragenlijst' ? vensterVragenlijst() : S.venster === 'rapportagetype' ? vensterRapportagetype() : ['meting','handeling','afwezigheid'].includes(S.venster) ? vensterAanvulling() : '';
   container.innerHTML = `
     <div class="oef">
       ${opdrachtenPaneel()}
-      <div class="ons ons--oefen${S.ingeklapt ? ' is-ingeklapt' : ''}${S.venster ? ' heeft-venster' : ''}" role="region" aria-label="Oefenomgeving Nedap ONS">
+      <div class="ons ons--oefen${S.ingeklapt ? ' is-ingeklapt' : ''}${S.venster ? ' heeft-venster' : ''}${S.module ? ` is-module oef-mod--${extraSchermen.moduleSleutel(S)}` : ''}" role="region" aria-label="Oefenomgeving Nedap ONS">
         ${bovenbalk()}
         ${S.venster === 'modules' ? modulekiezer() : ''}
-        ${dossier ? `
+        ${S.module ? extraSchermen.moduleScherm(aanvullingen()) : dossier ? `
           <div class="ons__lijf">
             ${menu()}
-            <div class="ons__inhoud oef-inhoud" data-oefen-regio="inhoud">${PAGINAS[S.pagina](c)}</div>
+            <div class="ons__inhoud oef-inhoud${SMAL.has(S.pagina) && !(S.pagina === 'overzicht' && S.episodeOpen) && !(S.pagina === 'plan' && S.ovzOpen) && !(S.pagina === 'vragenlijsten' && S.omahaStap !== null) ? ' is-smal' : ''}" data-oefen-regio="inhoud">${PAGINAS[S.pagina](c)}</div>
           </div>` : `<div class="oef-startlijf">${startscherm()}</div>`}
         ${venster ? `<div class="oef-dimmer">${venster}</div>` : ''}
         ${S.onsMelding ? `<p class="ons__melding" role="status"><span aria-hidden="true">✓</span> ${esc(S.onsMelding)}</p>` : ''}
@@ -1023,7 +1082,7 @@ function actie(a, w, el) {
   const { meld } = huidig.opties;
   S.focus = `[data-oefen="${a}"]${w !== undefined ? `[data-waarde="${CSS.escape(w)}"]` : ''}`;
   switch (a) {
-    case 'start': S.scherm = 'zoeken'; S.clientId = null; S.venster = null; S.focus = '#oef-zoek'; break;
+    case 'start': S.scherm = 'zoeken'; S.clientId = null; S.venster = null; S.module = null; S.focus = '#oef-zoek'; break;
     case 'mijn': S.mijn = !S.mijn; break;
     case 'client': opDossier(w); break;
     case 'pagina': naarPagina(w); S.focus = `[data-oefen="pagina"][data-waarde="${w}"]`; break;
@@ -1033,7 +1092,9 @@ function actie(a, w, el) {
       else { S.venster = 'modules'; S.terugFocus = '.oef-pil'; S.focus = '[data-oefen="module"][data-waarde="Dossier"]'; }
       break;
     case 'module':
-      if (w === 'Dossier') { sluitVenster(); if (S.scherm === 'dossier' && isAdmin()) naarPagina('overzicht'); }
+      if (w === 'Dossier') { sluitVenster(); S.module = null; if (S.scherm === 'dossier' && isAdmin()) naarPagina('overzicht'); S.focus = '.oef-pil'; }
+      else if (w === 'Administratie' && S.scherm === 'dossier' && client()) { sluitVenster(); S.module = null; naarPagina('a-overzicht'); S.focus = '.oef-pil'; }
+      else if (extraSchermen.heeftModule(w)) { sluitVenster(); S.module = w; S.modPagina = extraSchermen.startPagina(w); S.focus = '.oef-pil'; }
       else {
         const melding = huidig.container.querySelector('.oef-modules__melding');
         if (melding) melding.textContent = TEKSTEN.module;
@@ -1111,6 +1172,8 @@ function actie(a, w, el) {
       if (!f.agBegin || (S.venster==='handeling' && !f.agTitel.trim()) || (S.venster==='afwezigheid' && (!f.agEind || f.agEind<f.agBegin))) { meld?.('Vul de datum en de velden van deze oefening in.'); S.focus='#oef-ons-agBegin'; break; }
       const [y,m,d]=f.agBegin.split('-');
       S.agendaItems.push({clientId:S.clientId,soort:S.venster==='handeling'?'Handeling':'Afwezigheid',datum:`${d}-${m}-${y}`,titel:S.venster==='handeling'?f.agTitel:'Afwezigheid',notities:f.agNotities});
+      // Toon de week van het nieuwe item. Week 41 (maandag 5 oktober 2026) is de bronweek.
+      { const dag=new Date(Number(y),Number(m)-1,Number(d)); const ma=new Date(dag.getFullYear(),dag.getMonth(),dag.getDate()-((dag.getDay()+6)%7)); S.week=Math.round((ma-new Date(2026,9,5))/(7*86400000)); }
       sluitVenster(); S.onsMelding='Opgeslagen in deze oefening'; break;
     }
     case 'rap-wijzig': {
@@ -1128,6 +1191,11 @@ function actie(a, w, el) {
       S.rapEditId=null; bewaar(); S.onsMelding='Rapportage is gewijzigd'; break;
     }
     case 'doc-tab': S.docTab = w; break;
+    case 'mod-pagina': if (extraSchermen.modPaginaGeldig(w)) { const m = extraSchermen.moduleVanPagina(w); if (m) S.module = m; S.modPagina = w; S.focus = `[data-oefen="mod-pagina"][data-waarde="${w}"]`; } break;
+    case 'mod-open': if (extraSchermen.heeftModule(w)) { S.module = w; S.modPagina = extraSchermen.startPagina(w); S.focus = '.oef-pil'; } break;
+    case 'reg-tab': if (['vandaag', 'gisteren', 'eergisteren', 'open'].includes(w)) S.regTab = w; break;
+    case 'uitn-tab': if (['inkomend', 'uitstaand'].includes(w)) S.uitnTab = w; break;
+    case 'afspraak-open': S.venster = 'afspraak'; S.terugFocus = '[data-oefen="afspraak-open"]'; S.focus = '#oef-afspraak-titel'; break;
     case 'ice':
       if (w === ICE_GOED) { klaar('d'); S.focus = '.oef__opnieuw'; }
       else { meld?.(TEKSTEN.iceFout); S.focus = null; return; }
@@ -1213,6 +1281,7 @@ function koppel(container) {
     e.preventDefault();
     S.zoek = f.querySelector('input').value;
     S.scherm = 'zoeken';
+    S.module = null;
     S.clientId = null;
     S.venster = null;
     S.focus = '#oef-zoek';

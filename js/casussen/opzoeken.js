@@ -96,7 +96,7 @@ export default {
           knoppen: ['Opslaan'],
           velden: [
             { label: 'Hoeveelheid', waarde: '300 ml' },
-            { label: 'Tijd', waarde: '17.45' },
+            { label: 'Starttijd', waarde: '17.45' },
           ],
         },
       },

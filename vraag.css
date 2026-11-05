@@ -126,3 +126,18 @@ blockquote.vraag-antwoord__tekst p{margin:0}
   .vraag-antwoord{animation:none}
   .vraag-heel summary::before,.vraag-meer__item summary::before,.vraag-het__voorbeelden .chip{transition:none}
 }
+
+/* Vraag het, eenvoudig: zoekveld bovenaan, één antwoordkaart, de rest achter één knop. */
+.vraag-pagina { padding-top: clamp(28px, 5vw, 56px); padding-bottom: 56px; }
+.vraag-pagina h1 { margin: 0 0 18px; }
+.vraag-het__veld, .vraag-het__knop { min-height: 56px; font-size: 1.05rem; }
+.vraag-het:has([data-vraag-antwoord]) .vraag-het__voorbeelden { display: none; }
+.vraag-antwoord { display: grid; gap: 10px; }
+.vraag-antwoord__vraag { margin: 0; }
+.vraag-antwoord__tekst { margin: 0; font-size: 1.1rem; line-height: 1.55; color: var(--tekst); }
+.vraag-antwoord .vraag-bron, .vraag-contact { margin: 0; }
+.vraag-contact { display: flex; gap: .5em; align-items: flex-start; font-size: .95rem; color: var(--tekst); }
+.vraag-contact svg { flex: none; width: 18px; height: 18px; margin-top: .15em; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+.vraag-antwoord__acties { display: flex; flex-wrap: wrap; gap: 4px 20px; align-items: baseline; }
+.vraag-antwoord__acties:empty { display: none; }
+.vraag-meer > summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; font-weight: 600; color: var(--merk-tekst); }

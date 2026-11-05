@@ -182,7 +182,7 @@ function opslagmelding() {
   const vragen = alleenSessie(SLEUTEL_VRAGEN);
   if (!bronnen && !vragen) return '';
   const wat = bronnen && vragen ? 'Bronnen en vragen' : bronnen ? 'Bronnen' : 'Vragen';
-  return `<p class="bron__opslagmelding" role="status" data-vraag-opslagmelding>${wat} worden alleen in deze sessie bewaard. Ze verdwijnen als je deze sessie afsluit.</p>`;
+  return `<p class="bron__opslagmelding" role="status" data-vraag-opslagmelding>${wat} worden alleen in deze sessie bewaard.</p>`;
 }
 
 export function resetVraag() {
@@ -240,41 +240,16 @@ function bronRegel(a, esc) {
   return `<p class="vraag-bron">${ICOON.boek}<span>Uit: ${esc(waar)}</span></p>`;
 }
 
-function persoonKaart(p, esc) {
-  const letter = /^[A-Z]/.test(p.naam) && !/^(De|Via|Wie|Servicedesk|MIC)\b/.test(p.naam) ? p.naam.charAt(0) : '';
-  return `
-    <li class="vraag-persoon">
-      <span class="vraag-persoon__avatar" aria-hidden="true">${letter ? esc(letter) : ICOON.mensen}</span>
-      <div class="vraag-persoon__info">
-        <p class="vraag-persoon__naam">${esc(p.naam)}</p>
-        <p class="vraag-persoon__rol">${esc(p.rol)}${p.afdeling ? ` · ${esc(p.afdeling)}` : ''}</p>
-        <dl class="vraag-persoon__gegevens">
-          <div><dt>Wanneer</dt><dd>${esc(p.wanneer)}</dd></div>
-          <div><dt>Bereik</dt><dd>${esc(p.bereik)}</dd></div>
-        </dl>
-      </div>
-    </li>`;
-}
 
-function personenBlok(personen, esc, kop = 'Bij wie je terechtkunt', getoondeBron = null) {
+// Bij wie je terechtkunt, in één regel: naam en hoe je ze bereikt.
+function personenBlok(personen, esc, kop = 'Bij wie') {
   if (!personen?.length) return '';
-  return `
-    <div class="vraag-blok">
-      <h4 class="vraag-blok__kop">${esc(kop)}</h4>
-      <ul class="vraag-personen">${personen.map((p) => persoonKaart(p, esc)).join('')}</ul>
-      ${getoondeBron === personen[0].bron ? '' : `<p class="vraag-bron">${ICOON.mensen}<span>Uit: ${esc(personen[0].bron || 'Wie doet wat (voorbeeld)')}</span></p>`}
-    </div>`;
+  return `<p class="vraag-contact">${ICOON.mensen}<span>${esc(kop)}: ${personen.map((p) => `<strong>${esc(p.naam)}</strong>${p.bereik ? `, ${esc(p.bereik)}` : ''}`).join(' of ')}</span></p>`;
 }
 
 function modulesBlok(modules, esc) {
   if (!modules?.length) return '';
-  return `
-    <div class="vraag-blok">
-      <h4 class="vraag-blok__kop">Oefen het in de leeromgeving</h4>
-      <div class="vraag-modules">
-        ${modules.map((id) => `<button type="button" class="btn btn--rand btn--klein vraag-module" data-vraag-module="${esc(id)}"><span>${esc(moduleTitel(id))}</span>${ICOON.pijl}</button>`).join('')}
-      </div>
-    </div>`;
+  return modules.map((id) => `<button type="button" class="linkknop vraag-module" data-vraag-module="${esc(id)}">Oefen dit: ${esc(moduleTitel(id))}</button>`).join('');
 }
 
 function passage(t, esc) {
@@ -284,8 +259,8 @@ function passage(t, esc) {
 function meerBlok(treffers, esc, kop) {
   if (!treffers?.length) return '';
   return `
-    <section class="vraag-meer" aria-label="${esc(kop)}">
-      <h4 class="vraag-blok__kop">${esc(kop)}</h4>
+    <details class="vraag-meer">
+      <summary>${esc(kop)} (${treffers.length})</summary>
       <ul class="vraag-meer__lijst">
         ${treffers.map((t) => `
           <li>
@@ -298,7 +273,7 @@ function meerBlok(treffers, esc, kop) {
             </details>
           </li>`).join('')}
       </ul>
-    </section>`;
+    </details>`;
 }
 
 function antwoordHtml(vraag, a, esc, index, { alleenSessie: vraagAlleenSessie = false } = {}) {
@@ -308,7 +283,7 @@ function antwoordHtml(vraag, a, esc, index, { alleenSessie: vraagAlleenSessie = 
       <article class="vraag-antwoord vraag-antwoord--open" tabindex="-1" data-vraag-antwoord>
         <p class="vraag-antwoord__label">${ICOON.open}<span>Geen passend antwoord gevonden</span></p>
         <h3 class="vraag-antwoord__vraag">${esc(vraag)}</h3>
-        <p class="vraag-antwoord__tekst">${esc(a.tekst)} ${saveMessage} Zo kun je controleren of de informatie ontbreekt of lastig te vinden is.</p>
+        <p class="vraag-antwoord__tekst">${esc(a.tekst)} ${saveMessage}</p>
         <p>Kun je door een probleem niet verder werken? Bel dan de servicedesk op toestel 2140.</p>
         ${personenBlok(a.personen, esc, 'Je key-user')}
       </article>
@@ -317,15 +292,16 @@ function antwoordHtml(vraag, a, esc, index, { alleenSessie: vraagAlleenSessie = 
   const sectie = a.sectieId ? index.docs.find((d) => d.item.id === a.sectieId)?.item : null;
   return `
     <article class="vraag-antwoord" tabindex="-1" data-vraag-antwoord>
-      <p class="vraag-antwoord__label">${ICOON.vink}<span>Antwoord</span></p>
       <h3 class="vraag-antwoord__vraag">${esc(a.kop)}</h3>
-      <blockquote class="vraag-antwoord__tekst"><p>${esc(a.tekst)}</p></blockquote>
+      <p class="vraag-antwoord__tekst">${esc(a.tekst)}</p>
       ${bronRegel(a, esc)}
-      ${sectie ? `<details class="vraag-heel"><summary>Lees het hele stuk</summary><div class="vraag-heel__tekst">${passage(sectie, esc)}</div></details>` : ''}
-      ${personenBlok(a.personen, esc, 'Bij wie je terechtkunt', a.bron)}
-      ${modulesBlok(a.modules, esc)}
+      ${personenBlok(a.personen, esc)}
+      <div class="vraag-antwoord__acties">
+        ${sectie ? `<details class="vraag-heel"><summary>Lees het hele stuk</summary><div class="vraag-heel__tekst">${passage(sectie, esc)}</div></details>` : ''}
+        ${modulesBlok(a.modules, esc)}
+      </div>
     </article>
-    ${meerBlok(a.treffers, esc, 'Ook gevonden')}`;
+    ${meerBlok(a.treffers, esc, 'Meer gevonden')}`;
 }
 
 let teller = 0;
@@ -343,10 +319,10 @@ export function mountVraag(container, { esc = escStandaard, beginVraag, naarModu
   container.innerHTML = `
     <section class="vraag-het" aria-labelledby="vraag-kop-${nr}">
       <form class="vraag-het__form" role="search" data-vraag-form>
-        <label class="vraag-het__label" id="vraag-kop-${nr}" for="vraag-veld-${nr}">Stel je vraag of zoek in het handboek</label>
+        <label class="vraag-het__label sr" id="vraag-kop-${nr}" for="vraag-veld-${nr}">Stel je vraag of zoek in het handboek</label>
         <div class="vraag-het__rij">
           <input class="vraag-het__veld" id="vraag-veld-${nr}" name="vraag" type="search" autocomplete="off" enterkeyhint="search" maxlength="200"
-            placeholder="Bijvoorbeeld: bij wie meld ik een val?" data-vraag-veld>
+            placeholder="Stel je vraag, bijvoorbeeld: bij wie meld ik een val?" data-vraag-veld>
           <button type="submit" class="btn btn--merk vraag-het__knop">${ICOON.zoek}<span>Zoek</span></button>
         </div>
       </form>
@@ -368,7 +344,7 @@ export function mountVraag(container, { esc = escStandaard, beginVraag, naarModu
     }
     if (detecteerPersoonsgegevens(v).length) {
       veld.value = '';
-      uitkomst.innerHTML = `<article class="vraag-antwoord vraag-antwoord--open" tabindex="-1" data-vraag-antwoord><p class="vraag-antwoord__label">${ICOON.let}<span>Zoeken gestopt</span></p><p class="vraag-antwoord__tekst">Deze tekst bevat patronen die op persoonsgegevens kunnen lijken. Verwijder die gegevens en probeer het opnieuw. Deze controle is een hulpmiddel en herkent niet alle persoonsgegevens.</p><p>Bij een inhoudelijke vraag kun je terecht bij de key-user van je afdeling.</p></article>`;
+      uitkomst.innerHTML = `<article class="vraag-antwoord vraag-antwoord--open" tabindex="-1" data-vraag-antwoord><p class="vraag-antwoord__label">${ICOON.open}<span>Zoeken gestopt</span></p><p class="vraag-antwoord__tekst">Je vraag lijkt persoonsgegevens te bevatten. Haal die weg en probeer het opnieuw. Deze controle herkent niet alle persoonsgegevens.</p></article>`;
       if (focus) uitkomst.querySelector('[data-vraag-antwoord]')?.focus({ preventScroll: true });
       return { geblokkeerd: true };
     }
@@ -462,31 +438,31 @@ export function mountBronnen(container, { esc = escStandaard, meld = () => {} } 
             <input class="sr" type="file" accept=".txt,.md,.markdown,text/plain,text/markdown" data-vraag-upload>
           </label>
         </div>
-        <p class="bronnen__uitleg">In deze demo zoek je in deze voorbeeldbronnen. Voeg alleen verzonnen testtekst toe. Je kunt een .txt- of .md-bestand toevoegen, tot 200 kB. Elke kop wordt een eigen stuk tekst.</p>
+        <p class="bronnen__uitleg">Voeg alleen testtekst toe, als .txt- of .md-bestand tot 200 kB.</p>
         ${opslagmelding()}
         <ul class="bronnen__lijst">
           <li class="bron">
             <span class="bron__icoon" aria-hidden="true">${ICOON.boek}</span>
             <div class="bron__info">
               <p class="bron__naam">Handboek De Wilgenhof</p>
-              <p class="bron__meta">${HANDBOEK.length} stukken tekst · werkafspraken per onderwerp</p>
+              <p class="bron__meta">${HANDBOEK.length} stukken tekst</p>
             </div>
-            <span class="bron__labels"><span class="bron__label">Voorbeeldbron</span><span class="bron__status">${ICOON.vink}beschikbaar</span></span>
+            <span class="bron__labels"><span class="bron__status">${ICOON.vink}beschikbaar</span></span>
           </li>
           <li class="bron">
             <span class="bron__icoon" aria-hidden="true">${ICOON.mensen}</span>
             <div class="bron__info">
               <p class="bron__naam">Wie doet wat</p>
-              <p class="bron__meta">${WIE_DOET_WAT.length} personen en rollen · key-users, EVV'ers, servicedesk</p>
+              <p class="bron__meta">${WIE_DOET_WAT.length} personen en rollen</p>
             </div>
-            <span class="bron__labels"><span class="bron__label">Voorbeeldbron</span><span class="bron__status">${ICOON.vink}beschikbaar</span></span>
+            <span class="bron__labels"><span class="bron__status">${ICOON.vink}beschikbaar</span></span>
           </li>
           ${uploads.map((b) => `
           <li class="bron">
             <span class="bron__icoon" aria-hidden="true">${ICOON.bestand}</span>
             <div class="bron__info">
               <p class="bron__naam">${esc(b.naam)}</p>
-              <p class="bron__meta">${b.secties.length} ${b.secties.length === 1 ? 'stuk' : 'stukken'} tekst · ${esc(grootte(b.grootte || 0))} · toegevoegd op ${esc(datum(b.datum))}</p>
+              <p class="bron__meta">${b.secties.length} ${b.secties.length === 1 ? 'stuk' : 'stukken'} tekst, ${esc(grootte(b.grootte || 0))}, toegevoegd op ${esc(datum(b.datum))}</p>
             </div>
             <span class="bron__labels"><span class="bron__label bron__label--eigen">Geüpload</span>
               <button type="button" class="btn btn--stil bron__weg" data-vraag-verwijder="${esc(b.id)}">Verwijder<span class="sr"> ${esc(b.naam)}</span></button>
@@ -498,7 +474,7 @@ export function mountBronnen(container, { esc = escStandaard, meld = () => {} } 
           <h2>Wat medewerkers vroegen</h2>
           <p class="bronnen__telling">${vragen.length} ${vragen.length === 1 ? 'vraag' : 'vragen'}, waarvan ${zonder} zonder antwoord</p>
         </div>
-        <p class="bronnen__uitleg">Geen antwoord gevonden? Controleer of de informatie ontbreekt of lastig te vinden is. Vul het handboek zo nodig aan.</p>
+        <p class="bronnen__uitleg">Geen antwoord gevonden? Vul het handboek zo nodig aan.</p>
         ${toon.length ? `
         <div class="tabelwrap">
           <table class="tabel tabel--kaarten bronnen__tabel">
@@ -514,7 +490,7 @@ export function mountBronnen(container, { esc = escStandaard, meld = () => {} } 
             </tbody>
           </table>
         </div>
-        ${vragen.length > toon.length ? `<p class="opmerking">Je ziet de laatste ${toon.length} vragen.</p>` : ''}` : `<p class="bronnen__leeg">Er zijn nog geen medewerkersvragen geregistreerd. Deze voorbeelden zijn zinnen uit het handboek, geen gebruiksregistraties.</p>
+        ${vragen.length > toon.length ? `<p class="opmerking">Je ziet de laatste ${toon.length} vragen.</p>` : ''}` : `<p class="bronnen__leeg">Er zijn nog geen vragen gesteld. Deze voorbeelden komen uit het handboek.</p>
           <ul class="bronnen__voorbeelden">${voorbeelden.map((voorbeeld) => `<li><span>${esc(voorbeeld.vraag)}</span><small>Uit: ${esc(voorbeeld.kop)}</small></li>`).join('')}</ul>`}
       </section>`;
   }
@@ -564,7 +540,7 @@ export function mountBronnen(container, { esc = escStandaard, meld = () => {} } 
       if (zelfde >= 0) uploads.splice(zelfde, 1, bron); else uploads.push(bron);
       const opslag = schrijf(SLEUTEL_BRONNEN, uploads);
       render();
-      meld(`${basis} is toegevoegd, met ${secties.length} ${secties.length === 1 ? 'stuk' : 'stukken'} tekst. Je vindt het nu bij Vraag het in deze browser.${opslag.alleenSessie ? ' Deze bron wordt alleen in deze sessie bewaard.' : ''}`);
+      meld(`${basis} is toegevoegd, met ${secties.length} ${secties.length === 1 ? 'stuk' : 'stukken'} tekst. Je vindt het nu bij Vraag het.${opslag.alleenSessie ? ' Deze bron wordt alleen in deze sessie bewaard.' : ''}`);
     };
     lezer.onabort = () => verwijderLezer(lezer);
     lezer.readAsText(bestand);
@@ -590,7 +566,7 @@ export function mountBronnen(container, { esc = escStandaard, meld = () => {} } 
     nieuwstePerNaam.set(bron.naam, ++uploadVolgnummer);
     const opslag = schrijf(SLEUTEL_BRONNEN, uploads.filter((b) => b.id !== id));
     render();
-    meld(`${bron.naam} is verwijderd. Vraag het zoekt er in deze browser niet meer in.${opslag.alleenSessie ? ' De bronnenlijst wordt alleen in deze sessie bewaard.' : ''}`);
+    meld(`${bron.naam} is verwijderd.${opslag.alleenSessie ? ' De bronnenlijst wordt alleen in deze sessie bewaard.' : ''}`);
     container.querySelector('[data-vraag-upload]')?.focus();
   }
 
