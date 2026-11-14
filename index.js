@@ -2,6 +2,8 @@ window.__INHOUD={"klant":{"naam":"De Wilgenhof","kort":"De Wilgenhof","letter":"
 (function(){
 const esc = (t) => String(t ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const illustratie = () => '';
+// Vaste onderdelen van elk scherm van Nedap ONS: iconen, bovenbalk, menu en clientkop.
+// Gebundeld door bouw.mjs, samen met doorklik.js. De functie esc komt uit de bundel.
 const ONS_ICOON = {
   overzicht: '<rect x="4" y="4" width="6.5" height="6.5" rx="1"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1"/>',
   vragenlijst: '<path d="M13 21H6.5A1.5 1.5 0 0 1 5 19.5v-15A1.5 1.5 0 0 1 6.5 3H14l5 5v3.5M13.5 3v5.5H19M8 12h4M8 15.5h3"/><circle cx="17.5" cy="17.5" r="3.6" fill="currentColor" stroke="none"/><path d="M16.7 16.6a.9.9 0 1 1 1.2.8c-.3.1-.4.3-.4.6M17.5 19.4v.1" stroke="#fff" stroke-width="1.1"/>',
@@ -320,9 +322,9 @@ const typeIcoon = (naam, kleur) => `<svg class="dk-type__icoon dk-kleur-${kleur}
 const typeVan = (naam) => RAPPORTAGETYPEN.find((t) => t[0] === naam);
 
 // De tabs boven in de kaart Rapportages: de lijst, een vrije rapportage en het laatst gebruikte type.
-function rapTabs(h, actief = 0, derde = ['Bloeddruk', 'hart', 'r']) {
+function rapTabs(h, actief = 0, derde = ['Bloeddruk', 'hart', 'r'], nieuw = '') {
   const tab = (icoon, kleur, i) => `<span class="dk-rtab${i === actief ? ' is-actief' : ''}${kleur === 'r' ? ' dk-rtab--roze' : kleur === 'g' ? ' dk-rtab--geel' : ''}">${i === 0 ? h.onsIcoon('lijst') : typeIcoon(icoon, kleur)}</span>`;
-  return `<div class="dk-rtabs" aria-hidden="true">${tab('lijst', 'b', 0)}${tab('doc', 'b', 1)}${derde ? tab(derde[1], derde[2], 2) : ''}</div>`;
+  return `<div class="dk-rtabs"${nieuw ? '' : ' aria-hidden="true"'}>${tab('lijst', 'b', 0)}${nieuw || tab('doc', 'b', 1)}${derde ? tab(derde[1], derde[2], 2) : ''}</div>`;
 }
 const blauwPlus = (h) => `<span class="dk-blauwplus" aria-hidden="true">${h.onsIcoon('plus')}</span>`;
 
@@ -358,10 +360,10 @@ function rapItem(b, k) {
               </div>`;
 }
 
-function rapportageLijst(b, kaarten, { plus, acties, tabs = true } = {}) {
+function rapportageLijst(b, kaarten, { plus, acties, tabs = true, nieuw = '' } = {}) {
   return `
             <div class="ons__kaart dk-rkaart">
-              ${tabs ? `<div class="dk-rkop">${rapTabs(b.h, 0)}${plus || blauwPlus(b.h)}</div>` : ''}
+              ${tabs ? `<div class="dk-rkop">${rapTabs(b.h, 0, undefined, nieuw)}${plus || blauwPlus(b.h)}</div>` : ''}
               ${rapFilters(b, acties)}
               <div class="dk-ritems">${kaarten.map((k) => rapItem(b, k)).join('')}</div>
             </div>`;
@@ -376,7 +378,9 @@ const eerdereKaarten = (d, n, test) => {
 function schermRapportages(b, p) {
   const plus = (p.knoppen || []).includes('+') ? b.knop('+', 'dk-blauwplus', b.h.onsIcoon('plus')) : '';
   const acties = (p.knoppen || []).includes('Acties bekijken') ? b.knop('Acties bekijken', 'ons__knop ons__knop--paarsrand') : '';
-  return rapportageLijst(b, p.kaarten || [], { plus, acties });
+  // Het tweede icoontje boven de lijst opent Nieuw - Rapportage (19b). De plus is voor metingen en andere soorten.
+  const nieuw = (p.knoppen || []).includes('Nieuwe rapportage') ? b.knop('Nieuwe rapportage', 'dk-rtab', typeIcoon('doc', 'b')) : '';
+  return rapportageLijst(b, p.kaarten || [], { plus, acties, nieuw });
 }
 
 // Nieuw - Rapportage (19b). Wordt ook gebruikt door de koppelstap `nieuwe-rapportage`.
@@ -998,7 +1002,7 @@ function richtDoel(root) {
   menu.scrollLeft = Math.max(0, doel.offsetLeft - (menu.clientWidth - doel.offsetWidth) / 2);
 }
 
-window.__ONS = { scherm: (d, s, ctx) => (d.plek === 'telefoon' ? telefoonScherm(h, ctx, d, s) : onsScherm(h, ctx, d, s)), menus: [...ONS_MENU, ...ONS_MENU_ADMIN].map((m) => m[0]) };
+window.__ONS = { scherm: (d, s, ctx) => (d.plek === 'telefoon' ? telefoonScherm(h, ctx, d, s) : onsScherm(h, ctx, d, s)) };
 })();
 /* Motor van het leerplatform: speelt modules af uit inhoudsbestanden. Zie FORMAT.md.
    Geen klantinhoud in dit bestand. Alles komt uit window.__INHOUD = { klant, modules }. */
