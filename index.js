@@ -1299,13 +1299,14 @@ function vraagMelding(s){
 
 /* ---------- Module: weergave ---------- */
 function moduleShell(){
-  return balk(KL.medewerker.voluit||KL.medewerker.naam,KL.medewerker.initialen||'')+'<main class="kolom kolom--breed" id="main"><div id="bal"></div><div id="proces"></div><div id="ruimte"></div><div class="onder" id="onder"></div>'+voet()+'</main>';
+  return balk(KL.medewerker.voluit||KL.medewerker.naam,KL.medewerker.initialen||'')+'<main class="kolom kolom--breed" id="main"><div id="bal"></div><div id="proces"></div><div id="ruimte"></div>'+voet()+'</main>';
 }
 function renderBal(){
   var s=huidig();
-  $('#bal').innerHTML=ballon(ballonInhoud(),true);
+  /* De knop staat in de ballon, zodat hij altijd in beeld is. Staat iemand een tijdje stil, dan licht hij op. */
+  $('#bal').innerHTML=ballon(ballonInhoud()+'<div class="onder" id="onder">'+onderHTML()+'</div>',true);
   $('#proces').innerHTML=procesHTML();
-  $('#onder').innerHTML=onderHTML();
+  clearTimeout(nudgeT);nudgeT=setTimeout(function(){var k=$('#verder')||$('#controleer');if(k)k.classList.add('is-nudge')},6000);
 }
 function renderRuimte(vink,fade){
   var s=huidig(),r=$('#ruimte');
@@ -1350,7 +1351,7 @@ function klaarHTML(){
   var daarna=s.daarna?'<div class="daarna">'+s.daarna.regels.map(function(t){return '<p>'+esc(zet(t))+'</p>'}).join('')+'<small>Bron: '+esc(s.daarna.bron)+'</small></div>':'';
   return '<section class="klaar">'+beeld+'<h1 id="kop" tabindex="-1">'+esc(zet(s.titel))+'</h1><ul>'+s.geleerd.map(function(t){return '<li>'+CHECK2+'<span>'+esc(zet(t))+'</span></li>'}).join('')+'</ul>'+daarna+'<a class="knop" href="#modules" id="klaar-knop">'+esc(s.knop||'Verder naar mijn modules')+' '+PIJL+'</a>'+(s.vragen?'<p class="vragen">'+esc(zet(s.vragen))+'</p>':'')+'</section>';
 }
-var MD=null;
+var MD=null,nudgeT=0;
 function viewModule(){
   if(!M||M.klaarGemaakt){M=null}
   if(!M){
